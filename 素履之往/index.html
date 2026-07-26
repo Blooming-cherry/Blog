@@ -28,7 +28,7 @@
 <meta property="og:description" content="十一月的冷雨将大地涂得一片阴沉，使身披雨衣的地勤工、平地候机楼上的旗，以及BMW广告板等的一切的一切，看上去竟同尼德兰画派抑郁画幅的背景一般。罢了罢了，又是德国，我想。             ————————村上春树《挪威的森林》">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-14T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-22T12:21:24.664Z">
+<meta property="article:modified_time" content="2026-07-26T08:49:29.679Z">
 <meta property="article:author" content="奶油苏打和冕型灯">
 <meta property="article:tag" content="技术, 学习, 记录">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-07-22 20:21:24" itemprop="dateModified" datetime="2026-07-22T20:21:24+08:00">2026-07-22</time>
+                <time title="修改时间：2026-07-26 16:49:29" itemprop="dateModified" datetime="2026-07-26T16:49:29+08:00">2026-07-26</time>
               </span>
 
           <br>
@@ -259,7 +259,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">xcode-select --install</span><br><span class="line"><span class="comment">#运行后会弹窗提示安装，Git 随 Command Line Tools 一起装好。不装完整 Xcode（几十 GB），只装命令行工具（几百 MB）</span></span><br><span class="line"><span class="comment">#将git指令添加到path里面（这点是比windows方便的）</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">&quot;/usr/local/bin:<span class="variable">$PATH</span>&quot;</span></span><br><span class="line"><span class="comment">#然后直接clone下ollama</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/ollama/ollama.git</span><br></pre></td></tr></table></figure>
 <p>但是这个时候，我正准备下载Homebrew的时候，网络实在不行，即使使用了代理也不行（小珍珠都要掉出来了 mewm~ QAQ），配置清华的镜像源也不行（手搓http真的很难吧，啊喂！！！）。一夜过去了，我只能回到最初的办法，使用共享文件夹的方法，将我在windows上下好的dmg文件和zip压缩包一起打包过去（好像给植物人喂饭，该死の…）。当时打算打包了一个mac-setup的文件夹，但是不知道由于什么申必力量（有可能是读写权限的问题），导致我在mac中无法将共享文件夹拖拽至本地，故此我另寻他法。<br>于是我就开始考虑使用共享局域网下，在windows的主机上起了一个http服务</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server 8000</span><br><span class="line"><span class="comment">#在管理员模式下输入：</span></span><br><span class="line">New-NetFirewallRule -DisplayName <span class="string">&quot;Python HTTP 8000&quot;</span> -Direction Inbound -Protocol TCP -LocalPort 8000 -Action </span><br></pre></td></tr></table></figure>
-<p>外面的人访问不到，因为windows的防火墙默认拦截入站流量，执行这条命令后，防火墙就会放行 8000 端口的入站请求。局域网内的其他人可以用http:&#x2F;&#x2F;我的ip:8000 访问我电脑上的服务了。<br>然后我就着手本地化部署了，下面是我参照的大肥鱼给出的文档<a href="/attachments/%E7%B4%A0%E5%B1%A5%E4%B9%8B%E5%BE%80.blog/mac-%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97.txt">mac-setup</a>，但是实际上，我的内存在打开ollama的模型和docker的同时一瞬间就爆了，我的触控板突然断触，活动监视器爆红，swap内存飙升到200MB，给我人看傻了。具体原因是因为我想要运行一个openwebui窗口，这个项目在windows上看只有几十MB但是实际上，带上docker的虚拟环境总共就有7GB，这是我始料未及的（我之前使用虚拟机运行linux给了我虚拟机很轻巧的错觉，实际上windows太笨重了，根本不适合在macos系统上运行）。实际上我已经适应了没有ui的终端运行环境，加上macos简洁的文件管理方式，其实还挺轻便。以下是成功运行图<a href="/attachments/%E7%B4%A0%E5%B1%A5%E4%B9%8B%E5%BE%80.blog/1.jpg">mac-desktop</a>。</p>
+<p>外面的人访问不到，因为windows的防火墙默认拦截入站流量，执行这条命令后，防火墙就会放行 8000 端口的入站请求。局域网内的其他人可以用http:&#x2F;&#x2F;我的ip:8000 访问我电脑上的服务了。<br>然后我就着手本地化部署了，下面是我参照的大肥鱼给出的文档<a href="../attachments/%E7%B4%A0%E5%B1%A5%E4%B9%8B%E5%BE%80.blog/mac-%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97.txt">mac-setup</a>，但是实际上，我的内存在打开ollama的模型和docker的同时一瞬间就爆了，我的触控板突然断触，活动监视器爆红，swap内存飙升到200MB，给我人看傻了。具体原因是因为我想要运行一个openwebui窗口，这个项目在windows上看只有几十MB但是实际上，带上docker的虚拟环境总共就有7GB，这是我始料未及的（我之前使用虚拟机运行linux给了我虚拟机很轻巧的错觉，实际上windows太笨重了，根本不适合在macos系统上运行）。实际上我已经适应了没有ui的终端运行环境，加上macos简洁的文件管理方式，其实还挺轻便。以下是成功运行图<a href="../attachments/%E7%B4%A0%E5%B1%A5%E4%B9%8B%E5%BE%80.blog/1.jpg">mac-desktop</a>。</p>
 <h2 id="安可"><a href="#安可" class="headerlink" title="安可"></a>安可</h2><p>夏季的溽暑渐渐盛了，是处蝉鸣蛙噪。太平洋东来的台风太过潦草，搴裳涉秦，驻留不日，便是兵荒马乱。当雨声盖过人类活动的嘈杂，心声胜过言语，便会有“蓦然回首，那人却在，灯火阑珊处”的自得。<br>多少次，在或大或小的声音里质疑自己，甚至忘记了原点。更多时候，更喜欢独处，习惯了孤独，习惯被评价————缄默是我最后的反抗，因而总是虚苦劳神。<br>且让我与狄奥尼索斯共同举起夜光杯，且歌且行，排遣昨日的忧愁，今日的烦扰，明日的焦虑。 </p>
 <div style=”text-align: center;”>—————————— “歌筵畔，先安簟枕，容我醉时眠” ——————————</div>
     </div>
@@ -358,9 +358,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">5</span>
@@ -426,12 +430,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">12k</span>
+    <span title="站点总字数">28k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">26 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>

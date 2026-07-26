@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"adaydream.cn","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="从 C 手写哈希到 C++ STL 全家桶 —— vector &#x2F; string &#x2F; unordered_map &#x2F; map &#x2F; deque &#x2F; priority_queue 全容器速查手册，附 6 种哈希构造 + 4 种冲突解决底层原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ STL 容器 &amp; 哈希结构 知识速查">
+<meta property="og:url" content="https://adaydream.cn/C++%20STL%20%E5%AE%B9%E5%99%A8%E4%B8%8E%E5%93%88%E5%B8%8C%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E9%80%9F%E6%9F%A5/index.html">
+<meta property="og:site_name" content="“松花酿酒，春水煎茶”">
+<meta property="og:description" content="从 C 手写哈希到 C++ STL 全家桶 —— vector &#x2F; string &#x2F; unordered_map &#x2F; map &#x2F; deque &#x2F; priority_queue 全容器速查手册，附 6 种哈希构造 + 4 种冲突解决底层原理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-07-26T06:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-26T08:49:29.679Z">
+<meta property="article:author" content="奶油苏打和冕型灯">
+<meta property="article:tag" content="技术, 学习, 记录">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://adaydream.cn/C++%20STL%20%E5%AE%B9%E5%99%A8%E4%B8%8E%E5%93%88%E5%B8%8C%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E9%80%9F%E6%9F%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++ STL 容器 & 哈希结构 知识速查 | “松花酿酒，春水煎茶”</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">“松花酿酒，春水煎茶”</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">来一杯春季特调的毛峰芽尖</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-music">
+
+    <a href="/music/" rel="section"><i class="fa fa-music fa-fw"></i>music</a>
+
+  </li>
+        <li class="menu-item menu-item-vibe-coding">
+
+    <a href="/vibecoding/" rel="section"><i class="fa fa-pen fa-fw"></i>vibe-coding</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://adaydream.cn/C++%20STL%20%E5%AE%B9%E5%99%A8%E4%B8%8E%E5%93%88%E5%B8%8C%E7%BB%93%E6%9E%84%E7%9F%A5%E8%AF%86%E9%80%9F%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="奶油苏打和冕型灯">
+      <meta itemprop="description" content="在下不才，于图门下求道，辟此秘境，记录技术学习点滴。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="“松花酿酒，春水煎茶”">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ STL 容器 & 哈希结构 知识速查
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-07-26 14:00:00 / 修改时间：16:49:29" itemprop="dateCreated datePublished" datetime="2026-07-26T14:00:00+08:00">2026-07-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/vibecoding/" itemprop="url" rel="index"><span itemprop="name">vibecoding</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+            <div class="post-description">从 C 手写哈希到 C++ STL 全家桶 —— vector / string / unordered_map / map / deque / priority_queue 全容器速查手册，附 6 种哈希构造 + 4 种冲突解决底层原理。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p><strong>实用优先</strong>：高频容器在前，哈希底层原理在后。先能干活，再懂原理。</p>
+</blockquote>
+<hr>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#1-%E5%AE%B9%E5%99%A8%E9%80%89%E5%9E%8B-30-%E7%A7%92%E5%86%B3%E7%AD%96">容器选型 30 秒决策</a></li>
+<li><a href="#2-stdvector--%E4%BD%A0%E7%9A%84%E9%BB%98%E8%AE%A4%E5%AE%B9%E5%99%A8">std::vector — 你的默认容器</a></li>
+<li><a href="#3-stdstring--%E7%89%B9%E6%AE%8A%E7%9A%84-vectorchar">std::string — 特殊的 vector&lt;char&gt;</a></li>
+<li><a href="#4-stdunordered_map--o1-%E5%93%88%E5%B8%8C%E8%A1%A8">std::unordered_map — O(1) 哈希表</a></li>
+<li><a href="#5-stdunordered_set--%E5%8E%BB%E9%87%8D--%E5%BF%AB%E9%80%9F%E5%88%A4%E6%96%AD">std::unordered_set — 去重 + 快速判断</a></li>
+<li><a href="#6-stdmap--stdset--%E6%9C%89%E5%BA%8F%E7%9A%84%E7%BA%A2%E9%BB%91%E6%A0%91">std::map &#x2F; std::set — 有序的红黑树</a></li>
+<li><a href="#7-%E7%AC%AC%E4%BA%8C%E6%A2%AF%E9%98%9F%E5%AE%B9%E5%99%A8deque--array--list">第二梯队容器：deque &#x2F; array &#x2F; list</a></li>
+<li><a href="#8-%E5%AE%B9%E5%99%A8%E9%80%82%E9%85%8D%E5%99%A8stack--queue--priority_queue">容器适配器：stack &#x2F; queue &#x2F; priority_queue</a></li>
+<li><a href="#9-%E5%85%A8%E5%AE%B9%E5%99%A8%E5%A4%8D%E6%9D%82%E5%BA%A6%E9%80%9F%E6%9F%A5">全容器复杂度速查</a></li>
+<li><a href="#10-%E5%93%88%E5%B8%8C%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%866-%E7%A7%8D%E6%9E%84%E9%80%A0--4-%E7%A7%8D%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3">哈希底层原理：6 种构造 + 4 种冲突解决</a></li>
+<li><a href="#11-%E8%87%AA%E5%AE%9E%E7%8E%B0%E5%93%88%E5%B8%8C%E8%A1%A8">自实现哈希表</a></li>
+<li><a href="#12-%E9%9D%A2%E8%AF%95%E9%AB%98%E9%A2%91%E8%80%83%E7%82%B9">面试高频考点</a></li>
+</ol>
+<hr>
+<h2 id="1-容器选型-30-秒决策"><a href="#1-容器选型-30-秒决策" class="headerlink" title="1. 容器选型 30 秒决策"></a>1. 容器选型 30 秒决策</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">顺序存储一堆东西？</span><br><span class="line">├── 需要随机访问 [i]？</span><br><span class="line">│   ├── 大小编译期已知 → std::array</span><br><span class="line">│   ├── 只在尾部增删     → std::vector  ← 90% 的情况</span><br><span class="line">│   └── 需要在头部增删   → std::deque</span><br><span class="line">└── 频繁在中间插入/删除  → std::list（一般别用，见 §7）</span><br><span class="line"></span><br><span class="line">键值查找？</span><br><span class="line">├── 需要按 key 排序遍历 → std::map</span><br><span class="line">├── 只需要 O(1) 查找    → std::unordered_map</span><br><span class="line">├── 允许重复 key        → std::multimap / unordered_multimap</span><br><span class="line">└── 只存 key 无 value   → std::set / unordered_set</span><br><span class="line"></span><br><span class="line">特殊行为？</span><br><span class="line">├── 始终取最大/最小      → std::priority_queue  （Top-K、Dijkstra）</span><br><span class="line">├── 先进先出            → std::queue            （BFS、消息队列）</span><br><span class="line">├── 后进先出            → std::stack            （DFS、括号匹配）</span><br><span class="line">└── 连续内存 + 字符串语义 → std::string</span><br></pre></td></tr></table></figure>
+
+<h3 id="一句话速记"><a href="#一句话速记" class="headerlink" title="一句话速记"></a>一句话速记</h3><table>
+<thead>
+<tr>
+<th>容器</th>
+<th>一句话</th>
+<th>内部结构</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>vector</code></td>
+<td>默认容器，连续内存</td>
+<td>动态数组</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td><code>vector&lt;char&gt;</code> + 字符串操作</td>
+<td>动态数组 + SSO</td>
+</tr>
+<tr>
+<td><code>unordered_map</code></td>
+<td>O(1) 键值查找</td>
+<td>哈希表（链地址法）</td>
+</tr>
+<tr>
+<td><code>unordered_set</code></td>
+<td>O(1) 去重&#x2F;判存在</td>
+<td>哈希表</td>
+</tr>
+<tr>
+<td><code>map</code></td>
+<td>按键排序的键值对</td>
+<td>红黑树</td>
+</tr>
+<tr>
+<td><code>set</code></td>
+<td>有序去重集合</td>
+<td>红黑树</td>
+</tr>
+<tr>
+<td><code>deque</code></td>
+<td>头尾都能快速增删</td>
+<td>分块数组</td>
+</tr>
+<tr>
+<td><code>array</code></td>
+<td>安全版 C 数组</td>
+<td>栈上定长数组</td>
+</tr>
+<tr>
+<td><code>priority_queue</code></td>
+<td>始终取最值</td>
+<td>堆（默认大顶堆）</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>双向链表（别用）</td>
+<td>双向链表</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-std-vector-—-你的默认容器"><a href="#2-std-vector-—-你的默认容器" class="headerlink" title="2. std::vector — 你的默认容器"></a>2. std::vector — 你的默认容器</h2><blockquote>
+<p><strong>内部结构：</strong> 三指针 —— <code>begin</code> &#x2F; <code>end</code> &#x2F; <code>capacity_end</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[1][2][3][?][?][?][?][?]</span><br><span class="line"> |&lt;--size--&gt;|</span><br><span class="line"> |&lt;------capacity------&gt;|</span><br></pre></td></tr></table></figure></blockquote>
+<h3 id="2-1-声明"><a href="#2-1-声明" class="headerlink" title="2.1 声明"></a>2.1 声明</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; v1;                        <span class="comment">// 空</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">v2</span><span class="params">(<span class="number">10</span>)</span></span>;                    <span class="comment">// 10 个 0</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">v3</span><span class="params">(<span class="number">10</span>, <span class="number">-1</span>)</span></span>;                <span class="comment">// 10 个 -1</span></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; v4 = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;      <span class="comment">// 初始化列表</span></span><br><span class="line">vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">mat</span>(<span class="number">3</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(<span class="number">4</span>, <span class="number">0</span>));  <span class="comment">// 3×4 二维</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-核心操作"><a href="#2-2-核心操作" class="headerlink" title="2.2 核心操作"></a>2.2 核心操作</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; v = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 增 ──</span></span><br><span class="line">v.<span class="built_in">push_back</span>(<span class="number">4</span>);           <span class="comment">// 拷贝/移动，均摊 O(1)</span></span><br><span class="line">v.<span class="built_in">emplace_back</span>(<span class="number">5</span>);        <span class="comment">// 原地构造，优于 push_back</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 删 ──</span></span><br><span class="line">v.<span class="built_in">pop_back</span>();             <span class="comment">// 删尾部，O(1)</span></span><br><span class="line">v.<span class="built_in">erase</span>(v.<span class="built_in">begin</span>() + <span class="number">1</span>);   <span class="comment">// 删中间，O(n)  ← 注意！</span></span><br><span class="line">v.<span class="built_in">clear</span>();                <span class="comment">// size = 0，capacity 不变</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 查 ──</span></span><br><span class="line"><span class="type">int</span> a = v[<span class="number">2</span>];             <span class="comment">// 不检查越界</span></span><br><span class="line"><span class="type">int</span> b = v.<span class="built_in">at</span>(<span class="number">2</span>);          <span class="comment">// 越界抛 std::out_of_range</span></span><br><span class="line"><span class="type">int</span> c = v.<span class="built_in">front</span>();        <span class="comment">// 第一个</span></span><br><span class="line"><span class="type">int</span> d = v.<span class="built_in">back</span>();         <span class="comment">// 最后一个</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 大小 ──</span></span><br><span class="line">v.<span class="built_in">size</span>();                 <span class="comment">// 当前元素数</span></span><br><span class="line">v.<span class="built_in">capacity</span>();             <span class="comment">// 已分配容量</span></span><br><span class="line">v.<span class="built_in">empty</span>();                <span class="comment">// 是否为空</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-size-vs-capacity（必考）"><a href="#2-3-size-vs-capacity（必考）" class="headerlink" title="2.3 size vs capacity（必考）"></a>2.3 size vs capacity（必考）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; v;</span><br><span class="line">v.<span class="built_in">reserve</span>(<span class="number">100</span>);           <span class="comment">// capacity ≥ 100，size 仍为 0</span></span><br><span class="line">v[<span class="number">0</span>] = <span class="number">42</span>;                <span class="comment">// ❌ size=0，UB！</span></span><br><span class="line">v.<span class="built_in">push_back</span>(<span class="number">42</span>);          <span class="comment">// ✅ 正确</span></span><br><span class="line"></span><br><span class="line">v.<span class="built_in">resize</span>(<span class="number">5</span>);              <span class="comment">// size = 5，新元素默认值 0</span></span><br><span class="line">v.<span class="built_in">resize</span>(<span class="number">10</span>, <span class="number">-1</span>);         <span class="comment">// size = 10，新元素 = -1</span></span><br><span class="line">v.<span class="built_in">resize</span>(<span class="number">3</span>);              <span class="comment">// size = 3，尾部元素被销毁</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-遍历删元素（经典坑）"><a href="#2-4-遍历删元素（经典坑）" class="headerlink" title="2.4 遍历删元素（经典坑）"></a>2.4 遍历删元素（经典坑）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; v = &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅ 正确写法：利用 erase 返回下一个有效迭代器</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> it = v.<span class="built_in">begin</span>(); it != v.<span class="built_in">end</span>(); <span class="comment">/* 不递增 */</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (*it % <span class="number">20</span> == <span class="number">0</span>)</span><br><span class="line">        it = v.<span class="built_in">erase</span>(it);    <span class="comment">// 返回下一个</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        ++it;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅ erase-remove 惯用法（删所有等于 30 的元素）</span></span><br><span class="line">v.<span class="built_in">erase</span>(<span class="built_in">remove</span>(v.<span class="built_in">begin</span>(), v.<span class="built_in">end</span>(), <span class="number">30</span>), v.<span class="built_in">end</span>());</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-扩容机制"><a href="#2-5-扩容机制" class="headerlink" title="2.5 扩容机制"></a>2.5 扩容机制</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GCC/libstdc++: 1 → 2 → 4 → 8 → 16 ...    (×2)</span><br><span class="line">MSVC:          1 → 2 → 3 → 4 → 6 → 9 ...  (×1.5)</span><br><span class="line"></span><br><span class="line">均摊分析：插入 n 个元素，总拷贝 &lt; 2n → 每次 push_back 均摊 O(1)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>复杂度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>push_back</code> &#x2F; <code>emplace_back</code></td>
+<td>O(1) 均摊</td>
+</tr>
+<tr>
+<td><code>pop_back</code></td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td><code>operator[]</code> &#x2F; <code>at()</code> &#x2F; <code>front</code> &#x2F; <code>back</code></td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td><code>insert(pos)</code> &#x2F; <code>erase(pos)</code></td>
+<td><strong>O(n)</strong> ⚠️</td>
+</tr>
+<tr>
+<td><code>find()</code></td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td><code>sort()</code></td>
+<td>O(n log n)</td>
+</tr>
+<tr>
+<td><code>reserve()</code> &#x2F; <code>resize()</code></td>
+<td>O(n)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="3-std-string-—-特殊的-vector"><a href="#3-std-string-—-特殊的-vector" class="headerlink" title="3. std::string — 特殊的 vector&lt;char&gt;"></a>3. std::string — 特殊的 <code>vector&lt;char&gt;</code></h2><blockquote>
+<p><strong>内部：</strong> 和 vector 一样连续存储 + <strong>SSO（短字符串优化）</strong>——短字符串不分配堆内存。</p>
+</blockquote>
+<h3 id="3-1-常用操作"><a href="#3-1-常用操作" class="headerlink" title="3.1 常用操作"></a>3.1 常用操作</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line">string s = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"><span class="function">string <span class="title">s2</span><span class="params">(<span class="string">&quot;world&quot;</span>)</span></span>;</span><br><span class="line"><span class="function">string <span class="title">s3</span><span class="params">(<span class="number">10</span>, <span class="string">&#x27;x&#x27;</span>)</span></span>;              <span class="comment">// &quot;xxxxxxxxxx&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 拼接 ──</span></span><br><span class="line">string t = s + <span class="string">&quot; &quot;</span> + s2;         <span class="comment">// &quot;hello world&quot;</span></span><br><span class="line">s += <span class="string">&quot;!&quot;</span>;                        <span class="comment">// 追加</span></span><br><span class="line">s.<span class="built_in">append</span>(<span class="string">&quot; world&quot;</span>);              <span class="comment">// 同上</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 子串 ──</span></span><br><span class="line">string sub = s.<span class="built_in">substr</span>(<span class="number">0</span>, <span class="number">3</span>);     <span class="comment">// &quot;hel&quot;</span></span><br><span class="line">string_view sv = s;              <span class="comment">// C++17，不拷贝</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 查找 ──</span></span><br><span class="line"><span class="type">size_t</span> pos = s.<span class="built_in">find</span>(<span class="string">&quot;lo&quot;</span>);       <span class="comment">// 返回索引，找不到返回 npos</span></span><br><span class="line"><span class="keyword">if</span> (s.<span class="built_in">find</span>(<span class="string">&quot;xx&quot;</span>) == string::npos) &#123; <span class="comment">/* 没找到 */</span> &#125;</span><br><span class="line"><span class="type">bool</span> start = s.<span class="built_in">starts_with</span>(<span class="string">&quot;he&quot;</span>);  <span class="comment">// C++20</span></span><br><span class="line"><span class="type">bool</span> end   = s.<span class="built_in">ends_with</span>(<span class="string">&quot;lo&quot;</span>);    <span class="comment">// C++20</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 数值转换 ──</span></span><br><span class="line"><span class="type">int</span>    n = <span class="built_in">stoi</span>(<span class="string">&quot;42&quot;</span>);</span><br><span class="line"><span class="type">double</span> d = <span class="built_in">stod</span>(<span class="string">&quot;3.14&quot;</span>);</span><br><span class="line">string s = <span class="built_in">to_string</span>(<span class="number">123</span>);       <span class="comment">// &quot;123&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── C API 交互 ──</span></span><br><span class="line"><span class="type">const</span> <span class="type">char</span>* cstr = s.<span class="built_in">c_str</span>();    <span class="comment">// 返回 null-terminated 字符串</span></span><br><span class="line"><span class="comment">// ⚠️ s 被修改后，cstr 可能失效</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-string-view（C-17）—-零拷贝参数"><a href="#3-2-string-view（C-17）—-零拷贝参数" class="headerlink" title="3.2 string_view（C++17）— 零拷贝参数"></a>3.2 string_view（C++17）— 零拷贝参数</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">process</span><span class="params">(string_view sv)</span> </span>&#123;    <span class="comment">// 接受 string / const char* / 子串</span></span><br><span class="line">    cout &lt;&lt; sv.<span class="built_in">substr</span>(<span class="number">0</span>, <span class="number">3</span>);      <span class="comment">// substr 也是 O(1)，不拷贝</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">process</span>(<span class="string">&quot;literal&quot;</span>);        <span class="comment">// ✅</span></span><br><span class="line"><span class="built_in">process</span>(<span class="built_in">string</span>(<span class="string">&quot;hello&quot;</span>));  <span class="comment">// ✅</span></span><br><span class="line"><span class="built_in">process</span>(s);                <span class="comment">// ✅</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>原则：</strong> 函数参数用 <code>string_view</code>，返回值用 <code>string</code>（别返回 string_view 指向临时对象）。</p>
+</blockquote>
+<hr>
+<h2 id="4-std-unordered-map-—-O-1-哈希表"><a href="#4-std-unordered-map-—-O-1-哈希表" class="headerlink" title="4. std::unordered_map — O(1) 哈希表"></a>4. std::unordered_map — O(1) 哈希表</h2><blockquote>
+<p><strong>内部结构：</strong> <code>vector&lt;list&lt;pair&lt;K,V&gt;&gt;&gt;</code> — 桶数组 + 链表（链地址法）<br>负载因子默认 1.0，超过后自动 rehash（扩容 + 重新分配所有元素）</p>
+</blockquote>
+<h3 id="4-1-增删查"><a href="#4-1-增删查" class="headerlink" title="4.1 增删查"></a>4.1 增删查</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_map&gt;</span></span></span><br><span class="line">unordered_map&lt;string, <span class="type">int</span>&gt; m;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 插入 ──</span></span><br><span class="line">m[<span class="string">&quot;alice&quot;</span>] = <span class="number">25</span>;                     <span class="comment">// 不存在→插入，存在→覆盖</span></span><br><span class="line">m.<span class="built_in">insert</span>(&#123;<span class="string">&quot;bob&quot;</span>, <span class="number">30</span>&#125;);               <span class="comment">// 返回 pair&lt;iter, bool&gt;</span></span><br><span class="line">m.<span class="built_in">emplace</span>(<span class="string">&quot;charlie&quot;</span>, <span class="number">22</span>);            <span class="comment">// 原地构造</span></span><br><span class="line">m.<span class="built_in">insert_or_assign</span>(<span class="string">&quot;alice&quot;</span>, <span class="number">27</span>);     <span class="comment">// C++17，存在则覆盖</span></span><br><span class="line">m.<span class="built_in">try_emplace</span>(<span class="string">&quot;diana&quot;</span>, <span class="number">28</span>);          <span class="comment">// C++17，不存在才构造</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 查找 ──</span></span><br><span class="line"><span class="keyword">auto</span> it = m.<span class="built_in">find</span>(<span class="string">&quot;alice&quot;</span>);           <span class="comment">// 返回迭代器或 end()</span></span><br><span class="line"><span class="keyword">if</span> (m.<span class="built_in">contains</span>(<span class="string">&quot;alice&quot;</span>)) &#123; ... &#125;     <span class="comment">// C++20，最清晰</span></span><br><span class="line"><span class="keyword">if</span> (m.<span class="built_in">count</span>(<span class="string">&quot;alice&quot;</span>))    &#123; ... &#125;     <span class="comment">// 返回 0 或 1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ⚠️ operator[] 的坑</span></span><br><span class="line"><span class="type">int</span> x = m[<span class="string">&quot;nonexistent&quot;</span>];            <span class="comment">// 会插入 &#123;&quot;nonexistent&quot;, 0&#125;！</span></span><br><span class="line"><span class="type">int</span> y = m.<span class="built_in">at</span>(<span class="string">&quot;nonexistent&quot;</span>);         <span class="comment">// 抛 std::out_of_range ✅安全</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ── 删除 ──</span></span><br><span class="line">m.<span class="built_in">erase</span>(<span class="string">&quot;alice&quot;</span>);                    <span class="comment">// 按 key 删，返回 0 或 1</span></span><br><span class="line">m.<span class="built_in">erase</span>(it);                         <span class="comment">// 按迭代器删</span></span><br><span class="line">m.<span class="built_in">clear</span>();                           <span class="comment">// 清空</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-遍历"><a href="#4-2-遍历" class="headerlink" title="4.2 遍历"></a>4.2 遍历</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// C++17 结构化绑定（推荐）</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span>&amp; [key, value] : m) &#123;</span><br><span class="line">    cout &lt;&lt; key &lt;&lt; <span class="string">&quot; → &quot;</span> &lt;&lt; value &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 遍历中删除（安全写法）</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> it = m.<span class="built_in">begin</span>(); it != m.<span class="built_in">end</span>(); ) &#123;</span><br><span class="line">    <span class="keyword">if</span> (it-&gt;second &lt; <span class="number">20</span>)</span><br><span class="line">        it = m.<span class="built_in">erase</span>(it);            <span class="comment">// ✅ 用返回值</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        ++it;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ❌ for (auto&amp; kv : m) &#123; m.erase(kv.first); &#125;  — 迭代器失效</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-自定义键的哈希"><a href="#4-3-自定义键的哈希" class="headerlink" title="4.3 自定义键的哈希"></a>4.3 自定义键的哈希</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Person</span> &#123; string name; <span class="type">int</span> age; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">PersonHash</span> &#123;</span><br><span class="line">    <span class="function"><span class="type">size_t</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> Person&amp; p)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> hash&lt;string&gt;&#123;&#125;(p.name) ^ (hash&lt;<span class="type">int</span>&gt;&#123;&#125;(p.age) &lt;&lt; <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 别忘了 operator==</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">PersonEq</span> &#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> Person&amp; a, <span class="type">const</span> Person&amp; b)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.name == b.name &amp;&amp; a.age == b.age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">unordered_map&lt;Person, string, PersonHash, PersonEq&gt; m;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>平均</th>
+<th>最坏</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>insert &#x2F; find &#x2F; erase(k)</td>
+<td>O(1)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>operator[] &#x2F; at()</td>
+<td>O(1)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>遍历全部</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>rehash &#x2F; reserve</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>最坏 O(n)：所有 key 哈希到同一个桶（恶意构造 &#x2F; 极差哈希函数）</p>
+</blockquote>
+<hr>
+<h2 id="5-std-unordered-set-—-去重-快速判断"><a href="#5-std-unordered-set-—-去重-快速判断" class="headerlink" title="5. std::unordered_set — 去重 + 快速判断"></a>5. std::unordered_set — 去重 + 快速判断</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_set&gt;</span></span></span><br><span class="line">unordered_set&lt;<span class="type">int</span>&gt; s = &#123;<span class="number">1</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插入</span></span><br><span class="line">s.<span class="built_in">insert</span>(<span class="number">9</span>);                          <span class="comment">// 返回 pair&lt;iter, bool&gt;</span></span><br><span class="line">s.<span class="built_in">emplace</span>(<span class="number">10</span>);                        <span class="comment">// 原地构造</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 查找</span></span><br><span class="line"><span class="keyword">if</span> (s.<span class="built_in">contains</span>(<span class="number">6</span>)) &#123; ... &#125;            <span class="comment">// C++20</span></span><br><span class="line"><span class="keyword">if</span> (s.<span class="built_in">find</span>(<span class="number">6</span>) != s.<span class="built_in">end</span>()) &#123; ... &#125;     <span class="comment">// C++11+</span></span><br><span class="line"><span class="keyword">if</span> (s.<span class="built_in">count</span>(<span class="number">6</span>)) &#123; ... &#125;               <span class="comment">// 0 或 1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除</span></span><br><span class="line">s.<span class="built_in">erase</span>(<span class="number">5</span>);                           <span class="comment">// 按值删</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 集合运算（手写）</span></span><br><span class="line">unordered_set&lt;<span class="type">int</span>&gt; a = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;, b = &#123;<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;, r;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 交集：遍历小的那份</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> x : a) <span class="keyword">if</span> (b.<span class="built_in">count</span>(x)) r.<span class="built_in">insert</span>(x);   <span class="comment">// → &#123;3&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 并集</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> x : a) r.<span class="built_in">insert</span>(x);</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> x : b) r.<span class="built_in">insert</span>(x);                   <span class="comment">// → &#123;1,2,3,4,5&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 差集 a \ b</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> x : a) <span class="keyword">if</span> (!b.<span class="built_in">count</span>(x)) r.<span class="built_in">insert</span>(x);  <span class="comment">// → &#123;1,2&#125;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-std-map-std-set-—-有序的红黑树"><a href="#6-std-map-std-set-—-有序的红黑树" class="headerlink" title="6. std::map &#x2F; std::set — 有序的红黑树"></a>6. std::map &#x2F; std::set — 有序的红黑树</h2><blockquote>
+<p><strong>一句话选型：</strong> 需要按 key 排序遍历 → map&#x2F;set；只需 O(1) 查找 → unordered 版本。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">内存中的红黑树：</span><br><span class="line">               [4]</span><br><span class="line">              /   \</span><br><span class="line">           [2]     [6]</span><br><span class="line">          /  \    /  \</span><br><span class="line">        [1] [3] [5] [7]</span><br><span class="line"></span><br><span class="line">中序遍历 = 1, 2, 3, 4, 5, 6, 7  ← 自动有序</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-1-基本操作"><a href="#6-1-基本操作" class="headerlink" title="6.1 基本操作"></a>6.1 基本操作</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;map&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;set&gt;</span></span></span><br><span class="line"></span><br><span class="line">map&lt;string, <span class="type">int</span>&gt; m = &#123;&#123;<span class="string">&quot;c&quot;</span>,<span class="number">3</span>&#125;, &#123;<span class="string">&quot;a&quot;</span>,<span class="number">1</span>&#125;, &#123;<span class="string">&quot;b&quot;</span>,<span class="number">2</span>&#125;&#125;;</span><br><span class="line"><span class="comment">// 内部：&#123;&quot;a&quot;,1&#125;, &#123;&quot;b&quot;,2&#125;, &#123;&quot;c&quot;,3&#125;   ← 自动按 key 排序</span></span><br><span class="line"></span><br><span class="line">set&lt;<span class="type">int</span>&gt; s = &#123;<span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>&#125;;</span><br><span class="line"><span class="comment">// 内部：1, 2, 3                     ← 自动排序</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 增删查语法同 unordered_map/set，区别在复杂度：O(log n)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-map-独有的有序操作"><a href="#6-2-map-独有的有序操作" class="headerlink" title="6.2 map 独有的有序操作"></a>6.2 map 独有的有序操作</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">map&lt;<span class="type">int</span>, string&gt; m = &#123;&#123;<span class="number">1</span>,<span class="string">&quot;a&quot;</span>&#125;, &#123;<span class="number">3</span>,<span class="string">&quot;c&quot;</span>&#125;, &#123;<span class="number">5</span>,<span class="string">&quot;e&quot;</span>&#125;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> lb = m.<span class="built_in">lower_bound</span>(<span class="number">3</span>);   <span class="comment">// 第一个 ≥ 3 → &#123;3,&quot;c&quot;&#125;</span></span><br><span class="line"><span class="keyword">auto</span> ub = m.<span class="built_in">upper_bound</span>(<span class="number">3</span>);   <span class="comment">// 第一个 &gt; 3 → &#123;5,&quot;e&quot;&#125;</span></span><br><span class="line"><span class="keyword">auto</span> [lo, hi] = m.<span class="built_in">equal_range</span>(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反向遍历</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> rit = m.<span class="built_in">rbegin</span>(); rit != m.<span class="built_in">rend</span>(); ++rit) &#123; <span class="comment">/* 5,3,1 */</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 按自定义排序（注意语法）</span></span><br><span class="line">map&lt;<span class="type">int</span>, string, greater&lt;<span class="type">int</span>&gt;&gt; desc;  <span class="comment">// 降序</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-哈希-vs-红黑树-对比"><a href="#6-3-哈希-vs-红黑树-对比" class="headerlink" title="6.3 哈希 vs 红黑树 对比"></a>6.3 哈希 vs 红黑树 对比</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">                     unordered_map          map</span><br><span class="line">───────────────────────────────────────────────────</span><br><span class="line">底层                   哈希表                 红黑树</span><br><span class="line">查找/插入/删除          O(1) 平均              O(log n) 稳定</span><br><span class="line">遍历顺序                随机                   按键排序</span><br><span class="line">内存                   较大（桶+链表）         较小</span><br><span class="line">迭代器稳定性            rehash 时全失效        只有被删元素失效</span><br><span class="line">自定义比较器            hash + ==             只需 &lt;</span><br><span class="line">适用                   &quot;查得快&quot;               &quot;要有序&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-第二梯队容器：deque-array-list"><a href="#7-第二梯队容器：deque-array-list" class="headerlink" title="7. 第二梯队容器：deque &#x2F; array &#x2F; list"></a>7. 第二梯队容器：deque &#x2F; array &#x2F; list</h2><h3 id="7-1-std-deque-—-双端队列"><a href="#7-1-std-deque-—-双端队列" class="headerlink" title="7.1 std::deque — 双端队列"></a>7.1 std::deque — 双端队列</h3><blockquote>
+<p><strong>内部：</strong> 分块数组。头尾增删 O(1)，中间 O(n)。内存不如 vector 紧凑，但比 list 快。</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;deque&gt;</span></span></span><br><span class="line">deque&lt;<span class="type">int</span>&gt; dq = &#123;<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;;</span><br><span class="line"></span><br><span class="line">dq.<span class="built_in">push_front</span>(<span class="number">1</span>);          <span class="comment">// 头部插入，O(1)  ← vector 没有</span></span><br><span class="line">dq.<span class="built_in">push_back</span>(<span class="number">5</span>);           <span class="comment">// 尾部插入，O(1)</span></span><br><span class="line">dq.<span class="built_in">pop_front</span>();            <span class="comment">// 头部删除，O(1)</span></span><br><span class="line">dq.<span class="built_in">pop_back</span>();             <span class="comment">// 尾部删除，O(1)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> a = dq[<span class="number">2</span>];             <span class="comment">// 随机访问 O(1)，但稍慢于 vector（两次指针跳转）</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">使用场景：</span><br><span class="line">✅ 需要头尾都增删 + 偶尔随机访问 → deque</span><br><span class="line">✅ 实现 BFS 的队列底层（queue 默认用 deque）</span><br><span class="line">❌ 大部分情况用 vector 就够了</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-std-array-—-安全版-C-数组"><a href="#7-2-std-array-—-安全版-C-数组" class="headerlink" title="7.2 std::array — 安全版 C 数组"></a>7.2 std::array — 安全版 C 数组</h3><blockquote>
+<p><strong>编译期定长，零开销，不退化指针，有 size()</strong></p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;array&gt;</span></span></span><br><span class="line">array&lt;<span class="type">int</span>, 5&gt; arr = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> x = arr[<span class="number">2</span>];            <span class="comment">// 不检查越界</span></span><br><span class="line"><span class="type">int</span> y = arr.<span class="built_in">at</span>(<span class="number">2</span>);         <span class="comment">// 越界抛异常</span></span><br><span class="line"><span class="type">size_t</span> n = arr.<span class="built_in">size</span>();     <span class="comment">// 5，编译期常量</span></span><br><span class="line"><span class="type">int</span>* raw = arr.<span class="built_in">data</span>();     <span class="comment">// 需要 C API 时取裸指针</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ❌ arr.push_back(6);    // 没有这个！大小是编译期固定的</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">array vs C 数组</span><br><span class="line">✅ 有 size()，不退化指针</span><br><span class="line">✅ 可以按值传入/返回函数（C 数组不行）</span><br><span class="line">✅ .at() 有边界检查</span><br><span class="line">❌ 大小必须编译期确定</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-std-list-—-双向链表"><a href="#7-3-std-list-—-双向链表" class="headerlink" title="7.3 std::list — 双向链表"></a>7.3 std::list — 双向链表</h3><blockquote>
+<p><strong>大部分时候不该用的容器。</strong></p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;list&gt;</span></span></span><br><span class="line">list&lt;<span class="type">int</span>&gt; l = &#123;<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;;</span><br><span class="line"></span><br><span class="line">l.<span class="built_in">push_front</span>(<span class="number">1</span>);           <span class="comment">// O(1)</span></span><br><span class="line">l.<span class="built_in">push_back</span>(<span class="number">5</span>);            <span class="comment">// O(1)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it = <span class="built_in">next</span>(l.<span class="built_in">begin</span>());</span><br><span class="line">l.<span class="built_in">insert</span>(it, <span class="number">99</span>);          <span class="comment">// O(1) — list 的 killer feature</span></span><br><span class="line">l.<span class="built_in">erase</span>(it);               <span class="comment">// O(1)，且不会让其他迭代器失效</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自带的 O(n) 成员函数（比 &lt;algorithm&gt; 的通用版快）</span></span><br><span class="line">l.<span class="built_in">sort</span>();</span><br><span class="line">l.<span class="built_in">unique</span>();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">什么时候用 list？</span><br><span class="line">✅ 元素很大（如 string of 1KB），且频繁在中间插入删除</span><br><span class="line">✅ 需要插入时其他迭代器绝对不失效</span><br><span class="line"></span><br><span class="line">什么时候不用？</span><br><span class="line">❌ 遍历比 vector 慢 10-50×（cache miss）</span><br><span class="line">❌ 每个元素有 2 个指针开销（16 字节在 64 位系统）</span><br><span class="line">❌ 不能随机访问</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-容器适配器：stack-queue-priority-queue"><a href="#8-容器适配器：stack-queue-priority-queue" class="headerlink" title="8. 容器适配器：stack &#x2F; queue &#x2F; priority_queue"></a>8. 容器适配器：stack &#x2F; queue &#x2F; priority_queue</h2><blockquote>
+<p>它们不是独立的数据结构，而是给底层容器套了一层接口限制。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">stack   → 封掉头端，只留尾部 push/pop → LIFO</span><br><span class="line">queue   → 封掉头端 push + 尾端 pop  → FIFO</span><br><span class="line">priority_queue → 每次 pop 取最大值   → 堆</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-1-std-stack-—-后进先出"><a href="#8-1-std-stack-—-后进先出" class="headerlink" title="8.1 std::stack — 后进先出"></a>8.1 std::stack — 后进先出</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stack&gt;</span></span></span><br><span class="line">stack&lt;<span class="type">int</span>&gt; st;                   <span class="comment">// 默认底层 deque&lt;int&gt;</span></span><br><span class="line"></span><br><span class="line">st.<span class="built_in">push</span>(<span class="number">1</span>);</span><br><span class="line">st.<span class="built_in">push</span>(<span class="number">2</span>);</span><br><span class="line">st.<span class="built_in">push</span>(<span class="number">3</span>);</span><br><span class="line"><span class="type">int</span> top = st.<span class="built_in">top</span>();              <span class="comment">// 3（只看不删）</span></span><br><span class="line">st.<span class="built_in">pop</span>();                        <span class="comment">// 删 3</span></span><br><span class="line"><span class="comment">// st.pop() 不返回值！先 top() 再 pop()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!st.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    cout &lt;&lt; st.<span class="built_in">top</span>() &lt;&lt; <span class="string">&#x27; &#x27;</span>;     <span class="comment">// 2 1</span></span><br><span class="line">    st.<span class="built_in">pop</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-std-queue-—-先进先出"><a href="#8-2-std-queue-—-先进先出" class="headerlink" title="8.2 std::queue — 先进先出"></a>8.2 std::queue — 先进先出</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line">queue&lt;<span class="type">int</span>&gt; q;                    <span class="comment">// 默认底层 deque&lt;int&gt;</span></span><br><span class="line"></span><br><span class="line">q.<span class="built_in">push</span>(<span class="number">1</span>);  q.<span class="built_in">push</span>(<span class="number">2</span>);  q.<span class="built_in">push</span>(<span class="number">3</span>);</span><br><span class="line"><span class="type">int</span> front = q.<span class="built_in">front</span>();           <span class="comment">// 1（队首）</span></span><br><span class="line"><span class="type">int</span> back  = q.<span class="built_in">back</span>();            <span class="comment">// 3（队尾）</span></span><br><span class="line">q.<span class="built_in">pop</span>();                         <span class="comment">// 删 1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    cout &lt;&lt; q.<span class="built_in">front</span>() &lt;&lt; <span class="string">&#x27; &#x27;</span>;    <span class="comment">// 2 3</span></span><br><span class="line">    q.<span class="built_in">pop</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-std-priority-queue-—-始终取最值"><a href="#8-3-std-priority-queue-—-始终取最值" class="headerlink" title="8.3 std::priority_queue — 始终取最值"></a>8.3 std::priority_queue — 始终取最值</h3><blockquote>
+<p><strong>默认大顶堆（最大的在顶上）</strong>。你的 Game AI 里 A* 的 open set 就用它。</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span>  <span class="comment">// priority_queue 在这里</span></span></span><br><span class="line">priority_queue&lt;<span class="type">int</span>&gt; pq;</span><br><span class="line"></span><br><span class="line">pq.<span class="built_in">push</span>(<span class="number">3</span>); pq.<span class="built_in">push</span>(<span class="number">1</span>); pq.<span class="built_in">push</span>(<span class="number">5</span>); pq.<span class="built_in">push</span>(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!pq.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    cout &lt;&lt; pq.<span class="built_in">top</span>() &lt;&lt; <span class="string">&#x27; &#x27;</span>;     <span class="comment">// 5 3 2 1   ← 总是最大的先出</span></span><br><span class="line">    pq.<span class="built_in">pop</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 小顶堆（最小的在上）</span></span><br><span class="line">priority_queue&lt;<span class="type">int</span>, vector&lt;<span class="type">int</span>&gt;, greater&lt;<span class="type">int</span>&gt;&gt; min_pq;</span><br><span class="line"><span class="comment">// 第二个参数是底层容器，第三个是比较器</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义比较</span></span><br><span class="line"><span class="keyword">auto</span> cmp = [](<span class="type">int</span> a, <span class="type">int</span> b) &#123; <span class="keyword">return</span> a &gt; b; &#125;;</span><br><span class="line">priority_queue&lt;<span class="type">int</span>, vector&lt;<span class="type">int</span>&gt;, <span class="keyword">decltype</span>(cmp)&gt; <span class="built_in">pq_custom</span>(cmp);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义类型</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> &#123; <span class="type">int</span> id, cost; &#125;;</span><br><span class="line">priority_queue&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;, vector&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt;, greater&lt;&gt;&gt; dijkstra_pq;</span><br><span class="line"><span class="comment">//                           cost, node                    ↑ C++14 CTAD</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="9-全容器复杂度速查"><a href="#9-全容器复杂度速查" class="headerlink" title="9. 全容器复杂度速查"></a>9. 全容器复杂度速查</h2><h3 id="9-1-容器操作"><a href="#9-1-容器操作" class="headerlink" title="9.1 容器操作"></a>9.1 容器操作</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">操作              vector    string    deque    list    array</span><br><span class="line">────────────────────────────────────────────────────────────</span><br><span class="line">[i]               O(1)      O(1)      O(1)     -       O(1)</span><br><span class="line">at(i)             O(1)      O(1)      O(1)     -       O(1)</span><br><span class="line">push_back         O(1)†     O(1)†     O(1)     O(1)    -</span><br><span class="line">push_front        -         -         O(1)     O(1)    -</span><br><span class="line">pop_back          O(1)      O(1)      O(1)     O(1)    -</span><br><span class="line">pop_front         -         -         O(1)     O(1)    -</span><br><span class="line">insert(mid)       O(n)      O(n)      O(n)     O(1)    -</span><br><span class="line">erase(mid)        O(n)      O(n)      O(n)     O(1)    -</span><br><span class="line">find              O(n)      O(n)      O(n)     O(n)    O(n)</span><br><span class="line">front/back        O(1)      O(1)      O(1)     O(1)    O(1)</span><br><span class="line">size/empty        O(1)      O(1)      O(1)     O(1)    O(1)</span><br><span class="line">遍历              O(n)      O(n)      O(n)     O(n)    O(n)</span><br><span class="line"></span><br><span class="line">† 均摊 O(1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">操作             u_map     u_set     map       set</span><br><span class="line">───────────────────────────────────────────────────</span><br><span class="line">[ ] / at()       O(1)*     -         O(log n)  -</span><br><span class="line">find / count     O(1)*     O(1)*     O(log n)  O(log n)</span><br><span class="line">contains(C++20)  O(1)*     O(1)*     O(log n)  O(log n)</span><br><span class="line">insert           O(1)*     O(1)*     O(log n)  O(log n)</span><br><span class="line">erase(key)       O(1)*     O(1)*     O(log n)  O(log n)</span><br><span class="line">erase(it)        O(1)      O(1)      O(1)††    O(1)††</span><br><span class="line">lower_bound      -         -         O(log n)  O(log n)</span><br><span class="line">遍历             O(n)      O(n)      O(n)      O(n)</span><br><span class="line"></span><br><span class="line">* 平均，最坏 O(n)</span><br><span class="line">†† 均摊</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-2-适配器"><a href="#9-2-适配器" class="headerlink" title="9.2 适配器"></a>9.2 适配器</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">操作              stack     queue     priority_queue</span><br><span class="line">────────────────────────────────────────────────────</span><br><span class="line">push              O(1)      O(1)      O(log n)</span><br><span class="line">pop               O(1)      O(1)      O(log n)</span><br><span class="line">top/front         O(1)      O(1)      O(1)</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-3-空间开销"><a href="#9-3-空间开销" class="headerlink" title="9.3 空间开销"></a>9.3 空间开销</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">结构               每个元素额外开销</span><br><span class="line">────────────────────────────────────</span><br><span class="line">vector / string   0（连续紧凑）</span><br><span class="line">array             0（栈上）</span><br><span class="line">deque             极少（分块控制块）</span><br><span class="line">list              2 个指针 (16B)</span><br><span class="line">forward_list      1 个指针 (8B)</span><br><span class="line">set / map         3 个指针 + 颜色 (≈24B per node)</span><br><span class="line">u_set / u_map     1 个指针 + 桶数组开销</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="10-哈希底层原理：6-种构造-4-种冲突解决"><a href="#10-哈希底层原理：6-种构造-4-种冲突解决" class="headerlink" title="10. 哈希底层原理：6 种构造 + 4 种冲突解决"></a>10. 哈希底层原理：6 种构造 + 4 种冲突解决</h2><blockquote>
+<p>这部分是理论深度。面试可能问，实际工程中 <code>std::unordered_map</code> 已经帮你做好了。<br>只在需要<strong>自实现</strong>或<strong>极端优化</strong>时才需要深入。</p>
+</blockquote>
+<h3 id="10-1-哈希函数的-6-种构造方法"><a href="#10-1-哈希函数的-6-种构造方法" class="headerlink" title="10.1 哈希函数的 6 种构造方法"></a>10.1 哈希函数的 6 种构造方法</h3><h4 id="①-直接定址法"><a href="#①-直接定址法" class="headerlink" title="① 直接定址法"></a>① 直接定址法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(key) = key        或       H(key) = a×key + b</span><br></pre></td></tr></table></figure>
+<p>key 即地址，零冲突。仅当 key 范围小且连续时可行。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> freq[<span class="number">26</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">freq[c - <span class="string">&#x27;a&#x27;</span>]++;   <span class="comment">// &#x27;a&#x27;→0, &#x27;b&#x27;→1, ...</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="②-除留余数法（最常用）"><a href="#②-除留余数法（最常用）" class="headerlink" title="② 除留余数法（最常用）"></a>② 除留余数法（最常用）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(key) = key % p        p 取 ≤ 表长的最大素数</span><br></pre></td></tr></table></figure>
+<p><strong><code>std::unordered_map</code> 实际使用的就是这个（组合哈希后取模）。</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 经典素数备选</span></span><br><span class="line"><span class="number">53</span>, <span class="number">97</span>, <span class="number">193</span>, <span class="number">389</span>, <span class="number">769</span>, <span class="number">1543</span>, <span class="number">3079</span>, <span class="number">6151</span>, <span class="number">12289</span>, <span class="number">24593</span>, <span class="number">49157</span>, <span class="number">98317</span>, ...</span><br><span class="line"><span class="comment">// 每次 ×2 左右，取刚好大于预期 key 数量的那个</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="③-数字分析法"><a href="#③-数字分析法" class="headerlink" title="③ 数字分析法"></a>③ 数字分析法</h4><p>取 key 分布最均匀的若干位作为哈希地址。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">学号 20240101 → 前 4 位相同 → 丢弃，取后 4 位</span><br></pre></td></tr></table></figure>
+<p>适用：已知全部 key 的静态表（编译器的关键字表）。</p>
+<h4 id="④-平方取中法"><a href="#④-平方取中法" class="headerlink" title="④ 平方取中法"></a>④ 平方取中法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">key=1234 → key²=1522756 → 取中间 3 位 → 227</span><br></pre></td></tr></table></figure>
+<p>平方使原 key 每一位都对中间位产生混合。</p>
+<h4 id="⑤-折叠法"><a href="#⑤-折叠法" class="headerlink" title="⑤ 折叠法"></a>⑤ 折叠法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">key=9876543210 分割为 987|654|321|0 → 移位折叠求和 → 1962</span><br></pre></td></tr></table></figure>
+<p>适用：超长 key（身份证号、ISBN）。</p>
+<h4 id="⑥-随机数法"><a href="#⑥-随机数法" class="headerlink" title="⑥ 随机数法"></a>⑥ 随机数法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(key) = random(key)    // 确定性伪随机函数</span><br></pre></td></tr></table></figure>
+<p>几乎不用，被生产级哈希（SipHash &#x2F; xxHash）取代。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">方法              核心思路            冲突      适用场景</span><br><span class="line">─────────────────────────────────────────────────────────</span><br><span class="line">直接定址法         key 即地址          零         key 范围小且连续</span><br><span class="line">除留余数法 ⭐       key % 素数          靠素数     通用，最常用</span><br><span class="line">数字分析法         取均匀位            少         静态 key 集合</span><br><span class="line">平方取中法         平方后取中间位      较少        key 位数不多</span><br><span class="line">折叠法             分组求和            中等       key 超长</span><br><span class="line">随机数法           伪随机函数          靠质量     几乎不用</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="10-2-哈希冲突的-4-种解决方法"><a href="#10-2-哈希冲突的-4-种解决方法" class="headerlink" title="10.2 哈希冲突的 4 种解决方法"></a>10.2 哈希冲突的 4 种解决方法</h3><h4 id="①-链地址法（Separate-Chaining）⭐-C-STL-标准做法"><a href="#①-链地址法（Separate-Chaining）⭐-C-STL-标准做法" class="headerlink" title="① 链地址法（Separate Chaining）⭐ C++ STL 标准做法"></a>① 链地址法（Separate Chaining）⭐ C++ STL 标准做法</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">桶 0: [26] → [39] → [13] → nullptr</span><br><span class="line">桶 1: [15] → nullptr</span><br><span class="line">桶 2: nullptr</span><br><span class="line">桶 3: [37] → nullptr</span><br><span class="line"></span><br><span class="line">本质：vector&lt;list&lt;pair&lt;K,V&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实现简单</td>
+<td>每个节点有指针开销</td>
+</tr>
+<tr>
+<td>负载因子可 &gt;1</td>
+<td>缓存不友好（指针跳转）</td>
+</tr>
+<tr>
+<td>删除简单</td>
+<td>极端情况退化到 O(n)</td>
+</tr>
+</tbody></table>
+<h4 id="②-开放定址法-—-三种探测策略"><a href="#②-开放定址法-—-三种探测策略" class="headerlink" title="② 开放定址法 — 三种探测策略"></a>② 开放定址法 — 三种探测策略</h4><table>
+<thead>
+<tr>
+<th>探测</th>
+<th>公式</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>线性探测</td>
+<td><code>h + i</code></td>
+<td>一次聚集（连续占用块越积越长）</td>
+</tr>
+<tr>
+<td>平方探测</td>
+<td><code>h + i²</code></td>
+<td>二次聚集，需素数表长 + load&lt;0.5</td>
+</tr>
+<tr>
+<td><strong>双哈希</strong> ⭐</td>
+<td><code>h₁ + i×h₂</code></td>
+<td>理论最优，彻底消除聚集</td>
+</tr>
+</tbody></table>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 双哈希示例</span></span><br><span class="line"><span class="type">size_t</span> h1 = hash&lt;K&gt;&#123;&#125;(key);</span><br><span class="line"><span class="type">size_t</span> h2 = <span class="number">1</span> + (hash&lt;K&gt;&#123;&#125;(key) % (tableSize - <span class="number">1</span>));</span><br><span class="line"><span class="type">size_t</span> idx = (h1 + i * h2) % tableSize;</span><br></pre></td></tr></table></figure>
+
+<h4 id="③-再哈希法"><a href="#③-再哈希法" class="headerlink" title="③ 再哈希法"></a>③ 再哈希法</h4><p>准备多个哈希函数，冲突时换一个重算。不单独使用，出现在 rehash 阶段（扩容后重新分配所有 key）。</p>
+<h4 id="④-公共溢出区"><a href="#④-公共溢出区" class="headerlink" title="④ 公共溢出区"></a>④ 公共溢出区</h4><p>基本表和溢出表分离。冲突全进溢出区（退化为顺序搜索）。仅适合冲突极少的场景。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">方法                   C++ STL 采用？   实际地位</span><br><span class="line">────────────────────────────────────────────────</span><br><span class="line">链地址法               ✅ 唯一标准做法    主流</span><br><span class="line">开放定址·线性探测      ❌                 少用</span><br><span class="line">开放定址·平方探测      ❌                 少用</span><br><span class="line">开放定址·双哈希        ❌                 Robin Hood / SwissTable 变体</span><br><span class="line">再哈希法               ❌                 扩容时必用</span><br><span class="line">公共溢出区             ❌                 几乎不用</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="11-自实现哈希表"><a href="#11-自实现哈希表" class="headerlink" title="11. 自实现哈希表"></a>11. 自实现哈希表</h2><blockquote>
+<p>理解底层的最佳方式。面试手写首选<strong>链地址法</strong>。</p>
+</blockquote>
+<h3 id="11-1-链地址法（80-行）"><a href="#11-1-链地址法（80-行）" class="headerlink" title="11.1 链地址法（80 行）"></a>11.1 链地址法（80 行）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SimpleHashMap</span> &#123;</span><br><span class="line">    vector&lt;list&lt;pair&lt;K, V&gt;&gt;&gt; buckets;</span><br><span class="line">    <span class="type">size_t</span> num_elements = <span class="number">0</span>;</span><br><span class="line">    <span class="type">float</span> max_load = <span class="number">0.75f</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">size_t</span> <span class="title">idx</span><span class="params">(<span class="type">const</span> K&amp; k)</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> hash&lt;K&gt;&#123;&#125;(k) % buckets.<span class="built_in">size</span>(); &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">rehash</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> old = <span class="built_in">move</span>(buckets);</span><br><span class="line">        buckets.<span class="built_in">resize</span>(old.<span class="built_in">size</span>() * <span class="number">2</span>);</span><br><span class="line">        num_elements = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; b : old)</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; [k, v] : b)</span><br><span class="line">                buckets[<span class="built_in">idx</span>(k)].<span class="built_in">emplace_back</span>(k, <span class="built_in">move</span>(v)), ++num_elements;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">SimpleHashMap</span>(<span class="type">size_t</span> cap = <span class="number">16</span>) : <span class="built_in">buckets</span>(cap) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">put</span><span class="params">(<span class="type">const</span> K&amp; k, <span class="type">const</span> V&amp; v)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; [key, val] : buckets[<span class="built_in">idx</span>(k)])</span><br><span class="line">            <span class="keyword">if</span> (key == k) &#123; val = v; <span class="keyword">return</span>; &#125;</span><br><span class="line">        buckets[<span class="built_in">idx</span>(k)].<span class="built_in">emplace_back</span>(k, v);</span><br><span class="line">        <span class="keyword">if</span> (++num_elements &gt; buckets.<span class="built_in">size</span>() * max_load) <span class="built_in">rehash</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">V* <span class="title">get</span><span class="params">(<span class="type">const</span> K&amp; k)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; [key, val] : buckets[<span class="built_in">idx</span>(k)])</span><br><span class="line">            <span class="keyword">if</span> (key == k) <span class="keyword">return</span> &amp;val;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">erase</span><span class="params">(<span class="type">const</span> K&amp; k)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span>&amp; b = buckets[<span class="built_in">idx</span>(k)];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> it = b.<span class="built_in">begin</span>(); it != b.<span class="built_in">end</span>(); ++it)</span><br><span class="line">            <span class="keyword">if</span> (it-&gt;first == k) &#123; b.<span class="built_in">erase</span>(it); --num_elements; <span class="keyword">return</span> <span class="literal">true</span>; &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">size_t</span> <span class="title">size</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> num_elements; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-2-开放定址法（核心差异）"><a href="#11-2-开放定址法（核心差异）" class="headerlink" title="11.2 开放定址法（核心差异）"></a>11.2 开放定址法（核心差异）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OpenAddrHashMap</span> &#123;</span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">State</span> &#123; EMPTY, OCCUPIED, DELETED &#125;;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Slot</span> &#123; State state = EMPTY; pair&lt;K, V&gt; kv; &#125;;</span><br><span class="line">    vector&lt;Slot&gt; table;</span><br><span class="line">    <span class="type">size_t</span> n = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">size_t</span> <span class="title">probe</span><span class="params">(<span class="type">const</span> K&amp; k)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="type">size_t</span> h = hash&lt;K&gt;&#123;&#125;(k) % table.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">while</span> (table[h].state == OCCUPIED &amp;&amp; table[h].kv.first != k)</span><br><span class="line">            h = (h + <span class="number">1</span>) % table.<span class="built_in">size</span>();   <span class="comment">// 线性探测</span></span><br><span class="line">        <span class="keyword">return</span> h;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">rehash</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> old = <span class="built_in">move</span>(table);</span><br><span class="line">        table.<span class="built_in">resize</span>(old.<span class="built_in">size</span>() * <span class="number">2</span>); n = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; s : old)</span><br><span class="line">            <span class="keyword">if</span> (s.state == OCCUPIED) <span class="built_in">put</span>(s.kv.first, s.kv.second);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">OpenAddrHashMap</span>(<span class="type">size_t</span> cap = <span class="number">16</span>) : <span class="built_in">table</span>(cap) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">put</span><span class="params">(<span class="type">const</span> K&amp; k, <span class="type">const</span> V&amp; v)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (n * <span class="number">1.0</span> / table.<span class="built_in">size</span>() &gt;= <span class="number">0.7</span>) <span class="built_in">rehash</span>();</span><br><span class="line">        <span class="type">size_t</span> h = <span class="built_in">probe</span>(k);</span><br><span class="line">        <span class="keyword">if</span> (table[h].state != OCCUPIED) ++n;</span><br><span class="line">        table[h] = &#123;OCCUPIED, &#123;k, v&#125;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">V* <span class="title">get</span><span class="params">(<span class="type">const</span> K&amp; k)</span> </span>&#123;</span><br><span class="line">        <span class="type">size_t</span> h = hash&lt;K&gt;&#123;&#125;(k) % table.<span class="built_in">size</span>(), start = h;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (table[h].state == EMPTY) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">            <span class="keyword">if</span> (table[h].state == OCCUPIED &amp;&amp; table[h].kv.first == k)</span><br><span class="line">                <span class="keyword">return</span> &amp;table[h].kv.second;</span><br><span class="line">            h = (h + <span class="number">1</span>) % table.<span class="built_in">size</span>();</span><br><span class="line">        &#125; <span class="keyword">while</span> (h != start);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">erase</span><span class="params">(<span class="type">const</span> K&amp; k)</span> </span>&#123;</span><br><span class="line">        <span class="type">size_t</span> h = hash&lt;K&gt;&#123;&#125;(k) % table.<span class="built_in">size</span>(), start = h;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (table[h].state == EMPTY) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">if</span> (table[h].state == OCCUPIED &amp;&amp; table[h].kv.first == k) &#123;</span><br><span class="line">                table[h].state = DELETED; --n; <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            h = (h + <span class="number">1</span>) % table.<span class="built_in">size</span>();</span><br><span class="line">        &#125; <span class="keyword">while</span> (h != start);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="12-面试高频考点"><a href="#12-面试高频考点" class="headerlink" title="12. 面试高频考点"></a>12. 面试高频考点</h2><h3 id="12-1-Two-Sum（必考）"><a href="#12-1-Two-Sum（必考）" class="headerlink" title="12.1 Two Sum（必考）"></a>12.1 Two Sum（必考）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">twoSum</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> target)</span> </span>&#123;</span><br><span class="line">    unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; seen;  <span class="comment">// value → index</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">        <span class="type">int</span> need = target - nums[i];</span><br><span class="line">        <span class="keyword">if</span> (seen.<span class="built_in">contains</span>(need)) <span class="keyword">return</span> &#123;seen[need], i&#125;;</span><br><span class="line">        seen[nums[i]] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 暴力 O(n²) → 哈希 O(n)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="12-2-哈希-vs-数组：选哪个"><a href="#12-2-哈希-vs-数组：选哪个" class="headerlink" title="12.2 哈希 vs 数组：选哪个"></a>12.2 哈希 vs 数组：选哪个</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// key 范围小且连续 → 用数组（零哈希开销，无冲突）</span></span><br><span class="line"><span class="type">int</span> freq[<span class="number">26</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">char</span> c : s) freq[c - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line"></span><br><span class="line"><span class="comment">// key 范围不确定/稀疏/非整数 → 用哈希</span></span><br><span class="line">unordered_map&lt;string, <span class="type">int</span>&gt; word_count;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span>&amp; w : words) word_count[w]++;</span><br></pre></td></tr></table></figure>
+
+<h3 id="12-3-易错点速记"><a href="#12-3-易错点速记" class="headerlink" title="12.3 易错点速记"></a>12.3 易错点速记</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ① operator[] 会意外插入</span></span><br><span class="line"><span class="keyword">if</span> (m[<span class="string">&quot;key&quot;</span>] == <span class="number">0</span>) &#123; &#125;        <span class="comment">// ❌ &quot;key&quot; 已被插入！</span></span><br><span class="line"><span class="keyword">if</span> (m.<span class="built_in">find</span>(<span class="string">&quot;key&quot;</span>) == m.<span class="built_in">end</span>()) <span class="comment">// ✅ 不修改容器</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ② 遍历中删除</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> it = m.<span class="built_in">begin</span>(); it != m.<span class="built_in">end</span>(); ) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">bad</span>(it)) it = m.<span class="built_in">erase</span>(it);   <span class="comment">// ✅</span></span><br><span class="line">    <span class="keyword">else</span> ++it;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// for (auto&amp; kv : m) &#123; m.erase(kv.first); &#125;  // ❌ 迭代器失效</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ③ reserve 不改变 size</span></span><br><span class="line">v.<span class="built_in">reserve</span>(<span class="number">100</span>);</span><br><span class="line">v[<span class="number">0</span>] = <span class="number">42</span>;                    <span class="comment">// ❌ size 还是 0！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ④ vector&lt;bool&gt; 是特例</span></span><br><span class="line">vector&lt;<span class="type">bool</span>&gt; vb = &#123;<span class="literal">true</span>&#125;;</span><br><span class="line"><span class="comment">// auto&amp; b = vb[0];           // ❌ 返回 proxy，不是引用</span></span><br><span class="line"><span class="keyword">auto</span> b = vb[<span class="number">0</span>];               <span class="comment">// ✅ 按值接收</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ⑤ 多线程：STL 容器读写均非线程安全，需加锁</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<blockquote>
+<p><strong>总结：</strong> </p>
+<ul>
+<li>90% 的情况：<code>vector</code> + <code>unordered_map</code> + <code>string</code> </li>
+<li>需要排序：<code>map</code> &#x2F; <code>set</code></li>
+<li>双端操作：<code>deque</code></li>
+<li>最值：<code>priority_queue</code></li>
+<li>哈希底层原理（§10-11）是理解 <code>unordered_map</code> 为什么 O(1) 的基础，但日常编码不需要自己实现。</li>
+<li>选容器的第一原则：<strong>先确定访问模式，再选数据结构</strong>。没有万能容器，只有最匹配的容器。</li>
+</ul>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E9%A3%8E%E7%83%9F%E8%BF%B7%E6%B4%A5/" rel="prev" title="风烟迷津">
+      <i class="fa fa-chevron-left"></i> 风烟迷津
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%B9%E5%99%A8%E9%80%89%E5%9E%8B-30-%E7%A7%92%E5%86%B3%E7%AD%96"><span class="nav-number">2.</span> <span class="nav-text">1. 容器选型 30 秒决策</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E9%80%9F%E8%AE%B0"><span class="nav-number">2.1.</span> <span class="nav-text">一句话速记</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-std-vector-%E2%80%94-%E4%BD%A0%E7%9A%84%E9%BB%98%E8%AE%A4%E5%AE%B9%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">2. std::vector — 你的默认容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%A3%B0%E6%98%8E"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%A0%B8%E5%BF%83%E6%93%8D%E4%BD%9C"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 核心操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-size-vs-capacity%EF%BC%88%E5%BF%85%E8%80%83%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 size vs capacity（必考）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E9%81%8D%E5%8E%86%E5%88%A0%E5%85%83%E7%B4%A0%EF%BC%88%E7%BB%8F%E5%85%B8%E5%9D%91%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">2.4 遍历删元素（经典坑）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-number">3.5.</span> <span class="nav-text">2.5 扩容机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-std-string-%E2%80%94-%E7%89%B9%E6%AE%8A%E7%9A%84-vector"><span class="nav-number">4.</span> <span class="nav-text">3. std::string — 特殊的 vector&lt;char&gt;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 常用操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-string-view%EF%BC%88C-17%EF%BC%89%E2%80%94-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%8F%82%E6%95%B0"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 string_view（C++17）— 零拷贝参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-std-unordered-map-%E2%80%94-O-1-%E5%93%88%E5%B8%8C%E8%A1%A8"><span class="nav-number">5.</span> <span class="nav-text">4. std::unordered_map — O(1) 哈希表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%A2%9E%E5%88%A0%E6%9F%A5"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 增删查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E9%81%8D%E5%8E%86"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%AE%E7%9A%84%E5%93%88%E5%B8%8C"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 自定义键的哈希</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-std-unordered-set-%E2%80%94-%E5%8E%BB%E9%87%8D-%E5%BF%AB%E9%80%9F%E5%88%A4%E6%96%AD"><span class="nav-number">6.</span> <span class="nav-text">5. std::unordered_set — 去重 + 快速判断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-std-map-std-set-%E2%80%94-%E6%9C%89%E5%BA%8F%E7%9A%84%E7%BA%A2%E9%BB%91%E6%A0%91"><span class="nav-number">7.</span> <span class="nav-text">6. std::map &#x2F; std::set — 有序的红黑树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">7.1.</span> <span class="nav-text">6.1 基本操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-map-%E7%8B%AC%E6%9C%89%E7%9A%84%E6%9C%89%E5%BA%8F%E6%93%8D%E4%BD%9C"><span class="nav-number">7.2.</span> <span class="nav-text">6.2 map 独有的有序操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E5%93%88%E5%B8%8C-vs-%E7%BA%A2%E9%BB%91%E6%A0%91-%E5%AF%B9%E6%AF%94"><span class="nav-number">7.3.</span> <span class="nav-text">6.3 哈希 vs 红黑树 对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%AC%AC%E4%BA%8C%E6%A2%AF%E9%98%9F%E5%AE%B9%E5%99%A8%EF%BC%9Adeque-array-list"><span class="nav-number">8.</span> <span class="nav-text">7. 第二梯队容器：deque &#x2F; array &#x2F; list</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-std-deque-%E2%80%94-%E5%8F%8C%E7%AB%AF%E9%98%9F%E5%88%97"><span class="nav-number">8.1.</span> <span class="nav-text">7.1 std::deque — 双端队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-std-array-%E2%80%94-%E5%AE%89%E5%85%A8%E7%89%88-C-%E6%95%B0%E7%BB%84"><span class="nav-number">8.2.</span> <span class="nav-text">7.2 std::array — 安全版 C 数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-std-list-%E2%80%94-%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8"><span class="nav-number">8.3.</span> <span class="nav-text">7.3 std::list — 双向链表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%AE%B9%E5%99%A8%E9%80%82%E9%85%8D%E5%99%A8%EF%BC%9Astack-queue-priority-queue"><span class="nav-number">9.</span> <span class="nav-text">8. 容器适配器：stack &#x2F; queue &#x2F; priority_queue</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-std-stack-%E2%80%94-%E5%90%8E%E8%BF%9B%E5%85%88%E5%87%BA"><span class="nav-number">9.1.</span> <span class="nav-text">8.1 std::stack — 后进先出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-std-queue-%E2%80%94-%E5%85%88%E8%BF%9B%E5%85%88%E5%87%BA"><span class="nav-number">9.2.</span> <span class="nav-text">8.2 std::queue — 先进先出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-std-priority-queue-%E2%80%94-%E5%A7%8B%E7%BB%88%E5%8F%96%E6%9C%80%E5%80%BC"><span class="nav-number">9.3.</span> <span class="nav-text">8.3 std::priority_queue — 始终取最值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%85%A8%E5%AE%B9%E5%99%A8%E5%A4%8D%E6%9D%82%E5%BA%A6%E9%80%9F%E6%9F%A5"><span class="nav-number">10.</span> <span class="nav-text">9. 全容器复杂度速查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-%E5%AE%B9%E5%99%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">10.1.</span> <span class="nav-text">9.1 容器操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-%E9%80%82%E9%85%8D%E5%99%A8"><span class="nav-number">10.2.</span> <span class="nav-text">9.2 适配器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3-%E7%A9%BA%E9%97%B4%E5%BC%80%E9%94%80"><span class="nav-number">10.3.</span> <span class="nav-text">9.3 空间开销</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E5%93%88%E5%B8%8C%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%EF%BC%9A6-%E7%A7%8D%E6%9E%84%E9%80%A0-4-%E7%A7%8D%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3"><span class="nav-number">11.</span> <span class="nav-text">10. 哈希底层原理：6 种构造 + 4 种冲突解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0%E7%9A%84-6-%E7%A7%8D%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-number">11.1.</span> <span class="nav-text">10.1 哈希函数的 6 种构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A0-%E7%9B%B4%E6%8E%A5%E5%AE%9A%E5%9D%80%E6%B3%95"><span class="nav-number">11.1.1.</span> <span class="nav-text">① 直接定址法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A1-%E9%99%A4%E7%95%99%E4%BD%99%E6%95%B0%E6%B3%95%EF%BC%88%E6%9C%80%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">11.1.2.</span> <span class="nav-text">② 除留余数法（最常用）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A2-%E6%95%B0%E5%AD%97%E5%88%86%E6%9E%90%E6%B3%95"><span class="nav-number">11.1.3.</span> <span class="nav-text">③ 数字分析法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A3-%E5%B9%B3%E6%96%B9%E5%8F%96%E4%B8%AD%E6%B3%95"><span class="nav-number">11.1.4.</span> <span class="nav-text">④ 平方取中法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A4-%E6%8A%98%E5%8F%A0%E6%B3%95"><span class="nav-number">11.1.5.</span> <span class="nav-text">⑤ 折叠法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A5-%E9%9A%8F%E6%9C%BA%E6%95%B0%E6%B3%95"><span class="nav-number">11.1.6.</span> <span class="nav-text">⑥ 随机数法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81%E7%9A%84-4-%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="nav-number">11.2.</span> <span class="nav-text">10.2 哈希冲突的 4 种解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A0-%E9%93%BE%E5%9C%B0%E5%9D%80%E6%B3%95%EF%BC%88Separate-Chaining%EF%BC%89%E2%AD%90-C-STL-%E6%A0%87%E5%87%86%E5%81%9A%E6%B3%95"><span class="nav-number">11.2.1.</span> <span class="nav-text">① 链地址法（Separate Chaining）⭐ C++ STL 标准做法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A1-%E5%BC%80%E6%94%BE%E5%AE%9A%E5%9D%80%E6%B3%95-%E2%80%94-%E4%B8%89%E7%A7%8D%E6%8E%A2%E6%B5%8B%E7%AD%96%E7%95%A5"><span class="nav-number">11.2.2.</span> <span class="nav-text">② 开放定址法 — 三种探测策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A2-%E5%86%8D%E5%93%88%E5%B8%8C%E6%B3%95"><span class="nav-number">11.2.3.</span> <span class="nav-text">③ 再哈希法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A3-%E5%85%AC%E5%85%B1%E6%BA%A2%E5%87%BA%E5%8C%BA"><span class="nav-number">11.2.4.</span> <span class="nav-text">④ 公共溢出区</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-%E8%87%AA%E5%AE%9E%E7%8E%B0%E5%93%88%E5%B8%8C%E8%A1%A8"><span class="nav-number">12.</span> <span class="nav-text">11. 自实现哈希表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-%E9%93%BE%E5%9C%B0%E5%9D%80%E6%B3%95%EF%BC%8880-%E8%A1%8C%EF%BC%89"><span class="nav-number">12.1.</span> <span class="nav-text">11.1 链地址法（80 行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-%E5%BC%80%E6%94%BE%E5%AE%9A%E5%9D%80%E6%B3%95%EF%BC%88%E6%A0%B8%E5%BF%83%E5%B7%AE%E5%BC%82%EF%BC%89"><span class="nav-number">12.2.</span> <span class="nav-text">11.2 开放定址法（核心差异）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E9%9D%A2%E8%AF%95%E9%AB%98%E9%A2%91%E8%80%83%E7%82%B9"><span class="nav-number">13.</span> <span class="nav-text">12. 面试高频考点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#12-1-Two-Sum%EF%BC%88%E5%BF%85%E8%80%83%EF%BC%89"><span class="nav-number">13.1.</span> <span class="nav-text">12.1 Two Sum（必考）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-2-%E5%93%88%E5%B8%8C-vs-%E6%95%B0%E7%BB%84%EF%BC%9A%E9%80%89%E5%93%AA%E4%B8%AA"><span class="nav-number">13.2.</span> <span class="nav-text">12.2 哈希 vs 数组：选哪个</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-3-%E6%98%93%E9%94%99%E7%82%B9%E9%80%9F%E8%AE%B0"><span class="nav-number">13.3.</span> <span class="nav-text">12.3 易错点速记</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="奶油苏打和冕型灯"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">奶油苏打和冕型灯</p>
+  <div class="site-description" itemprop="description">在下不才，于图门下求道，辟此秘境，记录技术学习点滴。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Blooming-cherry" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Blooming-cherry" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yifan230@gmail.com" title="E-Mail → mailto:yifan230@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://music.163.com/#/user/home?id=6326055984" title="网易云音乐 → https:&#x2F;&#x2F;music.163.com&#x2F;#&#x2F;user&#x2F;home?id&#x3D;6326055984" rel="noopener" target="_blank"><i class="fa fa-music fa-fw"></i>网易云音乐</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/3461564099201962" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;3461564099201962" rel="noopener" target="_blank"><i class="fa fa-play-circle fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://echoesfromshell.netlify.app/" title="https:&#x2F;&#x2F;echoesfromshell.netlify.app" rel="noopener" target="_blank">EchoesFromShell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://seewater.cc/" title="https:&#x2F;&#x2F;seewater.cc" rel="noopener" target="_blank">SeeWater</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">奶油苏打和冕型灯</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">28k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'Ov23li1PWJC42UVKm49t',
+      clientSecret: 'b7ea163f893ec547d25552b840dfdb3efc0a3be7',
+      repo        : 'blooming-cherry.github.io',
+      owner       : 'Blooming-cherry',
+      admin       : ['Blooming-cherry'],
+      id          : '2e658eb9cbcc294ea857f351e149fc7c',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+<!-- Arknights credit -->
+<script>
+(function(){
+  function injectCredit() {
+    var footer = document.querySelector('.footer');
+    if (!footer) return;
+    // Remove any stale duplicates first
+    var stale = footer.querySelectorAll('.arknights-credit');
+    stale.forEach(function(el) { el.remove(); });
+    var credit = document.createElement('div');
+    credit.className = 'arknights-credit';
+    credit.style.cssText = 'margin-top:6px;font-size:12px;color:#999;text-align:center;';
+    credit.innerHTML = 'Inspired by <a href="https://ak.hypergryph.com/" target="_blank" style="color:#999;">Arknights / 明日方舟</a> &copy; Hypergryph / Studio Montagne';
+    footer.appendChild(credit);
+  }
+  injectCredit();
+  // Re-inject after PJAX page swaps (footer may have been replaced)
+  document.addEventListener('pjax:success', injectCredit);
+})();
+</script>
+
+<!-- Monster Siren URL Loader -->
+<script src="/js/siren-url-loader.js"></script>
+
+<!-- Global Mini Vinyl Player -->
+<div id="mpOverlay" style="display:none"></div>
+<div id="mpPlaylist" style="display:none"></div>
+<div id="miniPlayer">
+  <button class="mp-ctrl" id="mpPrev" title="上一首"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+  <div id="mpDisc" title="展开播放列表"><div id="mpCover"></div></div>
+  <span id="mpTitle">—</span>
+  <button id="mpBtn" title="播放/暂停">
+    <span class="mp-icon-play">▶</span>
+    <span class="mp-icon-pause" style="display:none">⏸</span>
+  </button>
+  <button class="mp-ctrl" id="mpNext" title="下一首"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+</div>
+
+<script>
+(function(){
+  var PL = [
+    {cid:"125042",name:"Sanctuary Inside",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/8aad7b966f7a8069f07c094251c5a2eb/6A12C018/siren/audio/20250430/61d007fbdd059d6c77d24359aa85c1f4.wav",cover:"https://web.hycdn.cn/siren/pic/20250430/384e007ed1908ce919a3bf704a5b36ff.png",album:"Sanctuary Inside"},
+    {cid:"306814",name:"Best Moments of...",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/d0f258fb5ec485c658e88aaebf68b821/6A12C018/siren/audio/20231019/d730dee09f6a74272784b2d5de200123.wav",cover:"https://web.hycdn.cn/siren/pic/20231019/ae52bd635f6a7e89be3c3d481788ce82.png",album:"Best Moments of..."},
+    {cid:"953953",name:"Little Wish",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/e0b903a9b2601ce6cf544c7580d6f1bf/6A12C019/siren/audio/20250801/10c5003150590f14844e554df545e8b4.wav",cover:"https://web.hycdn.cn/siren/pic/20250801/7d4b586dddf00b4e2a43c809f3fe4b45.jpg",album:"Little Wish"},
+    {cid:"306846",name:"Your Star",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/d3d870c65bbc0197bee6e97c306eaebb/6A12C019/siren/audio/20220608/8f704dc83ffaebe4a9786627564f1b22.mp3",cover:"https://web.hycdn.cn/siren/pic/20220608/7ceda0fb37acc8cdfc7f25e8352dbbc8.jpg",album:"Your Star"},
+    {cid:"697699",name:"Grow on My Time",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/db459452c39abc245786c4c16d7f491c/6A12C019/siren/audio/20250606/f9746a00e5f44840bacfb51cbe228f3e.wav",cover:"https://web.hycdn.cn/siren/pic/20250606/02da85b2cc73f426ef6cfec4910d31d9.jpg",album:"Grow on My Time"},
+    {cid:"953984",name:"Before Summer",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/bf58f2860d163be53ff969ecb64247d3/6A12C019/siren/audio/20230601/7725b49fdb287aa281103add3fd99c4e.wav",cover:"https://web.hycdn.cn/siren/pic/20230601/d052f9558a4ef28409556ba761cdd861.jpg",album:"Before Summer"},
+    {cid:"232224",name:"Innocence",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/59cb1b3aa2d6442ea9a31a55ba7c7b7d/6A12C019/siren/audio/20260430/ad9bf0b9ea6ca69a4d97cf479101b65f.wav",cover:"https://web.hycdn.cn/siren/pic/20260430/87e3010a27c3f0f85422fa6f1f33483e.jpg",album:"Innocence"},
+    {cid:"306815",name:"Effervescence",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/57deef730043c92d12fd94e18844f899/6A12C0C9/siren/audio/20230809/68b2cd453671e11d132fd2d3cd911879.wav",cover:"https://web.hycdn.cn/siren/pic/20230809/ecc4c113772a8e8a8cdde6aa303a3ad6.jpg",album:"火山旅梦OST"}
+  ];
+
+  // Resolve fresh URL from proxy cache, fallback to hardcoded
+  function resolveUrl(track) {
+    if (window.__sirenUrls && window.__sirenUrls[track.cid]) {
+      return window.__sirenUrls[track.cid];
+    }
+    return track.url;
+  }
+
+  // PJAX guard: body-end.swig re-executes inside #pjax on every navigation.
+  // Rebind new DOM to the existing Audio instead of creating a duplicate.
+  if (window.__vinyl) {
+    var V = window.__vinyl;
+    var mp2 = document.getElementById('miniPlayer');
+    var mpDisc2 = document.getElementById('mpDisc');
+    var mpCover2 = document.getElementById('mpCover');
+    var mpTitle2 = document.getElementById('mpTitle');
+    var mpBtn2 = document.getElementById('mpBtn');
+    var mpPrev2 = document.getElementById('mpPrev');
+    var mpNext2 = document.getElementById('mpNext');
+    var iconPlay2 = mpBtn2.querySelector('.mp-icon-play');
+    var iconPause2 = mpBtn2.querySelector('.mp-icon-pause');
+    var plPanel2 = document.getElementById('mpPlaylist');
+    var overlay2 = document.getElementById('mpOverlay');
+    var plOpen2 = false;
+
+    mpCover2.style.backgroundImage = 'url(' + V.playlist[V.getIdx()].cover + ')';
+    mpTitle2.textContent = V.playlist[V.getIdx()].name;
+    var playing = !V.audio.paused;
+    mpDisc2.classList.toggle('spinning', playing);
+    iconPlay2.style.display = playing ? 'none' : 'block';
+    iconPause2.style.display = playing ? 'block' : 'none';
+
+    function updateHighlight2() {
+      var rows = plPanel2.querySelectorAll('.mpp-row');
+      rows.forEach(function(r, i) { r.classList.toggle('active', i === V.getIdx()); });
+    }
+    plPanel2.innerHTML = '';
+    V.playlist.forEach(function(t, i) {
+      var row = document.createElement('div');
+      row.className = 'mpp-row';
+      row.innerHTML = '<span class="mpp-num">' + (i < 9 ? '0' + (i + 1) : i + 1) + '</span><span class="mpp-name">' + t.name + '</span><span class="mpp-artist">' + t.artist + '</span>';
+      row.addEventListener('click', function() {
+        V.load(i);
+        if (V.audio.paused) V.toggle();
+        plPanel2.style.display = 'none';
+        overlay2.style.display = 'none';
+        mpDisc2.classList.remove('expanded');
+        plOpen2 = false;
+      });
+      plPanel2.appendChild(row);
+    });
+    updateHighlight2();
+
+    function openPanel2() { plOpen2 = true; plPanel2.style.display = 'block'; overlay2.style.display = 'block'; mpDisc2.classList.add('expanded'); }
+    function closePanel2() { plOpen2 = false; plPanel2.style.display = 'none'; overlay2.style.display = 'none'; mpDisc2.classList.remove('expanded'); }
+    mpDisc2.addEventListener('click', function() { if (plOpen2) closePanel2(); else openPanel2(); });
+    overlay2.addEventListener('click', closePanel2);
+    mpBtn2.addEventListener('click', function() { V.toggle(); });
+    mpPrev2.addEventListener('click', function() { V.prev(); });
+    mpNext2.addEventListener('click', function() { V.next(); });
+    var onMusic = window.location.pathname.indexOf('/music') !== -1;
+    mp2.style.display = onMusic ? 'none' : '';
+    if (!V.audio.__syncBound) {
+      V.audio.__syncBound = true;
+      function syncUI() {
+        var d = document.getElementById('mpDisc');
+        var ip = document.querySelector('#mpBtn .mp-icon-play');
+        var ipa = document.querySelector('#mpBtn .mp-icon-pause');
+        var p = !V.audio.paused;
+        if (d) d.classList.toggle('spinning', p);
+        if (ip) ip.style.display = p ? 'none' : 'block';
+        if (ipa) ipa.style.display = p ? 'block' : 'none';
+      }
+      V.audio.addEventListener('play', syncUI);
+      V.audio.addEventListener('pause', syncUI);
+      var origLoad = V.load;
+      V.load = function(i) {
+        origLoad(i);
+        var cov = document.getElementById('mpCover');
+        var tit = document.getElementById('mpTitle');
+        if (cov) cov.style.backgroundImage = 'url(' + V.playlist[i].cover + ')';
+        if (tit) tit.textContent = V.playlist[i].name;
+        var rows = document.querySelectorAll('.mpp-row');
+        rows.forEach(function(r, j) { r.classList.toggle('active', j === i); });
+      };
+      var origCheck = V.checkMusicPage;
+      V.checkMusicPage = function() {
+        origCheck();
+        var m = document.getElementById('miniPlayer');
+        if (m) { var onM = window.location.pathname.indexOf('/music') !== -1; m.style.display = onM ? 'none' : ''; }
+      };
+    }
+    return;
+  }
+
+  var audio = new Audio();
+  audio.volume = 0.3;
+  var idx = 0;
+  var playing = false;
+  var mp = document.getElementById('miniPlayer');
+  var mpDisc = document.getElementById('mpDisc');
+  var mpCover = document.getElementById('mpCover');
+  var mpTitle = document.getElementById('mpTitle');
+  var mpBtn = document.getElementById('mpBtn');
+  var mpPrev = document.getElementById('mpPrev');
+  var mpNext = document.getElementById('mpNext');
+  var iconPlay = mpBtn.querySelector('.mp-icon-play');
+  var iconPause = mpBtn.querySelector('.mp-icon-pause');
+  var plPanel = document.getElementById('mpPlaylist');
+  var overlay = document.getElementById('mpOverlay');
+  var plOpen = false;
+
+  // Restore from localStorage
+  try {
+    var s = JSON.parse(localStorage.getItem('vs'));
+    if (s && s.i < PL.length) { idx = s.i; audio.currentTime = s.t || 0; }
+  } catch(e) {}
+
+  function save() {
+    try { localStorage.setItem('vs', JSON.stringify({i:idx, t:audio.currentTime, p:playing})); } catch(e) {}
+  }
+
+  function load(i) {
+    var changed = (idx !== i);
+    idx = i;
+    var t = PL[i];
+    if (changed || !audio.src) { audio.src = resolveUrl(t); audio.setAttribute('data-idx', i); }
+    mpCover.style.backgroundImage = 'url(' + t.cover + ')';
+    mpTitle.textContent = t.name;
+    updatePlaylistHighlight();
+    save();
+    if (playing) audio.play();
+  }
+
+  function setPlaying(p) {
+    playing = p;
+    mpDisc.classList.toggle('spinning', p);
+    iconPlay.style.display = p ? 'none' : 'block';
+    iconPause.style.display = p ? 'block' : 'none';
+    updateB2t();
+    save();
+  }
+
+  function toggle() {
+    if (playing) { audio.pause(); setPlaying(false); }
+    else { audio.play().then(function(){ setPlaying(true); }).catch(function(){}); }
+  }
+
+  function next() { load((idx + 1) % PL.length); }
+  function prev() { load((idx - 1 + PL.length) % PL.length); }
+
+  function updateB2t() {
+    var b2t = document.querySelector('.back-to-top');
+    if (b2t) {
+      b2t.classList.toggle('vinyl-on', playing);
+      if (!b2t.querySelector('.b2t-disc')) {
+        var disc = document.createElement('div');
+        disc.className = 'b2t-disc';
+        b2t.appendChild(disc);
+      }
+    }
+  }
+
+  function checkMusicPage() {
+    var onMusic = window.location.pathname.indexOf('/music') !== -1;
+    mp.style.display = onMusic ? 'none' : '';
+  }
+
+  // --- Playlist panel ---
+  function buildPlaylist() {
+    plPanel.innerHTML = '';
+    PL.forEach(function(t, i) {
+      var row = document.createElement('div');
+      row.className = 'mpp-row';
+      row.innerHTML = '<span class="mpp-num">' + (i < 9 ? '0' + (i + 1) : i + 1) + '</span><span class="mpp-name">' + t.name + '</span><span class="mpp-artist">' + t.artist + '</span>';
+      row.addEventListener('click', function() {
+        load(i);
+        if (!playing) toggle();
+        closePlaylist();
+      });
+      plPanel.appendChild(row);
+    });
+    updatePlaylistHighlight();
+  }
+
+  function updatePlaylistHighlight() {
+    var rows = plPanel.querySelectorAll('.mpp-row');
+    rows.forEach(function(r, i) { r.classList.toggle('active', i === idx); });
+  }
+
+  function openPlaylist() {
+    plOpen = true;
+    plPanel.style.display = 'block';
+    overlay.style.display = 'block';
+    mpDisc.classList.add('expanded');
+  }
+
+  function closePlaylist() {
+    plOpen = false;
+    plPanel.style.display = 'none';
+    overlay.style.display = 'none';
+    mpDisc.classList.remove('expanded');
+  }
+
+  mpDisc.addEventListener('click', function() {
+    if (plOpen) closePlaylist(); else openPlaylist();
+  });
+  overlay.addEventListener('click', closePlaylist);
+  buildPlaylist();
+
+  // --- Audio events ---
+  audio.addEventListener('loadedmetadata', save);
+  audio.addEventListener('ended', function() {
+    playing = true;
+    next();
+  });
+  audio.addEventListener('play', function(){ setPlaying(true); });
+  audio.addEventListener('pause', function(){ setPlaying(false); });
+  audio.addEventListener('timeupdate', function(){
+    if (audio.currentTime && !(Math.floor(audio.currentTime) % 2)) save();
+  });
+  audio.addEventListener('error', function(){ setPlaying(false); });
+
+  mpBtn.addEventListener('click', toggle);
+  mpPrev.addEventListener('click', prev);
+  mpNext.addEventListener('click', next);
+
+  // PJAX: update UI after page transitions
+  document.addEventListener('pjax:success', function() {
+    checkMusicPage();
+    updateB2t();
+  });
+
+  // Init
+  checkMusicPage();
+  updateB2t();
+
+  // Expose for music page
+  window.__vinyl = {
+    audio: audio, playlist: PL,
+    getIdx: function(){ return idx; },
+    load: load, toggle: toggle, next: next, prev: prev,
+    setPlaying: setPlaying, checkMusicPage: checkMusicPage
+  };
+
+  // Initial load + auto-play
+  load(idx);
+  if (s && s.p && window.location.pathname.indexOf('/music') === -1) {
+    audio.play().then(function(){ setPlaying(true); }).catch(function(){});
+  }
+})();
+</script>
+
+<!-- Live2D 看板娘 -->
+<style>
+#waifu {
+  transform: scale(0.42);
+  transform-origin: left bottom;
+}
+/* 工具栏缩小 + 左移 */
+#waifu-tool {
+  transform: scale(0.7);
+  transform-origin: left bottom;
+  left: 8px !important;
+  right: auto !important;
+}
+@media (max-width: 768px) {
+  #waifu { display: none; }
+}
+</style>
+
+<script src="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/live2d.min.js"></script>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu.css">
+
+<!-- 拦截 CDN 请求：过滤模型 + sagiri 语音走本地 -->
+<script>
+(function(){
+  // 抑制 widget v1.0.1 Cubism2 hitTest 报错
+  var _warn = console.warn, _error = console.error;
+  console.warn = function() {
+    var m = Array.prototype.join.call(arguments, ' ');
+    if (m.indexOf('hit_areas') !== -1 || m.indexOf('D_REF') !== -1 || m.indexOf('_$NP') !== -1) return;
+    return _warn.apply(console, arguments);
+  };
+  console.error = function() {
+    var m = Array.prototype.join.call(arguments, ' ');
+    if (m.indexOf('hit_areas') !== -1 || m.indexOf('D_REF') !== -1 || m.indexOf('_$NP') !== -1) return;
+    return _error.apply(console, arguments);
+  };
+
+  var origFetch = window.fetch;
+  var CDN = 'https://cdn.jsdelivr.net/npm/yzs-live2d_src@1.1.0';
+
+  window.fetch = function(url, opts) {
+    if (typeof url !== 'string') return origFetch.apply(this, arguments);
+
+    // 过滤模型列表 → 只保留三人
+    if (url.indexOf('yzs-live2d_src') !== -1 && url.indexOf('model_list.json') !== -1) {
+      return Promise.resolve(new Response(JSON.stringify({
+        models: ["umaru", "sagiri", "chino"],
+        messages: [
+          "U.M.R. はい! 小埋参上!",
+          "埃罗芒阿老师来啦！",
+          "欢迎光临 Rabbit House ~"
+        ]
+      }), { headers: { 'Content-Type': 'application/json' } }));
+    }
+
+    // sagiri 的 index.json → 走本地（含 B 站语音引用）
+    if (url.indexOf('yzs-live2d_src') !== -1 && url.indexOf('sagiri/index.json') !== -1) {
+      return origFetch('/js/model/sagiri/index.json', opts);
+    }
+
+    // sagiri 的语音文件 → 走本地（B 站提取的 WAV）
+    if (url.indexOf('yzs-live2d_src') !== -1 && url.indexOf('sagiri/voice/') !== -1) {
+      return origFetch(url.replace(CDN + '/model/sagiri/', '/js/model/sagiri/'), opts);
+    }
+
+    return origFetch.apply(this, arguments);
+  };
+})();
+</script>
+
+<!-- 全局音量控制 -->
+<script>
+(function(){
+  if (window.__lv2AudioHooked) return;
+  window.__lv2AudioHooked = true;
+  var VOL = 0.5;
+  var COOLDOWN = 7000;
+  var lastPlay = {};
+  var liveAudios = {};
+
+  function modelOf(url) {
+    if (!url) return null;
+    var s = String(url);
+    if (s.indexOf('/umaru/') !== -1) return 'umaru';
+    if (s.indexOf('/sagiri/') !== -1) return 'sagiri';
+    if (s.indexOf('/chino/') !== -1) return 'chino';
+    return null;
+  }
+
+  function stopOthers(model) {
+    Object.keys(liveAudios).forEach(function(m) {
+      if (m === model) return;
+      (liveAudios[m] || []).forEach(function(a) {
+        try { a.pause(); if (a.currentTime !== undefined) a.currentTime = 0; } catch(e) {}
+      });
+      liveAudios[m] = [];
+    });
+  }
+
+  var OrigAudio = window.Audio;
+  window.Audio = function(url) {
+    var a = new OrigAudio(url);
+    a.volume = VOL;
+
+    var model = modelOf(url);
+    if (model && !a.__lv2Monitored) {
+      a.__lv2Monitored = true;
+      a.__lv2Model = model;
+
+      var _play = a.play;
+      a.play = function() {
+        var now = Date.now();
+        if (lastPlay[model] && (now - lastPlay[model] < COOLDOWN)) {
+          return Promise.resolve();
+        }
+        stopOthers(model);
+        lastPlay[model] = now;
+        if (!liveAudios[model]) liveAudios[model] = [];
+        liveAudios[model].push(a);
+        return _play.call(a).catch(function(){});
+      };
+
+      a.addEventListener('ended', function() {
+        var arr = liveAudios[model];
+        if (!arr) return;
+        var idx = arr.indexOf(a);
+        if (idx !== -1) arr.splice(idx, 1);
+      });
+      a.addEventListener('pause', function() {
+        var arr = liveAudios[model];
+        if (!arr) return;
+        var idx = arr.indexOf(a);
+        if (idx !== -1) arr.splice(idx, 1);
+      });
+    }
+
+    return a;
+  };
+  window.Audio.prototype = OrigAudio.prototype;
+})();
+</script>
+
+
+<script>
+(function(){
+  // 抑制 Cubism2 运行时 hit_areas 引用异常
+  window.addEventListener('error', function(e) {
+    var m = e.message || '';
+    if (m.indexOf('_$NP') !== -1 || m.indexOf('D_REF') !== -1 || m.indexOf('null') !== -1 && e.filename && e.filename.indexOf('live2d.min.js') !== -1) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  var s = document.createElement('script');
+  s.type = 'module';
+  s.src = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu-tips.js';
+  s.onload = function() {
+    if (typeof initWidget !== 'function') return;
+    initWidget({
+      waifuPath: '/js/live2d-config.json',
+      cdnPath: 'https://cdn.jsdelivr.net/npm/yzs-live2d_src@1.1.0/',
+      cubism2Path: 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/live2d.min.js',
+      cubism5Path: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
+      tools: ['switch-model', 'switch-texture', 'photo', 'info', 'quit'],
+      logLevel: 'warn',
+      drag: false
+    });
+  };
+  document.head.appendChild(s);
+})();
+</script>
+
+<!-- 鼠标拖尾粒子 -->
+
+<!-- 鼠标拖尾粒子 -->
+<canvas id="mouseTrail" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999"></canvas>
+<script>
+(function(){
+  var canvas = document.getElementById('mouseTrail');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var maxParticles = 40;
+  var mouse = { x: -100, y: -100 };
+  var raf;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  document.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    var now = Date.now();
+    for (var i = 0; i < 2; i++) {
+      if (particles.length >= maxParticles) break;
+      particles.push({
+        x: mouse.x,
+        y: mouse.y,
+        r: Math.random() * 3 + 1.5,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        life: 1,
+        decay: Math.random() * 0.02 + 0.015,
+        hue: Math.random() * 60 + 200
+      });
+    }
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+      if (p.life <= 0) { particles.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+      ctx.fillStyle = 'hsla(' + p.hue + ', 80%, 65%, ' + (p.life * 0.6) + ')';
+      ctx.fill();
+    }
+    raf = requestAnimationFrame(draw);
+  }
+  draw();
+
+  // PJAX guard
+  document.addEventListener('pjax:success', function() {
+    canvas = document.getElementById('mouseTrail');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    resize();
+  });
+})();
+</script>
+
+    </div>
+</body>
+</html>
