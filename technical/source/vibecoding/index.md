@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-07-20
+
+- **[博客迁移日志](2026-07-20-blog-migration-log.html)** — adaydream.cn → blog.adaydream.cn 完整迁移：DNS / Docker / Nginx / SSL / CI/CD 踩坑记录
+
 ### 2026-07-12
 
 - **[C 语言链表学习笔记](2026-07-12-c-linked-list-guide.html)** — 从 HTML 转换，已移除 CSS 样式
