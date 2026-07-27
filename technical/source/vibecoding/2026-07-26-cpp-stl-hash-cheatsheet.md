@@ -1,7 +1,8 @@
 ---
 title: C++ STL 容器 & 哈希结构 知识速查
-date: 2026-07-26 14:00:00
-categories: vibecoding
+date: 2026-07-26
+layout: page
+comments: false
 description: "从 C 手写哈希到 C++ STL 全家桶 —— vector / string / unordered_map / map / deque / priority_queue 全容器速查手册，附 6 种哈希构造 + 4 种冲突解决底层原理。"
 ---
 
