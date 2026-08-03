@@ -10,6 +10,9 @@ node_modules/
 public/
 .deploy*/
 
+# Obsidian vault config
+.obsidian/
+
 # System files
 .DS_Store
 Thumbs.db
