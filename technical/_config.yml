@@ -59,6 +59,23 @@ prismjs:
   line_number: true
   tab_replace: ''
 
+# Markdown 渲染:支持 LaTeX 数学公式($...$ / $$...$$)
+## https://github.com/hexojs/hexo-renderer-markdown-it
+## https://github.com/goessner/markdown-it-texmath
+markdown:
+  render:
+    html: true
+    xhtmlOut: false
+    breaks: true
+    linkify: true
+    typographer: true
+    quotes: '“”‘’'
+  plugins:
+    - name: markdown-it-texmath
+      options:
+        engine: katex
+        delimiters: dollars
+
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
 # per_page: Posts displayed per page. (0 = disable pagination)
