@@ -28,7 +28,7 @@
 <meta property="og:description" content="花和人都会遇到各种各样的不幸，但是生命的长河是无止境的。我抚摸了一下那小小的紫色的花舱，那里满装生命的酒酿，它张满了帆，在这闪光的花的河流上航行。它是万花中的一朵，也正是一朵一朵花，组成了万花灿烂的流动的瀑布。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-06-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-28T08:10:30.757Z">
+<meta property="article:modified_time" content="2026-08-03T03:19:47.776Z">
 <meta property="article:author" content="奶油苏打和冕型灯">
 <meta property="article:tag" content="技术, 学习, 记录">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-07-28 16:10:30" itemprop="dateModified" datetime="2026-07-28T16:10:30+08:00">2026-07-28</time>
+                <time title="修改时间：2026-08-03 11:19:47" itemprop="dateModified" datetime="2026-08-03T11:19:47+08:00">2026-08-03</time>
               </span>
 
           <br>
@@ -234,7 +234,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -254,16 +254,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="C语言常用循环体"><a href="#C语言常用循环体" class="headerlink" title="C语言常用循环体"></a>C语言常用循环体</h2><p>对于初学者而言，循环一般只涉及二元变量，代表了平面里的两个坐标。在平面中输出字符构成的图形时，往往采用 i 代表行、j 代表列，按照给定的函数表达式逐行输出。</p>
+        <h2 id="C语言常用循环体">C语言常用循环体</h2>
+<p>对于初学者而言，循环一般只涉及二元变量，代表了平面里的两个坐标。在平面中输出字符构成的图形时，往往采用 i 代表行、j 代表列，按照给定的函数表达式逐行输出。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (condition)&#123;</span><br><span class="line">    <span class="keyword">for</span> (condition)&#123;</span><br><span class="line">        <span class="keyword">while</span>(condition)&#123;</span><br><span class="line">            ...(code);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> (variate);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>还有许多诸如此类的”千层蛋糕”。如果需要实现这类函数，最好先数清楚变量数量，然后理清哪些是不变量、哪些是变量，以及变量之间满足怎样的函数关系，先声明清楚，然后再定义函数。<br>在定义函数的时候，先写一遍伪代码，让 agent 检查一遍逻辑，查看特殊值和错误值输入时的返回处理，然后再进行编码。反正一天写一道函数题是我的日常……有点惨不忍睹。</p>
-<h2 id="C语言累计计数"><a href="#C语言累计计数" class="headerlink" title="C语言累计计数"></a>C语言累计计数</h2><p>在C语言中，不使用C标准库的时候，我们需要自己手搓计数器。对于字符串中不同类型的字符（比如说字母、空格、数字等），这主要通过ASCII码来实现。比如对于字母类型：</p>
+<p>还有许多诸如此类的&quot;千层蛋糕&quot;。如果需要实现这类函数，最好先数清楚变量数量，然后理清哪些是不变量、哪些是变量，以及变量之间满足怎样的函数关系，先声明清楚，然后再定义函数。<br>
+在定义函数的时候，先写一遍伪代码，让 agent 检查一遍逻辑，查看特殊值和错误值输入时的返回处理，然后再进行编码。反正一天写一道函数题是我的日常……有点惨不忍睹。</p>
+<h2 id="C语言累计计数">C语言累计计数</h2>
+<p>在C语言中，不使用C标准库的时候，我们需要自己手搓计数器。对于字符串中不同类型的字符（比如说字母、空格、数字等），这主要通过ASCII码来实现。比如对于字母类型：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 我们先声明一个变量并且读取 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAXS 100</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">ReadString</span><span class="params">(<span class="type">char</span> s[])</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">Stringcount</span><span class="params">(<span class="type">char</span> s[])</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 以上定义了两个函数原型 */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">char</span> s[MAXS];</span><br><span class="line">    ReadString(s);</span><br><span class="line">    Stringcount(s);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">ReadString</span><span class="params">(<span class="type">char</span> s[])</span></span><br><span class="line">&#123;</span><br><span class="line">    fgets(s, MAXS, <span class="built_in">stdin</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Stringcount</span><span class="params">(<span class="type">char</span> s[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> letter = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (s[i] != <span class="string">&#x27;\0&#x27;</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span> ( (s[i] &gt;= <span class="string">&#x27;a&#x27;</span> &amp;&amp; s[i] &lt;= <span class="string">&#x27;z&#x27;</span>) || (s[i] &gt;= <span class="string">&#x27;A&#x27;</span> &amp;&amp; s[i] &lt;= <span class="string">&#x27;Z&#x27;</span>) )&#123;</span><br><span class="line">            letter++;</span><br><span class="line">        &#125;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;字母数量: %d\n&quot;</span>, letter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>或者对于单一字符类型，例如数字字符，我们可以初始化一个计数的”容器”：</p>
+<p>或者对于单一字符类型，例如数字字符，我们可以初始化一个计数的&quot;容器&quot;：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> count[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="comment">/* 自动向数组中的每一个元素写入0 */</span></span><br><span class="line"><span class="comment">/* 这里的数组储存的是每个数字字符（0-9）出现的次数 */</span></span><br><span class="line"><span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (s[i] != <span class="string">&#x27;\0&#x27;</span>)&#123;</span><br><span class="line">    <span class="keyword">if</span> (s[i] &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; s[i] &lt;= <span class="string">&#x27;9&#x27;</span>)&#123;</span><br><span class="line">        count[s[i] - <span class="string">&#x27;0&#x27;</span>]++;  <span class="comment">/* 将字符数字映射到对应的数组下标 */</span></span><br><span class="line">    &#125;</span><br><span class="line">    i++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>以上便是在C语言中不使用标准库函数，徒手实现字符计数的基本思路。遍历字符串，依据ASCII码范围判断字符类型，将计数累加到对应的变量或数组单元中即可。</p>
-<h2 id="一些小细节"><a href="#一些小细节" class="headerlink" title="一些小细节"></a>一些小细节</h2><p>对于特殊值的处理是我们不得不小心的一环，我们无法判断和要求用户按照我们的实际功能输入正确的参数，所以我们需要对特殊情况做出分类。一般来说都有：负数、浮点数、字符串、含有特殊字符的字符串、0等等。因为C语言对于数据类型乃至于数据长度有着严苛的要求，所以对输入的数据做分类处理是非常有必要的。一般我们会采用if语句排除掉这些特殊值。<br>另外，除了在输出中产生的特殊类型数据，我们还经常需要处理函数之间可能产生的特殊数据，比如说我在输入整型数据的时候，由于在进行除法运算或者因为二进制精度不够而产生了浮点数，在我们使用(int)强制可能因为直接舍去末尾小数，而导致与期望值差1，这时候我们需要使用四舍五入，将精度修正为我们需要的。</p>
-<p>学习C语言，最难的不是语法本身，而是培养一种”机器思维”——你需要亲自告诉计算机每一个步骤该做什么，没有任何现成的便利可言。但也正是这种笨拙，让我逐渐理解到程序运行的本质。花和人都会遇到各种各样的不幸，代码也会遇到各种各样的bug，但生命的长河、学习的长河，都是无止境的。</p>
+<h2 id="一些小细节">一些小细节</h2>
+<p>对于特殊值的处理是我们不得不小心的一环，我们无法判断和要求用户按照我们的实际功能输入正确的参数，所以我们需要对特殊情况做出分类。一般来说都有：负数、浮点数、字符串、含有特殊字符的字符串、0等等。因为C语言对于数据类型乃至于数据长度有着严苛的要求，所以对输入的数据做分类处理是非常有必要的。一般我们会采用if语句排除掉这些特殊值。<br>
+另外，除了在输出中产生的特殊类型数据，我们还经常需要处理函数之间可能产生的特殊数据，比如说我在输入整型数据的时候，由于在进行除法运算或者因为二进制精度不够而产生了浮点数，在我们使用(int)强制可能因为直接舍去末尾小数，而导致与期望值差1，这时候我们需要使用四舍五入，将精度修正为我们需要的。</p>
+<p>学习C语言，最难的不是语法本身，而是培养一种&quot;机器思维&quot;——你需要亲自告诉计算机每一个步骤该做什么，没有任何现成的便利可言。但也正是这种笨拙，让我逐渐理解到程序运行的本质。花和人都会遇到各种各样的不幸，代码也会遇到各种各样的bug，但生命的长河、学习的长河，都是无止境的。</p>
 
     </div>
 
@@ -361,7 +366,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -429,12 +434,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">13k</span>
+    <span title="站点总字数">15k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -554,6 +559,8 @@ window.addEventListener('pjax:success', () => {
 
 
     <div id="pjax">
+  
+
   
 
   

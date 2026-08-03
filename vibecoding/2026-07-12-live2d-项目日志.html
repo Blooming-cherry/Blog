@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"adaydream.cn","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="Live2D 看板娘项目日志项目本地路径: D:\my-blog\technical本地预览: http:&#x2F;&#x2F;127.0.0.1:8080（需先启动 Python HTTP Server 在 public&#x2F; 目录）预览启动: cd D:\my-blog\technical\public &amp;&amp; python -m http.server 8080重新生成: cd D:\my-blog">
+  <meta name="description" content="Live2D 看板娘项目日志 项目本地路径: D:\my-blog\technical 本地预览: http:&#x2F;&#x2F;127.0.0.1:8080（需先启动 Python HTTP Server 在 public&#x2F; 目录） 预览启动: cd D:\my-blog\technical\public &amp;&amp; python -m http.server 8080 重新生成: cd D:\my-">
 <meta property="og:type" content="website">
 <meta property="og:title" content="2026-07-12-live2d-项目日志">
 <meta property="og:url" content="https://adaydream.cn/vibecoding/2026-07-12-live2d-%E9%A1%B9%E7%9B%AE%E6%97%A5%E5%BF%97.html">
 <meta property="og:site_name" content="“松花酿酒，春水煎茶”">
-<meta property="og:description" content="Live2D 看板娘项目日志项目本地路径: D:\my-blog\technical本地预览: http:&#x2F;&#x2F;127.0.0.1:8080（需先启动 Python HTTP Server 在 public&#x2F; 目录）预览启动: cd D:\my-blog\technical\public &amp;&amp; python -m http.server 8080重新生成: cd D:\my-blog">
+<meta property="og:description" content="Live2D 看板娘项目日志 项目本地路径: D:\my-blog\technical 本地预览: http:&#x2F;&#x2F;127.0.0.1:8080（需先启动 Python HTTP Server 在 public&#x2F; 目录） 预览启动: cd D:\my-blog\technical\public &amp;&amp; python -m http.server 8080 重新生成: cd D:\my-">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-28T08:10:30.859Z">
+<meta property="article:modified_time" content="2026-08-03T03:19:47.863Z">
 <meta property="article:author" content="奶油苏打和冕型灯">
 <meta property="article:tag" content="技术, 学习, 记录">
 <meta name="twitter:card" content="summary">
@@ -214,24 +214,31 @@
       
       
       <div class="post-body">
-          <h1 id="Live2D-看板娘项目日志"><a href="#Live2D-看板娘项目日志" class="headerlink" title="Live2D 看板娘项目日志"></a>Live2D 看板娘项目日志</h1><p><strong>项目本地路径</strong>: <code>D:\my-blog\technical</code><br><strong>本地预览</strong>: <code>http://127.0.0.1:8080</code>（需先启动 Python HTTP Server 在 <code>public/</code> 目录）<br><strong>预览启动</strong>: <code>cd D:\my-blog\technical\public &amp;&amp; python -m http.server 8080</code><br><strong>重新生成</strong>: <code>cd D:\my-blog\technical &amp;&amp; npx hexo generate</code></p>
+          <h1>Live2D 看板娘项目日志</h1>
+<p><strong>项目本地路径</strong>: <code>D:\my-blog\technical</code><br>
+<strong>本地预览</strong>: <code>http://127.0.0.1:8080</code>（需先启动 Python HTTP Server 在 <code>public/</code> 目录）<br>
+<strong>预览启动</strong>: <code>cd D:\my-blog\technical\public &amp;&amp; python -m http.server 8080</code><br>
+<strong>重新生成</strong>: <code>cd D:\my-blog\technical &amp;&amp; npx hexo generate</code></p>
 <hr>
-<h2 id="项目背景"><a href="#项目背景" class="headerlink" title="项目背景"></a>项目背景</h2><ul>
+<h2 id="项目背景">项目背景</h2>
+<ul>
 <li>Hexo 博客 + NexT.Muse 主题</li>
-<li>目标：左下角 Live2D 看板娘，三个角色轮换（小埋&#x2F;和泉纱雾&#x2F;香风智乃），点击触发语音（7s 冷却），各自独立语音不串扰</li>
+<li>目标：左下角 Live2D 看板娘，三个角色轮换（小埋/和泉纱雾/香风智乃），点击触发语音（7s 冷却），各自独立语音不串扰</li>
 </ul>
-<h2 id="技术栈"><a href="#技术栈" class="headerlink" title="技术栈"></a>技术栈</h2><ul>
-<li><strong>Live2D 引擎</strong>: live2d-widgets v1.0.1 (stevenjoezhang&#x2F;live2d-widget)</li>
+<h2 id="技术栈">技术栈</h2>
+<ul>
+<li><strong>Live2D 引擎</strong>: live2d-widgets v1.0.1 (stevenjoezhang/live2d-widget)</li>
 <li><strong>Runtime</strong>: Cubism 2.1 (live2d.min.js)</li>
 <li><strong>模型源</strong>: [email] (CDN)</li>
 <li><strong>语音</strong>: 小埋 34 句 wav（CDN 原声），纱雾 24 句 wav（B站视频 BV1fK4y1774f 提取，本地托管）</li>
 <li><strong>语音识别</strong>: OpenAI Whisper small 模型（日语）</li>
 <li><strong>注入点</strong>: <code>source/_data/body-end.swig</code>（PJAX 环境）</li>
-<li><strong>核心配置</strong>: <code>source/js/live2d-config.json</code> &#x2F; <code>source/js/model_list.json</code></li>
+<li><strong>核心配置</strong>: <code>source/js/live2d-config.json</code> / <code>source/js/model_list.json</code></li>
 <li><strong>模型目录</strong>: <code>source/js/model/umaru/</code> <code>source/js/model/sagiri/</code> <code>source/js/model/chino/</code></li>
 </ul>
 <hr>
-<h2 id="成功的部分"><a href="#成功的部分" class="headerlink" title="成功的部分"></a>成功的部分</h2><table>
+<h2 id="成功的部分">成功的部分</h2>
+<table>
 <thead>
 <tr>
 <th>事项</th>
@@ -239,7 +246,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>博客本地预览</td>
 <td>✅</td>
 <td>Python HTTP server on 8080</td>
@@ -247,7 +255,7 @@
 <tr>
 <td>菜单调整</td>
 <td>✅</td>
-<td>home &#x2F; categories &#x2F; archives &#x2F; music &#x2F; vibe-coding</td>
+<td>home / categories / archives / music / vibe-coding</td>
 </tr>
 <tr>
 <td>鼠标拖尾粒子</td>
@@ -272,7 +280,7 @@
 <tr>
 <td>模型文件本地托管</td>
 <td>✅</td>
-<td>umaru 34句 &#x2F; sagiri 24句 &#x2F; chino 静态</td>
+<td>umaru 34句 / sagiri 24句 / chino 静态</td>
 </tr>
 <tr>
 <td>MSR 唱片音量</td>
@@ -284,9 +292,11 @@
 <td>✅</td>
 <td>scale 0.42，工具栏 0.7</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
-<h2 id="反复失败的部分"><a href="#反复失败的部分" class="headerlink" title="反复失败的部分"></a>反复失败的部分</h2><table>
+<h2 id="反复失败的部分">反复失败的部分</h2>
+<table>
 <thead>
 <tr>
 <th>问题</th>
@@ -294,15 +304,16 @@
 <th>根因</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>CDN 路径 vs 本地路径</strong></td>
 <td>5+ 次来回切换</td>
-<td>Widget 的 <code>cdnPath</code> 同时控制 <code>model_list.json</code> 位置和模型文件&#x2F;语音路径解析，无法分离</td>
+<td>Widget 的 <code>cdnPath</code> 同时控制 <code>model_list.json</code> 位置和模型文件/语音路径解析，无法分离</td>
 </tr>
 <tr>
 <td><strong>本地 cdnPath 时语音 404</strong></td>
 <td>3 次</td>
-<td>Widget 对 voice 文件的路径解析与 CDN 模式不同，本地模式下 voice&#x2F; 路径拼接错误</td>
+<td>Widget 对 voice 文件的路径解析与 CDN 模式不同，本地模式下 voice/ 路径拼接错误</td>
 </tr>
 <tr>
 <td><strong>CDN cdnPath 时模型过多</strong></td>
@@ -329,19 +340,22 @@
 <td>3 次出现</td>
 <td><code>index.js:194</code> — widget v1.0.1 的 Cubism2 鼠标跟踪 bug，部分模型的 hit_areas 参数 ID 不匹配</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
-<h2 id="当前架构"><a href="#当前架构" class="headerlink" title="当前架构"></a>当前架构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Widget (live2d-widgets v1.0.1)</span><br><span class="line">├─ cdnPath: yzs CDN</span><br><span class="line">├─ model_list.json → fetch 拦截 → 只返回 umaru/sagiri/chino</span><br><span class="line">├─ umaru/index.json → CDN 直连（34 句原声）</span><br><span class="line">├─ sagiri/index.json → fetch 拦截 → 本地版本（24 句 B 站语音）</span><br><span class="line">├─ sagiri/voice/*.wav → fetch 拦截 → 本地文件</span><br><span class="line">└─ 其他资源 → CDN 直连</span><br></pre></td></tr></table></figure>
-
+<h2 id="当前架构">当前架构</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Widget (live2d-widgets v1.0.1)</span><br><span class="line">├─ cdnPath: yzs CDN</span><br><span class="line">├─ model_list.json → fetch 拦截 → 只返回 umaru/sagiri/chino</span><br><span class="line">├─ umaru/index.json → CDN 直连（34 句原声）</span><br><span class="line">├─ sagiri/index.json → fetch 拦截 → 本地版本（24 句 B 站语音）</span><br><span class="line">├─ sagiri/voice/*.wav → fetch 拦截 → 本地文件</span><br><span class="line">└─ 其他资源 → CDN 直连</span><br></pre></td></tr></table></figure>
 <hr>
-<h2 id="无法解决的根本矛盾"><a href="#无法解决的根本矛盾" class="headerlink" title="无法解决的根本矛盾"></a>无法解决的根本矛盾</h2><ol>
+<h2 id="无法解决的根本矛盾">无法解决的根本矛盾</h2>
+<ol>
 <li><strong>Widget 不支持模型间音频隔离</strong> — 所有模型共享同一个 Audio 上下文，切换模型不清洗</li>
 <li><strong>v1.0.1 的 Cubism2 路径解析</strong> — voice 文件路径拼接逻辑在 CDN 和本地模式下不同，无法用单配置兼容</li>
 <li><strong>无内置冷却</strong> — tap 触发依赖 widget 内部 motion 状态机，外部 JS 拦截会导致动画+语音一起失效</li>
-<li><strong>hit_areas 参数 ID</strong> — 部分模型（umaru&#x2F;chino）的 <code>D_REF.PT_HEAD</code> 等引用在 runtime 中为 null</li>
+<li><strong>hit_areas 参数 ID</strong> — 部分模型（umaru/chino）的 <code>D_REF.PT_HEAD</code> 等引用在 runtime 中为 null</li>
 </ol>
 <hr>
-<h2 id="已尝试过、确认无效的方案"><a href="#已尝试过、确认无效的方案" class="headerlink" title="已尝试过、确认无效的方案"></a>已尝试过、确认无效的方案</h2><ol>
+<h2 id="已尝试过、确认无效的方案">已尝试过、确认无效的方案</h2>
+<ol>
 <li><code>cdnPath=&quot;/js/&quot;</code> + 本地完整模型文件 → 语音 404</li>
 <li><code>cdnPath=yzs CDN</code> → 模型列表无法过滤</li>
 <li><code>initWidget({ models: [...] })</code> 直接传模型 → 参数被忽略</li>
@@ -350,20 +364,22 @@
 <li><code>click</code> 事件 capture 拦截 → 动画和语音一起被阻断</li>
 </ol>
 <hr>
-<h2 id="关键文件清单"><a href="#关键文件清单" class="headerlink" title="关键文件清单"></a>关键文件清单</h2><table>
+<h2 id="关键文件清单">关键文件清单</h2>
+<table>
 <thead>
 <tr>
 <th>文件</th>
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>D:\my-blog\technical\source\_data\body-end.swig</code></td>
 <td>主注入点（Live2D widget + 鼠标拖尾 + 音量控制 + fetch 拦截）</td>
 </tr>
 <tr>
 <td><code>D:\my-blog\technical\source\js\live2d-config.json</code></td>
-<td>看板娘 tips&#x2F;对话配置</td>
+<td>看板娘 tips/对话配置</td>
 </tr>
 <tr>
 <td><code>D:\my-blog\technical\source\js\model_list.json</code></td>
@@ -409,7 +425,8 @@
 <td><code>D:\my-blog\technical\sagiri_segments\</code></td>
 <td>24 个分段音频 + metadata.json</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 
       </div>
       
@@ -471,7 +488,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Live2D-%E7%9C%8B%E6%9D%BF%E5%A8%98%E9%A1%B9%E7%9B%AE%E6%97%A5%E5%BF%97"><span class="nav-number">1.</span> <span class="nav-text">Live2D 看板娘项目日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">项目背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="nav-number">1.2.</span> <span class="nav-text">技术栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%90%E5%8A%9F%E7%9A%84%E9%83%A8%E5%88%86"><span class="nav-number">1.3.</span> <span class="nav-text">成功的部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%A4%8D%E5%A4%B1%E8%B4%A5%E7%9A%84%E9%83%A8%E5%88%86"><span class="nav-number">1.4.</span> <span class="nav-text">反复失败的部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E6%9E%B6%E6%9E%84"><span class="nav-number">1.5.</span> <span class="nav-text">当前架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E6%B3%95%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B9%E6%9C%AC%E7%9F%9B%E7%9B%BE"><span class="nav-number">1.6.</span> <span class="nav-text">无法解决的根本矛盾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%B2%E5%B0%9D%E8%AF%95%E8%BF%87%E3%80%81%E7%A1%AE%E8%AE%A4%E6%97%A0%E6%95%88%E7%9A%84%E6%96%B9%E6%A1%88"><span class="nav-number">1.7.</span> <span class="nav-text">已尝试过、确认无效的方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E6%96%87%E4%BB%B6%E6%B8%85%E5%8D%95"><span class="nav-number">1.8.</span> <span class="nav-text">关键文件清单</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Live2D 看板娘项目日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">项目背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="nav-number">1.2.</span> <span class="nav-text">技术栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%90%E5%8A%9F%E7%9A%84%E9%83%A8%E5%88%86"><span class="nav-number">1.3.</span> <span class="nav-text">成功的部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%A4%8D%E5%A4%B1%E8%B4%A5%E7%9A%84%E9%83%A8%E5%88%86"><span class="nav-number">1.4.</span> <span class="nav-text">反复失败的部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E6%9E%B6%E6%9E%84"><span class="nav-number">1.5.</span> <span class="nav-text">当前架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E6%B3%95%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B9%E6%9C%AC%E7%9F%9B%E7%9B%BE"><span class="nav-number">1.6.</span> <span class="nav-text">无法解决的根本矛盾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%B2%E5%B0%9D%E8%AF%95%E8%BF%87%E3%80%81%E7%A1%AE%E8%AE%A4%E6%97%A0%E6%95%88%E7%9A%84%E6%96%B9%E6%A1%88"><span class="nav-number">1.7.</span> <span class="nav-text">已尝试过、确认无效的方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E6%96%87%E4%BB%B6%E6%B8%85%E5%8D%95"><span class="nav-number">1.8.</span> <span class="nav-text">关键文件清单</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -487,7 +504,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -555,12 +572,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">13k</span>
+    <span title="站点总字数">15k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -680,6 +697,8 @@ window.addEventListener('pjax:success', () => {
 
 
     <div id="pjax">
+  
+
   
 
   

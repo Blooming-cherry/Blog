@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"adaydream.cn","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="Live2D 看板娘 — 代码审核日志审核时间: 2026-07-12项目路径: D:\my-blog\technical预览地址: http:&#x2F;&#x2F;127.0.0.1:8080（cd public &amp;&amp; python -m http.server 8080）  当前架构1234567live2d-widgets v1.0.1├─ cdnPath: yzs CDN（模型文件从 CDN">
+  <meta name="description" content="Live2D 看板娘 — 代码审核日志 审核时间: 2026-07-12 项目路径: D:\my-blog\technical 预览地址: http:&#x2F;&#x2F;127.0.0.1:8080（cd public &amp;&amp; python -m http.server 8080）  当前架构 1234567live2d-widgets v1.0.1├─ cdnPath: yzs CDN（模型文件从">
 <meta property="og:type" content="website">
 <meta property="og:title" content="2026-07-12-live2d-代码审核日志">
 <meta property="og:url" content="https://adaydream.cn/vibecoding/2026-07-12-live2d-%E4%BB%A3%E7%A0%81%E5%AE%A1%E6%A0%B8%E6%97%A5%E5%BF%97.html">
 <meta property="og:site_name" content="“松花酿酒，春水煎茶”">
-<meta property="og:description" content="Live2D 看板娘 — 代码审核日志审核时间: 2026-07-12项目路径: D:\my-blog\technical预览地址: http:&#x2F;&#x2F;127.0.0.1:8080（cd public &amp;&amp; python -m http.server 8080）  当前架构1234567live2d-widgets v1.0.1├─ cdnPath: yzs CDN（模型文件从 CDN">
+<meta property="og:description" content="Live2D 看板娘 — 代码审核日志 审核时间: 2026-07-12 项目路径: D:\my-blog\technical 预览地址: http:&#x2F;&#x2F;127.0.0.1:8080（cd public &amp;&amp; python -m http.server 8080）  当前架构 1234567live2d-widgets v1.0.1├─ cdnPath: yzs CDN（模型文件从">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-28T08:10:30.859Z">
+<meta property="article:modified_time" content="2026-08-03T03:19:47.863Z">
 <meta property="article:author" content="奶油苏打和冕型灯">
 <meta property="article:tag" content="技术, 学习, 记录">
 <meta name="twitter:card" content="summary">
@@ -214,32 +214,40 @@
       
       
       <div class="post-body">
-          <h1 id="Live2D-看板娘-—-代码审核日志"><a href="#Live2D-看板娘-—-代码审核日志" class="headerlink" title="Live2D 看板娘 — 代码审核日志"></a>Live2D 看板娘 — 代码审核日志</h1><p><strong>审核时间</strong>: 2026-07-12<br><strong>项目路径</strong>: <code>D:\my-blog\technical</code><br><strong>预览地址</strong>: <code>http://127.0.0.1:8080</code>（<code>cd public &amp;&amp; python -m http.server 8080</code>）</p>
+          <h1>Live2D 看板娘 — 代码审核日志</h1>
+<p><strong>审核时间</strong>: 2026-07-12<br>
+<strong>项目路径</strong>: <code>D:\my-blog\technical</code><br>
+<strong>预览地址</strong>: <code>http://127.0.0.1:8080</code>（<code>cd public &amp;&amp; python -m http.server 8080</code>）</p>
 <hr>
-<h2 id="当前架构"><a href="#当前架构" class="headerlink" title="当前架构"></a>当前架构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">live2d-widgets v1.0.1</span><br><span class="line">├─ cdnPath: yzs CDN（模型文件从 CDN 加载，语音路径解析正常）</span><br><span class="line">├─ model_list.json → fetch 拦截 → 只返回 [&quot;umaru&quot;, &quot;sagiri&quot;, &quot;chino&quot;]</span><br><span class="line">├─ sagiri/index.json → fetch 拦截 → 本地版本（含 B 站语音引用）</span><br><span class="line">├─ sagiri/voice/*.wav → fetch 拦截 → 本地文件（24 句）</span><br><span class="line">├─ umaru 语音 → CDN 直连（34 句原声）</span><br><span class="line">└─ chino → CDN 直连（无语音）</span><br></pre></td></tr></table></figure>
-
-<h2 id="注入文件"><a href="#注入文件" class="headerlink" title="注入文件"></a>注入文件</h2><p><code>source/_data/body-end.swig</code></p>
+<h2 id="当前架构">当前架构</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">live2d-widgets v1.0.1</span><br><span class="line">├─ cdnPath: yzs CDN（模型文件从 CDN 加载，语音路径解析正常）</span><br><span class="line">├─ model_list.json → fetch 拦截 → 只返回 [&quot;umaru&quot;, &quot;sagiri&quot;, &quot;chino&quot;]</span><br><span class="line">├─ sagiri/index.json → fetch 拦截 → 本地版本（含 B 站语音引用）</span><br><span class="line">├─ sagiri/voice/*.wav → fetch 拦截 → 本地文件（24 句）</span><br><span class="line">├─ umaru 语音 → CDN 直连（34 句原声）</span><br><span class="line">└─ chino → CDN 直连（无语音）</span><br></pre></td></tr></table></figure>
+<h2 id="注入文件">注入文件</h2>
+<p><code>source/_data/body-end.swig</code></p>
 <hr>
-<h2 id="各脚本段审核"><a href="#各脚本段审核" class="headerlink" title="各脚本段审核"></a>各脚本段审核</h2><h3 id="段一：fetch-拦截-console-抑制（行-327-373）-✅"><a href="#段一：fetch-拦截-console-抑制（行-327-373）-✅" class="headerlink" title="段一：fetch 拦截 + console 抑制（行 327-373） ✅"></a>段一：fetch 拦截 + console 抑制（行 327-373） ✅</h3><ul>
-<li><code>console.warn</code>&#x2F;<code>console.error</code> 覆写，过滤 <code>hit_areas</code> &#x2F; <code>D_REF</code> &#x2F; <code>_$NP</code> 关键词</li>
+<h2 id="各脚本段审核">各脚本段审核</h2>
+<h3 id="段一：fetch-拦截-console-抑制（行-327-373）-✅">段一：fetch 拦截 + console 抑制（行 327-373） ✅</h3>
+<ul>
+<li><code>console.warn</code>/<code>console.error</code> 覆写，过滤 <code>hit_areas</code> / <code>D_REF</code> / <code>_$NP</code> 关键词</li>
 <li><code>model_list.json</code> 请求拦截，返回三人列表</li>
 <li><code>sagiri/index.json</code> 请求拦截，重定向到本地 <code>/js/model/sagiri/index.json</code></li>
 <li><code>sagiri/voice/*.wav</code> 请求拦截，重定向 CDN 路径到本地路径</li>
 <li><strong>结论：逻辑正确，无 bug</strong></li>
 </ul>
-<p><strong>小建议</strong>：<code>Array.prototype.join.call(arguments, &#39; &#39;)</code> 在 console 传入对象参数时会丢失信息，可改进但不影响功能。</p>
-<h3 id="段二：Audio-音量-冷却-模型隔离（行-376-445）-✅"><a href="#段二：Audio-音量-冷却-模型隔离（行-376-445）-✅" class="headerlink" title="段二：Audio 音量 + 冷却 + 模型隔离（行 376-445） ✅"></a>段二：Audio 音量 + 冷却 + 模型隔离（行 376-445） ✅</h3><ul>
+<p><strong>小建议</strong>：<code>Array.prototype.join.call(arguments, ' ')</code> 在 console 传入对象参数时会丢失信息，可改进但不影响功能。</p>
+<h3 id="段二：Audio-音量-冷却-模型隔离（行-376-445）-✅">段二：Audio 音量 + 冷却 + 模型隔离（行 376-445） ✅</h3>
+<ul>
 <li><code>window.__lv2AudioHooked</code> 防 PJAX 重复覆写</li>
 <li><code>modelOf(url)</code> 根据 URL 中的模型名判断归属</li>
 <li><code>stopOthers(model)</code> 切换模型时暂停并重置上一个模型的 Audio</li>
 <li><code>play()</code> 覆写实现 7 秒冷却（每个模型独立计时）</li>
-<li><code>ended</code> &#x2F; <code>pause</code> 事件清理 <code>liveAudios</code> 跟踪数组</li>
+<li><code>ended</code> / <code>pause</code> 事件清理 <code>liveAudios</code> 跟踪数组</li>
 <li><strong>结论：语音串扰、重复触发、7s 冷却均已解决</strong></li>
 </ul>
 <p><strong>确认</strong>：<code>modelOf</code> 用 <code>/umaru/</code> <code>/sagiri/</code> <code>/chino/</code> 匹配，CDN 和本地路径均兼容。</p>
-<h3 id="段三：错误抑制-initWidget（行-448-477）-⚠️"><a href="#段三：错误抑制-initWidget（行-448-477）-⚠️" class="headerlink" title="段三：错误抑制 + initWidget（行 448-477） ⚠️"></a>段三：错误抑制 + initWidget（行 448-477） ⚠️</h3><ul>
-<li><code>window.addEventListener(&#39;error&#39;, ...)</code> capture 阶段拦截 Cubism2 运行时异常</li>
-<li>过滤条件：<code>_$NP</code> &#x2F; <code>D_REF</code> &#x2F; <code>null</code> + 文件名 <code>live2d.min.js</code></li>
+<h3 id="段三：错误抑制-initWidget（行-448-477）-⚠️">段三：错误抑制 + initWidget（行 448-477） ⚠️</h3>
+<ul>
+<li><code>window.addEventListener('error', ...)</code> capture 阶段拦截 Cubism2 运行时异常</li>
+<li>过滤条件：<code>_$NP</code> / <code>D_REF</code> / <code>null</code> + 文件名 <code>live2d.min.js</code></li>
 <li><code>initWidget()</code> 加载看板娘，<code>cdnPath</code> 指向 yzs CDN</li>
 <li><strong>结论：功能有效，但有一个优先级隐患</strong></li>
 </ul>
@@ -248,12 +256,14 @@
 <p><code>&amp;&amp;</code> 优先级高于 <code>||</code>，当前等价于：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(m 包含 &#x27;_$NP&#x27;) → 拦截</span><br><span class="line">(m 包含 &#x27;D_REF&#x27;) → 拦截  </span><br><span class="line">(m 包含 &#x27;null&#x27; 且文件名是 live2d.min.js) → 拦截</span><br></pre></td></tr></table></figure>
 <p><strong>实际上能拦住 hitTest 报错</strong>（消息同时含 <code>null</code> 和 <code>hitTest</code>），但建议加括号或直接加上 <code>hitTest</code> 关键词。</p>
-<h3 id="段四：鼠标拖尾（行-479-483）-⚠️-微小瑕疵"><a href="#段四：鼠标拖尾（行-479-483）-⚠️-微小瑕疵" class="headerlink" title="段四：鼠标拖尾（行 479-483） ⚠️ 微小瑕疵"></a>段四：鼠标拖尾（行 479-483） ⚠️ 微小瑕疵</h3><ul>
+<h3 id="段四：鼠标拖尾（行-479-483）-⚠️-微小瑕疵">段四：鼠标拖尾（行 479-483） ⚠️ 微小瑕疵</h3>
+<ul>
 <li>第 479 行和 481 行有重复的 <code>&lt;!-- 鼠标拖尾粒子 --&gt;</code> 注释</li>
 <li>不影响功能，删一个即可</li>
 </ul>
 <hr>
-<h2 id="解决清单"><a href="#解决清单" class="headerlink" title="解决清单"></a>解决清单</h2><table>
+<h2 id="解决清单">解决清单</h2>
+<table>
 <thead>
 <tr>
 <th>问题</th>
@@ -261,7 +271,8 @@
 <th>方案</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>语音串扰（小埋→纱雾）</td>
 <td>✅ 已解决</td>
 <td><code>stopOthers()</code> 切换模型时静音</td>
@@ -301,10 +312,11 @@
 <td>✅ 已解决</td>
 <td><code>#waifu { transform: scale(0.42) }</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
-<h2 id="启动命令"><a href="#启动命令" class="headerlink" title="启动命令"></a>启动命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重新生成</span></span><br><span class="line"><span class="built_in">cd</span> D:\my<span class="literal">-blog</span>\technical</span><br><span class="line">npx hexo generate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动预览</span></span><br><span class="line"><span class="built_in">cd</span> public</span><br><span class="line">python <span class="literal">-m</span> http.server <span class="number">8080</span></span><br></pre></td></tr></table></figure>
-
+<h2 id="启动命令">启动命令</h2>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重新生成</span></span><br><span class="line"><span class="built_in">cd</span> D:\my<span class="literal">-blog</span>\technical</span><br><span class="line">npx hexo generate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动预览</span></span><br><span class="line"><span class="built_in">cd</span> public</span><br><span class="line">python <span class="literal">-m</span> http.server <span class="number">8080</span></span><br></pre></td></tr></table></figure>
 <p>然后浏览器打开 <code>http://127.0.0.1:8080</code></p>
 
       </div>
@@ -367,7 +379,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Live2D-%E7%9C%8B%E6%9D%BF%E5%A8%98-%E2%80%94-%E4%BB%A3%E7%A0%81%E5%AE%A1%E6%A0%B8%E6%97%A5%E5%BF%97"><span class="nav-number">1.</span> <span class="nav-text">Live2D 看板娘 — 代码审核日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">当前架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%85%A5%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">注入文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E8%84%9A%E6%9C%AC%E6%AE%B5%E5%AE%A1%E6%A0%B8"><span class="nav-number">1.3.</span> <span class="nav-text">各脚本段审核</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E4%B8%80%EF%BC%9Afetch-%E6%8B%A6%E6%88%AA-console-%E6%8A%91%E5%88%B6%EF%BC%88%E8%A1%8C-327-373%EF%BC%89-%E2%9C%85"><span class="nav-number">1.3.1.</span> <span class="nav-text">段一：fetch 拦截 + console 抑制（行 327-373） ✅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E4%BA%8C%EF%BC%9AAudio-%E9%9F%B3%E9%87%8F-%E5%86%B7%E5%8D%B4-%E6%A8%A1%E5%9E%8B%E9%9A%94%E7%A6%BB%EF%BC%88%E8%A1%8C-376-445%EF%BC%89-%E2%9C%85"><span class="nav-number">1.3.2.</span> <span class="nav-text">段二：Audio 音量 + 冷却 + 模型隔离（行 376-445） ✅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E4%B8%89%EF%BC%9A%E9%94%99%E8%AF%AF%E6%8A%91%E5%88%B6-initWidget%EF%BC%88%E8%A1%8C-448-477%EF%BC%89-%E2%9A%A0%EF%B8%8F"><span class="nav-number">1.3.3.</span> <span class="nav-text">段三：错误抑制 + initWidget（行 448-477） ⚠️</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E5%9B%9B%EF%BC%9A%E9%BC%A0%E6%A0%87%E6%8B%96%E5%B0%BE%EF%BC%88%E8%A1%8C-479-483%EF%BC%89-%E2%9A%A0%EF%B8%8F-%E5%BE%AE%E5%B0%8F%E7%91%95%E7%96%B5"><span class="nav-number">1.3.4.</span> <span class="nav-text">段四：鼠标拖尾（行 479-483） ⚠️ 微小瑕疵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%B8%85%E5%8D%95"><span class="nav-number">1.4.</span> <span class="nav-text">解决清单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.5.</span> <span class="nav-text">启动命令</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Live2D 看板娘 — 代码审核日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">当前架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%85%A5%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">注入文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E8%84%9A%E6%9C%AC%E6%AE%B5%E5%AE%A1%E6%A0%B8"><span class="nav-number">1.3.</span> <span class="nav-text">各脚本段审核</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E4%B8%80%EF%BC%9Afetch-%E6%8B%A6%E6%88%AA-console-%E6%8A%91%E5%88%B6%EF%BC%88%E8%A1%8C-327-373%EF%BC%89-%E2%9C%85"><span class="nav-number">1.3.1.</span> <span class="nav-text">段一：fetch 拦截 + console 抑制（行 327-373） ✅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E4%BA%8C%EF%BC%9AAudio-%E9%9F%B3%E9%87%8F-%E5%86%B7%E5%8D%B4-%E6%A8%A1%E5%9E%8B%E9%9A%94%E7%A6%BB%EF%BC%88%E8%A1%8C-376-445%EF%BC%89-%E2%9C%85"><span class="nav-number">1.3.2.</span> <span class="nav-text">段二：Audio 音量 + 冷却 + 模型隔离（行 376-445） ✅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E4%B8%89%EF%BC%9A%E9%94%99%E8%AF%AF%E6%8A%91%E5%88%B6-initWidget%EF%BC%88%E8%A1%8C-448-477%EF%BC%89-%E2%9A%A0%EF%B8%8F"><span class="nav-number">1.3.3.</span> <span class="nav-text">段三：错误抑制 + initWidget（行 448-477） ⚠️</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E5%9B%9B%EF%BC%9A%E9%BC%A0%E6%A0%87%E6%8B%96%E5%B0%BE%EF%BC%88%E8%A1%8C-479-483%EF%BC%89-%E2%9A%A0%EF%B8%8F-%E5%BE%AE%E5%B0%8F%E7%91%95%E7%96%B5"><span class="nav-number">1.3.4.</span> <span class="nav-text">段四：鼠标拖尾（行 479-483） ⚠️ 微小瑕疵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%B8%85%E5%8D%95"><span class="nav-number">1.4.</span> <span class="nav-text">解决清单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.5.</span> <span class="nav-text">启动命令</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -383,7 +395,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -451,12 +463,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">13k</span>
+    <span title="站点总字数">15k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -576,6 +588,8 @@ window.addEventListener('pjax:success', () => {
 
 
     <div id="pjax">
+  
+
   
 
   

@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"adaydream.cn","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="adaydream.cn 音乐盒链接修复日志时间： 2026年5月25日作者： Claude Code  一、问题发现用户反馈 adaydream.cn 网站上的音乐盒链接不稳定，经常无法播放。音乐盒是一个内嵌于 Hexo + NexT 主题博客中的「Mini Vinyl Player」（黑胶唱片风格播放器），曲库全部来自明日方舟官方音乐厂牌——塞壬唱片（Monster Siren）。 二、根因分">
+  <meta name="description" content="adaydream.cn 音乐盒链接修复日志 时间： 2026年5月25日 作者： Claude Code  一、问题发现 用户反馈 adaydream.cn 网站上的音乐盒链接不稳定，经常无法播放。音乐盒是一个内嵌于 Hexo + NexT 主题博客中的「Mini Vinyl Player」（黑胶唱片风格播放器），曲库全部来自明日方舟官方音乐厂牌——塞壬唱片（Monster Siren）。 二、">
 <meta property="og:type" content="website">
 <meta property="og:title" content="2026-07-12-adaydream-music-fix-log">
 <meta property="og:url" content="https://adaydream.cn/vibecoding/2026-07-12-adaydream-music-fix-log.html">
 <meta property="og:site_name" content="“松花酿酒，春水煎茶”">
-<meta property="og:description" content="adaydream.cn 音乐盒链接修复日志时间： 2026年5月25日作者： Claude Code  一、问题发现用户反馈 adaydream.cn 网站上的音乐盒链接不稳定，经常无法播放。音乐盒是一个内嵌于 Hexo + NexT 主题博客中的「Mini Vinyl Player」（黑胶唱片风格播放器），曲库全部来自明日方舟官方音乐厂牌——塞壬唱片（Monster Siren）。 二、根因分">
+<meta property="og:description" content="adaydream.cn 音乐盒链接修复日志 时间： 2026年5月25日 作者： Claude Code  一、问题发现 用户反馈 adaydream.cn 网站上的音乐盒链接不稳定，经常无法播放。音乐盒是一个内嵌于 Hexo + NexT 主题博客中的「Mini Vinyl Player」（黑胶唱片风格播放器），曲库全部来自明日方舟官方音乐厂牌——塞壬唱片（Monster Siren）。 二、">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-28T08:10:30.859Z">
+<meta property="article:modified_time" content="2026-08-03T03:19:47.862Z">
 <meta property="article:author" content="奶油苏打和冕型灯">
 <meta property="article:tag" content="技术, 学习, 记录">
 <meta name="twitter:card" content="summary">
@@ -214,23 +214,30 @@
       
       
       <div class="post-body">
-          <h1 id="adaydream-cn-音乐盒链接修复日志"><a href="#adaydream-cn-音乐盒链接修复日志" class="headerlink" title="adaydream.cn 音乐盒链接修复日志"></a>adaydream.cn 音乐盒链接修复日志</h1><p><strong>时间：</strong> 2026年5月25日<br><strong>作者：</strong> Claude Code</p>
+          <h1><a href="http://adaydream.cn">adaydream.cn</a> 音乐盒链接修复日志</h1>
+<p><strong>时间：</strong> 2026年5月25日<br>
+<strong>作者：</strong> Claude Code</p>
 <hr>
-<h2 id="一、问题发现"><a href="#一、问题发现" class="headerlink" title="一、问题发现"></a>一、问题发现</h2><p>用户反馈 adaydream.cn 网站上的音乐盒链接不稳定，经常无法播放。音乐盒是一个内嵌于 Hexo + NexT 主题博客中的「Mini Vinyl Player」（黑胶唱片风格播放器），曲库全部来自明日方舟官方音乐厂牌——塞壬唱片（Monster Siren）。</p>
-<h2 id="二、根因分析"><a href="#二、根因分析" class="headerlink" title="二、根因分析"></a>二、根因分析</h2><p>通过系统化调试流程，对网站进行了逐层排查：</p>
-<h3 id="2-1-信息收集"><a href="#2-1-信息收集" class="headerlink" title="2.1 信息收集"></a>2.1 信息收集</h3><p>首先抓取网站首页和 <code>/music/</code> 页面，确认了网站架构：Hexo 8.1.1 静态博客，NexT 7.8.0 主题，托管于 GitHub Pages，前端有一个自定义的黑胶唱片 Mini Player。播放器以硬编码 JavaScript 数组的形式内联在页面底部，包含 8 首歌曲的完整信息，其中音频 URL 均指向鹰角网络的 CDN 域名 <code>res01.hycdn.cn</code>。</p>
-<h3 id="2-2-关键发现"><a href="#2-2-关键发现" class="headerlink" title="2.2 关键发现"></a>2.2 关键发现</h3><p>对全部 8 个硬编码音频 URL 逐一发起 HTTP 请求测试，结果令人震惊——<strong>所有 8 个链接全部返回 HTTP 403 Forbidden</strong>，无一例外。与此同时，封面图片（托管于 <code>web.hycdn.cn</code>，URL 结构中无令牌）全部正常返回 HTTP 200。</p>
+<h2 id="一、问题发现">一、问题发现</h2>
+<p>用户反馈 <a href="http://adaydream.cn">adaydream.cn</a> 网站上的音乐盒链接不稳定，经常无法播放。音乐盒是一个内嵌于 Hexo + NexT 主题博客中的「Mini Vinyl Player」（黑胶唱片风格播放器），曲库全部来自明日方舟官方音乐厂牌——塞壬唱片（Monster Siren）。</p>
+<h2 id="二、根因分析">二、根因分析</h2>
+<p>通过系统化调试流程，对网站进行了逐层排查：</p>
+<h3 id="2-1-信息收集">2.1 信息收集</h3>
+<p>首先抓取网站首页和 <code>/music/</code> 页面，确认了网站架构：Hexo 8.1.1 静态博客，NexT 7.8.0 主题，托管于 GitHub Pages，前端有一个自定义的黑胶唱片 Mini Player。播放器以硬编码 JavaScript 数组的形式内联在页面底部，包含 8 首歌曲的完整信息，其中音频 URL 均指向鹰角网络的 CDN 域名 <code>res01.hycdn.cn</code>。</p>
+<h3 id="2-2-关键发现">2.2 关键发现</h3>
+<p>对全部 8 个硬编码音频 URL 逐一发起 HTTP 请求测试，结果令人震惊——<strong>所有 8 个链接全部返回 HTTP 403 Forbidden</strong>，无一例外。与此同时，封面图片（托管于 <code>web.hycdn.cn</code>，URL 结构中无令牌）全部正常返回 HTTP 200。</p>
 <p>进一步分析 URL 结构发现了问题所在：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">res01.hycdn.cn/&#123;32位hex令牌&#125;/&#123;8位hex代码&#125;/siren/audio/&#123;日期&#125;/&#123;文件ID&#125;.&#123;ext&#125;</span><br></pre></td></tr></table></figure>
-
 <p>URL 路径中包含一个 32 位的十六进制访问令牌（如 <code>8aad7b966f7a8069f07c094251c5a2eb</code>），这是 HyCDN 的防盗链鉴权机制。鹰角网络会周期性轮换这些令牌，旧的令牌直接失效。</p>
-<h3 id="2-3-验证假设"><a href="#2-3-验证假设" class="headerlink" title="2.3 验证假设"></a>2.3 验证假设</h3><p>通过探索 Monster Siren 官方站点，发现了其后台 API 端点 <code>/api/song/{cid}</code>。调用该 API 获取同一首「Sanctuary Inside」的数据，返回的 <code>sourceUrl</code> 中令牌和代码段已完全不同：</p>
+<h3 id="2-3-验证假设">2.3 验证假设</h3>
+<p>通过探索 Monster Siren 官方站点，发现了其后台 API 端点 <code>/api/song/{cid}</code>。调用该 API 获取同一首「Sanctuary Inside」的数据，返回的 <code>sourceUrl</code> 中令牌和代码段已完全不同：</p>
 <ul>
 <li><strong>硬编码（过期）：</strong> <code>8aad7b966f7a8069f07c094251c5a2eb / 6A12C018</code></li>
 <li><strong>API 实时获取（有效）：</strong> <code>594d336b295cdbab286d352474194077 / 6A147742</code></li>
 </ul>
 <p>替换为新鲜 URL 后测试，音频立即返回 HTTP 200。根因确认：<strong>硬编码的 CDN 令牌过期导致全部链接失效</strong>。</p>
-<h2 id="三、方案设计"><a href="#三、方案设计" class="headerlink" title="三、方案设计"></a>三、方案设计</h2><p>考虑到网站托管于 GitHub Pages（纯静态，无法运行服务端代码），需要引入外部 serverless 平台提供代理能力。评估了以下方案：</p>
+<h2 id="三、方案设计">三、方案设计</h2>
+<p>考虑到网站托管于 GitHub Pages（纯静态，无法运行服务端代码），需要引入外部 serverless 平台提供代理能力。评估了以下方案：</p>
 <table>
 <thead>
 <tr>
@@ -239,7 +246,8 @@
 <th>缺点</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>服务端代理</td>
 <td>一次部署永久生效，前端无痛</td>
 <td>需额外平台</td>
@@ -259,13 +267,16 @@
 <td>最稳定</td>
 <td>版权风险</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>最终选择了<strong>方案 A：服务端代理</strong>，具体架构为三层：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">浏览器 (adaydream.cn)</span><br><span class="line">  → Vercel Serverless Function (代理)</span><br><span class="line">    → Monster Siren API (/api/song/&#123;cid&#125;)</span><br><span class="line">      → 返回新鲜音频 URL</span><br></pre></td></tr></table></figure>
-
-<h2 id="四、实施过程"><a href="#四、实施过程" class="headerlink" title="四、实施过程"></a>四、实施过程</h2><h3 id="4-1-Vercel-代理部署"><a href="#4-1-Vercel-代理部署" class="headerlink" title="4.1 Vercel 代理部署"></a>4.1 Vercel 代理部署</h3><p>编写了一个轻量级 Vercel Serverless Function，位于 <code>/api/music-proxy.js</code>。该函数维护 8 首歌曲的元数据（名称、艺人、封面）和对应的 Monster Siren CID，每次被调用时并发请求 8 个 <code>/api/song/{cid}</code> 端点，聚合所有新鲜 URL 后以 JSON 格式返回。配置了 Edge 缓存 1 小时（<code>s-maxage=3600</code>）和过期后后台重新验证（<code>stale-while-revalidate=600</code>），兼顾性能和时效性。</p>
+<h2 id="四、实施过程">四、实施过程</h2>
+<h3 id="4-1-Vercel-代理部署">4.1 Vercel 代理部署</h3>
+<p>编写了一个轻量级 Vercel Serverless Function，位于 <code>/api/music-proxy.js</code>。该函数维护 8 首歌曲的元数据（名称、艺人、封面）和对应的 Monster Siren CID，每次被调用时并发请求 8 个 <code>/api/song/{cid}</code> 端点，聚合所有新鲜 URL 后以 JSON 格式返回。配置了 Edge 缓存 1 小时（<code>s-maxage=3600</code>）和过期后后台重新验证（<code>stale-while-revalidate=600</code>），兼顾性能和时效性。</p>
 <p>部署地址：<code>https://adaydream-proxy.vercel.app/api/music-proxy</code></p>
-<h3 id="4-2-前端改造"><a href="#4-2-前端改造" class="headerlink" title="4.2 前端改造"></a>4.2 前端改造</h3><p>在 Hexo 项目中新增了 <code>source/js/siren-url-loader.js</code>，负责在页面加载时从 Vercel 代理获取新鲜 URL，并以 30 分钟 TTL 缓存于 <code>localStorage</code>。核心机制：</p>
+<h3 id="4-2-前端改造">4.2 前端改造</h3>
+<p>在 Hexo 项目中新增了 <code>source/js/siren-url-loader.js</code>，负责在页面加载时从 Vercel 代理获取新鲜 URL，并以 30 分钟 TTL 缓存于 <code>localStorage</code>。核心机制：</p>
 <ul>
 <li><strong>同步缓存检查</strong>：先检查 <code>localStorage</code> 中是否有未过期的缓存，如有则立即可用（后续访问体验无延迟）</li>
 <li><strong>异步刷新</strong>：缓存过期或不存在时，发起 XHR 请求获取新鲜 URL，写入 <code>window.__sirenUrls</code></li>
@@ -278,14 +289,17 @@
 <li>新增 <code>resolveUrl()</code> 函数，优先使用代理返回的新鲜 URL，回退到硬编码 URL</li>
 <li>修改 <code>load()</code> 函数中的 <code>audio.src</code> 赋值，从直接使用 <code>t.url</code> 改为调用 <code>resolveUrl(t)</code></li>
 </ol>
-<h3 id="4-3-构建验证"><a href="#4-3-构建验证" class="headerlink" title="4.3 构建验证"></a>4.3 构建验证</h3><p>本地执行 <code>hexo generate</code> 构建成功，14 个文件生成完毕。验证了生成产物：</p>
+<h3 id="4-3-构建验证">4.3 构建验证</h3>
+<p>本地执行 <code>hexo generate</code> 构建成功，14 个文件生成完毕。验证了生成产物：</p>
 <ul>
 <li><code>siren-url-loader.js</code> 正确包含代理地址</li>
 <li><code>body-end.swig</code> 中的修改正确嵌入到生成的 HTML</li>
 <li>全部 8 首歌曲的 <code>cid</code> 字段正确注入</li>
 </ul>
-<h2 id="五、部署说明"><a href="#五、部署说明" class="headerlink" title="五、部署说明"></a>五、部署说明</h2><p>项目通过 GitHub Actions 自动部署。推送代码到 <code>main</code> 分支后，CI 工作流自动执行 <code>hexo generate</code>，并将 <code>public/</code> 目录部署至 GitHub Pages。用户只需执行 <code>git push</code> 即可完成上线。</p>
-<h2 id="六、遗留事项"><a href="#六、遗留事项" class="headerlink" title="六、遗留事项"></a>六、遗留事项</h2><ol>
+<h2 id="五、部署说明">五、部署说明</h2>
+<p>项目通过 GitHub Actions 自动部署。推送代码到 <code>main</code> 分支后，CI 工作流自动执行 <code>hexo generate</code>，并将 <code>public/</code> 目录部署至 GitHub Pages。用户只需执行 <code>git push</code> 即可完成上线。</p>
+<h2 id="六、遗留事项">六、遗留事项</h2>
+<ol>
 <li>Vercel 免费套餐每月 10 万次请求限制，对个人博客完全足够</li>
 <li>如需添加新歌，只需在 Vercel 函数的 <code>SONGS</code> 数组和 <code>body-end.swig</code> 的 <code>PL</code> 数组中同步添加即可</li>
 <li>Monster Siren API 的可用性依赖鹰角网络服务器，若其 API 变更需要同步更新代理代码</li>
@@ -351,7 +365,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#adaydream-cn-%E9%9F%B3%E4%B9%90%E7%9B%92%E9%93%BE%E6%8E%A5%E4%BF%AE%E5%A4%8D%E6%97%A5%E5%BF%97"><span class="nav-number">1.</span> <span class="nav-text">adaydream.cn 音乐盒链接修复日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E5%8F%91%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">一、问题发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">二、根因分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 信息收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%85%B3%E9%94%AE%E5%8F%91%E7%8E%B0"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 关键发现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E9%AA%8C%E8%AF%81%E5%81%87%E8%AE%BE"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 验证假设</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.3.</span> <span class="nav-text">三、方案设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%9E%E6%96%BD%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">四、实施过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Vercel-%E4%BB%A3%E7%90%86%E9%83%A8%E7%BD%B2"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 Vercel 代理部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%89%8D%E7%AB%AF%E6%94%B9%E9%80%A0"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 前端改造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E6%9E%84%E5%BB%BA%E9%AA%8C%E8%AF%81"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 构建验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E"><span class="nav-number">1.5.</span> <span class="nav-text">五、部署说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%81%97%E7%95%99%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">六、遗留事项</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">adaydream.cn 音乐盒链接修复日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E5%8F%91%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">一、问题发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B9%E5%9B%A0%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">二、根因分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 信息收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%85%B3%E9%94%AE%E5%8F%91%E7%8E%B0"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 关键发现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E9%AA%8C%E8%AF%81%E5%81%87%E8%AE%BE"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 验证假设</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.3.</span> <span class="nav-text">三、方案设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%9E%E6%96%BD%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">四、实施过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Vercel-%E4%BB%A3%E7%90%86%E9%83%A8%E7%BD%B2"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 Vercel 代理部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%89%8D%E7%AB%AF%E6%94%B9%E9%80%A0"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 前端改造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E6%9E%84%E5%BB%BA%E9%AA%8C%E8%AF%81"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 构建验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E"><span class="nav-number">1.5.</span> <span class="nav-text">五、部署说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%81%97%E7%95%99%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">六、遗留事项</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -367,7 +381,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -435,12 +449,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">13k</span>
+    <span title="站点总字数">15k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -560,6 +574,8 @@ window.addEventListener('pjax:success', () => {
 
 
     <div id="pjax">
+  
+
   
 
   

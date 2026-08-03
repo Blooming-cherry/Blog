@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"adaydream.cn","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="Hexo 博客部署日志：从本地到自动部署 目标：将 Hexo 博客从本地 D:&#x2F;&#x2F;my-blog&#x2F;my-blog 部署到阿里云服务器，并通过 GitHub Actions 实现推送即自动部署。 涉及节点：  本地 Windows 开发机 GitHub (Blooming-cherry&#x2F;blooming-cherry.github.io) 阿里云轻量应用服务器（上海）47.116.103.176，宝">
+  <meta name="description" content="Hexo 博客部署日志：从本地到自动部署  目标：将 Hexo 博客从本地 D:&#x2F;&#x2F;my-blog&#x2F;my-blog 部署到阿里云服务器，并通过 GitHub Actions 实现推送即自动部署。 涉及节点：  本地 Windows 开发机 GitHub (Blooming-cherry&#x2F;blooming-cherry.github.io) 阿里云轻量应用服务器（上海）47.116.103.176，">
 <meta property="og:type" content="website">
 <meta property="og:title" content="2026-07-12-blog-deployment-log">
 <meta property="og:url" content="https://adaydream.cn/vibecoding/2026-07-12-blog-deployment-log.html">
 <meta property="og:site_name" content="“松花酿酒，春水煎茶”">
-<meta property="og:description" content="Hexo 博客部署日志：从本地到自动部署 目标：将 Hexo 博客从本地 D:&#x2F;&#x2F;my-blog&#x2F;my-blog 部署到阿里云服务器，并通过 GitHub Actions 实现推送即自动部署。 涉及节点：  本地 Windows 开发机 GitHub (Blooming-cherry&#x2F;blooming-cherry.github.io) 阿里云轻量应用服务器（上海）47.116.103.176，宝">
+<meta property="og:description" content="Hexo 博客部署日志：从本地到自动部署  目标：将 Hexo 博客从本地 D:&#x2F;&#x2F;my-blog&#x2F;my-blog 部署到阿里云服务器，并通过 GitHub Actions 实现推送即自动部署。 涉及节点：  本地 Windows 开发机 GitHub (Blooming-cherry&#x2F;blooming-cherry.github.io) 阿里云轻量应用服务器（上海）47.116.103.176，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-07-28T08:10:30.859Z">
+<meta property="article:modified_time" content="2026-08-03T03:19:47.862Z">
 <meta property="article:author" content="奶油苏打和冕型灯">
 <meta property="article:tag" content="技术, 学习, 记录">
 <meta name="twitter:card" content="summary">
@@ -214,7 +214,8 @@
       
       
       <div class="post-body">
-          <h1 id="Hexo-博客部署日志：从本地到自动部署"><a href="#Hexo-博客部署日志：从本地到自动部署" class="headerlink" title="Hexo 博客部署日志：从本地到自动部署"></a>Hexo 博客部署日志：从本地到自动部署</h1><blockquote>
+          <h1>Hexo 博客部署日志：从本地到自动部署</h1>
+<blockquote>
 <p><strong>目标</strong>：将 Hexo 博客从本地 <code>D://my-blog/my-blog</code> 部署到阿里云服务器，并通过 GitHub Actions 实现推送即自动部署。</p>
 <p><strong>涉及节点</strong>：</p>
 <ul>
@@ -225,20 +226,25 @@
 <p><strong>状态</strong>：🔄 大部分完成 — GitHub Actions 自动部署已跑通（GitHub Pages + 阿里云服务器双部署）；待完成：宝塔面板 Nginx 站点、SSL 证书。</p>
 </blockquote>
 <hr>
-<h2 id="阶段一：本地开发环境（Windows）"><a href="#阶段一：本地开发环境（Windows）" class="headerlink" title="阶段一：本地开发环境（Windows）"></a>阶段一：本地开发环境（Windows）</h2><h3 id="1-1-项目初始化-✅"><a href="#1-1-项目初始化-✅" class="headerlink" title="1.1 项目初始化 ✅"></a>1.1 项目初始化 ✅</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">路径：D://my-blog/my-blog</span><br><span class="line">框架：Hexo</span><br><span class="line">Git 仓库：[email]:Blooming-cherry/blooming-cherry.github.io.git</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-2-前置条件"><a href="#1-2-前置条件" class="headerlink" title="1.2 前置条件"></a>1.2 前置条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">✅ SSH 私钥已配置（本地）</span><br><span class="line">✅ sudo 可执行（服务器上）</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-3-待办：配置-GitHub-Actions-自动部署-⏳"><a href="#1-3-待办：配置-GitHub-Actions-自动部署-⏳" class="headerlink" title="1.3 待办：配置 GitHub Actions 自动部署 ⏳"></a>1.3 待办：配置 GitHub Actions 自动部署 ⏳</h3><p>用户请求配置 GitHub Actions 实现自动部署——此任务尚未开始。</p>
+<h2 id="阶段一：本地开发环境（Windows）">阶段一：本地开发环境（Windows）</h2>
+<h3 id="1-1-项目初始化-✅">1.1 项目初始化 ✅</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">路径：D://my-blog/my-blog</span><br><span class="line">框架：Hexo</span><br><span class="line">Git 仓库：[email]:Blooming-cherry/blooming-cherry.github.io.git</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-前置条件">1.2 前置条件</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">✅ SSH 私钥已配置（本地）</span><br><span class="line">✅ sudo 可执行（服务器上）</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-待办：配置-GitHub-Actions-自动部署-⏳">1.3 待办：配置 GitHub Actions 自动部署 ⏳</h3>
+<p>用户请求配置 GitHub Actions 实现自动部署——此任务尚未开始。</p>
 <hr>
-<h2 id="阶段二：服务器端部署（阿里云）"><a href="#阶段二：服务器端部署（阿里云）" class="headerlink" title="阶段二：服务器端部署（阿里云）"></a>阶段二：服务器端部署（阿里云）</h2><h3 id="2-1-服务器基本信息"><a href="#2-1-服务器基本信息" class="headerlink" title="2.1 服务器基本信息"></a>2.1 服务器基本信息</h3><table>
+<h2 id="阶段二：服务器端部署（阿里云）">阶段二：服务器端部署（阿里云）</h2>
+<h3 id="2-1-服务器基本信息">2.1 服务器基本信息</h3>
+<table>
 <thead>
 <tr>
 <th>项目</th>
 <th>值</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>主机名</td>
 <td><code>iZuf6a5zotmktmnd9w4deeZ</code></td>
 </tr>
@@ -274,17 +280,17 @@
 <td>Web 根目录</td>
 <td>计划 <code>/var/www/my-site</code>（未创建成功）</td>
 </tr>
-</tbody></table>
-<h3 id="2-2-Hexo-项目已在服务器上"><a href="#2-2-Hexo-项目已在服务器上" class="headerlink" title="2.2 Hexo 项目已在服务器上"></a>2.2 Hexo 项目已在服务器上</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/my-site</span><br><span class="line">npm install &amp;&amp; npx hexo generate</span><br><span class="line"><span class="comment"># ✅ 安装成功（470 个包）</span></span><br><span class="line"><span class="comment"># ✅ 生成成功：58 files generated in 1.54 s</span></span><br></pre></td></tr></table></figure>
-
+</tbody>
+</table>
+<h3 id="2-2-Hexo-项目已在服务器上">2.2 Hexo 项目已在服务器上</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/my-site</span><br><span class="line">npm install &amp;&amp; npx hexo generate</span><br><span class="line"><span class="comment"># ✅ 安装成功（470 个包）</span></span><br><span class="line"><span class="comment"># ✅ 生成成功：58 files generated in 1.54 s</span></span><br></pre></td></tr></table></figure>
 <p><strong>🔴 问题 2.2.1：<code>public/</code> 目录消失</strong></p>
 <p><strong>现象</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> ~/my-site/public/ 2&gt;/dev/null</span><br><span class="line"><span class="comment"># 输出：没有public目录</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>详情</strong>：</p>
 <ul>
 <li><code>hexo generate</code> 输出显示已成功生成了 58 个文件（包括 <code>index.html</code>、<code>archives/index.html</code>、各类标签页等）</li>
-<li>但随后 <code>ls ~/my-site/public/</code> 返回”没有public目录”</li>
+<li>但随后 <code>ls ~/my-site/public/</code> 返回&quot;没有public目录&quot;</li>
 <li>列出 <code>~/my-site</code> 根目录内容时也没有 <code>public/</code> 子目录</li>
 </ul>
 <p><strong>可能原因</strong>：</p>
@@ -295,37 +301,34 @@
 </ul>
 <p><strong>状态</strong>：⚠️ 待排查</p>
 <hr>
-<h3 id="2-3-Nginx-站点配置"><a href="#2-3-Nginx-站点配置" class="headerlink" title="2.3 Nginx 站点配置"></a>2.3 Nginx 站点配置</h3><p><strong>🔴 问题 2.3.1：Nginx 没有站点专属虚拟主机配置</strong></p>
+<h3 id="2-3-Nginx-站点配置">2.3 Nginx 站点配置</h3>
+<p><strong>🔴 问题 2.3.1：Nginx 没有站点专属虚拟主机配置</strong></p>
 <p><strong>现象</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">cat</span> /www/server/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure>
-
 <p>Nginx 主配置中 <code>http</code> 块内只有 phpmyadmin 的 server 块：</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">888</span>;</span><br><span class="line">    <span class="attribute">server_name</span> phpmyadmin;</span><br><span class="line">    <span class="attribute">root</span>  /www/server/phpmyadmin;</span><br><span class="line">    <span class="attribute">allow</span> <span class="number">127.0.0.1</span>;</span><br><span class="line">    <span class="attribute">allow</span> ::<span class="number">1</span>;</span><br><span class="line">    <span class="attribute">deny</span> all;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="attribute">include</span> /www/server/panel/vhost/nginx/<span class="regexp">*.conf</span>;</span><br></pre></td></tr></table></figure>
-
 <p>末尾 <code>include</code> 会加载 vhost 目录下的 <code>.conf</code> 文件，但该目录下没有任何站点配置：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">ls</span> /www/server/panel/vhost/nginx/</span><br><span class="line"><span class="comment"># 输出：</span></span><br><span class="line"><span class="comment"># 0.site_total_log_format.conf</span></span><br><span class="line"><span class="comment"># 0.websocket.conf</span></span><br><span class="line"><span class="comment"># phpfpm_status.conf</span></span><br><span class="line"><span class="comment"># tcp</span></span><br><span class="line"><span class="comment"># waf2monitor_data.conf</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>结论</strong>：没有为博客站点创建 Nginx vhost 配置文件。这是导致下文 <code>47.116.103.176 关闭了连接</code> 错误的根因——Nginx 根本不知道该把博客域名指向哪个目录。</p>
 <p><strong>状态</strong>：⚠️ 需要在宝塔面板中创建网站，或手动编写 vhost .conf 文件。</p>
 <hr>
-<h3 id="2-4-站点文件部署"><a href="#2-4-站点文件部署" class="headerlink" title="2.4 站点文件部署"></a>2.4 站点文件部署</h3><p><strong>🔴 问题 2.4.1：<code>/var/www/my-site</code> 目录不存在且无创建权限</strong></p>
+<h3 id="2-4-站点文件部署">2.4 站点文件部署</h3>
+<p><strong>🔴 问题 2.4.1：<code>/var/www/my-site</code> 目录不存在且无创建权限</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /var/www/my-site</span><br><span class="line"><span class="comment"># Permission denied</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">ls</span> /var/www/my-site</span><br><span class="line"><span class="comment"># No such file or directory</span></span><br></pre></td></tr></table></figure>
-
 <p><code>admin</code> 用户对 <code>/var/www/</code> 没有写入权限，需要用 <code>sudo</code>。</p>
 <hr>
 <p><strong>🔴 问题 2.4.2：<code>sudo cp</code> 时找不到源文件</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">mkdir</span> -p /var/www/my-site    <span class="comment"># ✅ 成功</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> -r ~/my-site/public/* /var/www/my-site/</span><br><span class="line"><span class="comment"># cp: cannot stat &#x27;/root/my-site/public/*&#x27;: No such file or directory</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>根因</strong>：<code>sudo</code> 执行时 <code>~</code> 被解析为 <code>/root</code>（root 用户的主目录），而不是 <code>/home/admin</code>。Hexo 项目在 <code>/home/admin/my-site/</code>，但 root 用户下 <code>/root/my-site/</code> 并不存在。</p>
 <p>加上之前的 <code>public/</code> 目录问题，这个命令无论如何都会失败。</p>
 <p><strong>状态</strong>：⚠️ 待解决目录问题和权限问题。</p>
 <hr>
-<h2 id="阶段三：Git-GitHub-集成"><a href="#阶段三：Git-GitHub-集成" class="headerlink" title="阶段三：Git &#x2F; GitHub 集成"></a>阶段三：Git &#x2F; GitHub 集成</h2><h3 id="3-1-Git-仓库克隆"><a href="#3-1-Git-仓库克隆" class="headerlink" title="3.1 Git 仓库克隆"></a>3.1 Git 仓库克隆</h3><p><strong>🔴 问题 3.1.1：SSH 公钥认证失败</strong></p>
+<h2 id="阶段三：Git-GitHub-集成">阶段三：Git / GitHub 集成</h2>
+<h3 id="3-1-Git-仓库克隆">3.1 Git 仓库克隆</h3>
+<p><strong>🔴 问题 3.1.1：SSH 公钥认证失败</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> [email]:Blooming-cherry/blooming-cherry.github.io.git ~/my-site</span><br></pre></td></tr></table></figure>
-
 <p><strong>输出</strong>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host &#x27;github.com (20.205.243.166)&#x27; can&#x27;t be established.</span><br><span class="line">ECDSA key fingerprint is SHA256:p2QAMXNIC1TJYWeIOttrVc98/R1BUFWu3/LiyKgUfQM.</span><br><span class="line">Are you sure you want to continue connecting (yes/no/[fingerprint])? yes</span><br><span class="line">Warning: Permanently added &#x27;github.com,20.205.243.166&#x27; (ECDSA) to the list of known hosts.</span><br><span class="line">[email]: Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br></pre></td></tr></table></figure>
-
 <p><strong>详情</strong>：</p>
 <ul>
 <li>首次连接 GitHub，ECDSA host key 已添加到 <code>known_hosts</code> ✅</li>
@@ -333,11 +336,10 @@
 </ul>
 <p><strong>根因排查过程</strong>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># admin 用户有部署密钥</span></span><br><span class="line"><span class="comment"># 尝试复制密钥到 root（需要的 target 位置）</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /root/.ssh                                    <span class="comment"># Permission denied</span></span><br><span class="line"><span class="built_in">cp</span> /home/admin/.ssh/github-deploy /root/.ssh/          <span class="comment"># Permission denied</span></span><br><span class="line"><span class="built_in">cp</span> /home/admin/.ssh/config /root/.ssh/                 <span class="comment"># Permission denied</span></span><br><span class="line"><span class="built_in">chmod</span> 700 /root/.ssh                                    <span class="comment"># Permission denied</span></span><br><span class="line"><span class="built_in">chmod</span> 600 /root/.ssh/github-deploy                      <span class="comment"># Permission denied</span></span><br><span class="line"><span class="built_in">chmod</span> 600 /root/.ssh/config                             <span class="comment"># Permission denied</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>根因分析</strong>：</p>
 <ul>
 <li><code>admin</code> 用户没有权限访问 <code>/root/</code> 及其子目录</li>
-<li>Git&#x2F;SSH 操作应该是用 <code>admin</code> 用户执行的，但 SSH 可能尝试在 <code>/root/.ssh/</code> 查找密钥（取决于配置）</li>
+<li>Git/SSH 操作应该是用 <code>admin</code> 用户执行的，但 SSH 可能尝试在 <code>/root/.ssh/</code> 查找密钥（取决于配置）</li>
 <li>或者密钥文件 <code>github-deploy</code> 未添加到 GitHub 仓库的 Deploy Keys 中</li>
 <li>或者 SSH config 未正确配置 <code>IdentityFile</code> 指向 <code>/home/admin/.ssh/github-deploy</code></li>
 </ul>
@@ -349,17 +351,21 @@
 </ol>
 <p><strong>状态</strong>：⚠️ 待解决</p>
 <hr>
-<h3 id="3-2-HTTPS-访问问题"><a href="#3-2-HTTPS-访问问题" class="headerlink" title="3.2 HTTPS 访问问题"></a>3.2 HTTPS 访问问题</h3><p><strong>🔴 问题 3.2.1：使用 HTTPS 无法访问</strong></p>
-<p>用户在本地可能遇到 HTTPS 访问问题（回溯中提到”为什么 https 就不能访问”）。</p>
+<h3 id="3-2-HTTPS-访问问题">3.2 HTTPS 访问问题</h3>
+<p><strong>🔴 问题 3.2.1：使用 HTTPS 无法访问</strong></p>
+<p>用户在本地可能遇到 HTTPS 访问问题（回溯中提到&quot;为什么 https 就不能访问&quot;）。</p>
 <p><strong>大概率原因</strong>：Nginx 没有配置 SSL 证书，只监听了 80 端口（HTTP），443 端口（HTTPS）没有相应的 server 块。</p>
 <p><strong>状态</strong>：⚠️ Nginx 站点配置完成后需同步配置 SSL（可用宝塔面板一键 Let’s Encrypt）。</p>
 <hr>
-<h3 id="3-3-浏览器访问报错"><a href="#3-3-浏览器访问报错" class="headerlink" title="3.3 浏览器访问报错"></a>3.3 浏览器访问报错</h3><p><strong>🔴 问题 3.3.1：<code>47.116.103.176 关闭了连接</code></strong></p>
+<h3 id="3-3-浏览器访问报错">3.3 浏览器访问报错</h3>
+<p><strong>🔴 问题 3.3.1：<code>47.116.103.176 关闭了连接</code></strong></p>
 <p><strong>现象</strong>：浏览器访问时提示 <code>47.116.103.176 关闭了连接</code>。</p>
-<p><strong>根因</strong>：这是 2.3.1 的直接后果——Nginx 没有为该域名&#x2F;端口配置任何 server 块（因为 &#x2F;www&#x2F;server&#x2F;panel&#x2F;vhost&#x2F;nginx&#x2F; 下无站点 .conf 文件），无法处理该请求，TCP 连接被拒绝或立即关闭。</p>
+<p><strong>根因</strong>：这是 2.3.1 的直接后果——Nginx 没有为该域名/端口配置任何 server 块（因为 /www/server/panel/vhost/nginx/ 下无站点 .conf 文件），无法处理该请求，TCP 连接被拒绝或立即关闭。</p>
 <p><strong>状态</strong>：⚠️ 待 Nginx 站点配置完成后解决。</p>
 <hr>
-<h2 id="阶段四：DNS-域名解析"><a href="#阶段四：DNS-域名解析" class="headerlink" title="阶段四：DNS 域名解析"></a>阶段四：DNS 域名解析</h2><h3 id="4-1-阿里云控制台"><a href="#4-1-阿里云控制台" class="headerlink" title="4.1 阿里云控制台"></a>4.1 阿里云控制台</h3><p>用户询问：”是在 <code>https://swasnext.console.aliyun.com/servers/cn-shanghai/b3fbbe7fed054f218fb9179df9a8a92a/dashboard</code> 的域名选项中添加域名解析吗？”</p>
+<h2 id="阶段四：DNS-域名解析">阶段四：DNS 域名解析</h2>
+<h3 id="4-1-阿里云控制台">4.1 阿里云控制台</h3>
+<p>用户询问：“是在 <code>https://swasnext.console.aliyun.com/servers/cn-shanghai/b3fbbe7fed054f218fb9179df9a8a92a/dashboard</code> 的域名选项中添加域名解析吗？”</p>
 <p><strong>回答</strong>：这是两个不同层面的操作：</p>
 <table>
 <thead>
@@ -369,24 +375,28 @@
 <th>位置</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>DNS 解析（必做）</td>
-<td>添加 A&#x2F;AAAA 记录：域名 → <code>47.116.103.176</code></td>
-<td>阿里云 DNS 控制台（域名服务），或宝塔面板的”域名”入口</td>
+<td>添加 A/AAAA 记录：域名 → <code>47.116.103.176</code></td>
+<td>阿里云 DNS 控制台（域名服务），或宝塔面板的&quot;域名&quot;入口</td>
 </tr>
 <tr>
 <td>Nginx 站点配置（必做）</td>
 <td>创建 vhost：告诉 Nginx 这个域名对应 <code>/var/www/my-site</code></td>
 <td>宝塔面板 → 网站 → 添加站点</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>两者缺一不可。</p>
 <p><strong>状态</strong>：⚠️ 待确认域名解析是否已配置，待创建 Nginx 站点。</p>
 <hr>
-<h2 id="阶段三：GitHub-Actions-自动部署（双目标）"><a href="#阶段三：GitHub-Actions-自动部署（双目标）" class="headerlink" title="阶段三：GitHub Actions 自动部署（双目标）"></a>阶段三：GitHub Actions 自动部署（双目标）</h2><blockquote>
+<h2 id="阶段三：GitHub-Actions-自动部署（双目标）">阶段三：GitHub Actions 自动部署（双目标）</h2>
+<blockquote>
 <p>✅ 本阶段已完成。2026-07-08 通过临时测试文件 <code>test-deploy-trigger.txt</code> 验证通过。</p>
 </blockquote>
-<h3 id="3-1-工作流文件"><a href="#3-1-工作流文件" class="headerlink" title="3.1 工作流文件"></a>3.1 工作流文件</h3><p><strong>文件</strong>：<code>.github/workflows/deploy.yml</code></p>
+<h3 id="3-1-工作流文件">3.1 工作流文件</h3>
+<p><strong>文件</strong>：<code>.github/workflows/deploy.yml</code></p>
 <p><strong>触发条件</strong>：<code>push</code> 到 <code>main</code> 分支</p>
 <p><strong>流程</strong>：</p>
 <table>
@@ -394,10 +404,11 @@
 <tr>
 <th>步骤</th>
 <th>操作</th>
-<th>工具&#x2F;动作</th>
+<th>工具/动作</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>拉取代码（含主题子模块）</td>
 <td><code>actions/checkout@v4</code></td>
@@ -427,12 +438,14 @@
 <td>SCP 到阿里云服务器</td>
 <td><code>appleboy/scp-action@v0</code> → <code>/var/www/my-site/</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <ul>
 <li>GitHub Pages 用 <code>$&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</code>（GitHub 内置，无需手动配置）</li>
 <li>服务器部署用 <code>$&#123;&#123; secrets.SSH_HOST &#125;&#125;</code>、<code>$&#123;&#123; secrets.SSH_USER &#125;&#125;</code>、<code>$&#123;&#123; secrets.SSH_KEY &#125;&#125;</code>（在仓库 Settings → Secrets → Actions 中手动配置）</li>
 </ul>
-<h3 id="3-2-GitHub-Secrets-配置"><a href="#3-2-GitHub-Secrets-配置" class="headerlink" title="3.2 GitHub Secrets 配置"></a>3.2 GitHub Secrets 配置</h3><table>
+<h3 id="3-2-GitHub-Secrets-配置">3.2 GitHub Secrets 配置</h3>
+<table>
 <thead>
 <tr>
 <th>Secret</th>
@@ -440,7 +453,8 @@
 <th>用途</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>SSH_HOST</code></td>
 <td><code>47.116.103.176</code></td>
 <td>阿里云服务器 IP</td>
@@ -455,11 +469,13 @@
 <td><em>(SSH 私钥)</em></td>
 <td>用于 SCP 免密登录</td>
 </tr>
-</tbody></table>
-<h3 id="3-3-Hexo-本地配置"><a href="#3-3-Hexo-本地配置" class="headerlink" title="3.3 Hexo 本地配置"></a>3.3 Hexo 本地配置</h3><p><code>_config.yml</code> 中 <code>deploy</code> 部分已完全注释掉，避免本地 <code>hexo deploy</code> 与 Actions 冲突：</p>
+</tbody>
+</table>
+<h3 id="3-3-Hexo-本地配置">3.3 Hexo 本地配置</h3>
+<p><code>_config.yml</code> 中 <code>deploy</code> 部分已完全注释掉，避免本地 <code>hexo deploy</code> 与 Actions 冲突：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># deploy:</span></span><br><span class="line"><span class="comment">#   type: git</span></span><br><span class="line"><span class="comment">#   repo: https://github.com/Blooming-cherry/blooming-cherry.github.io.git</span></span><br><span class="line"><span class="comment">#   branch: gh-pages</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-4-验证记录"><a href="#3-4-验证记录" class="headerlink" title="3.4 验证记录"></a>3.4 验证记录</h3><table>
+<h3 id="3-4-验证记录">3.4 验证记录</h3>
+<table>
 <thead>
 <tr>
 <th>日期</th>
@@ -467,7 +483,8 @@
 <th>结果</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>2026-07-08</td>
 <td>推送测试文件 <code>test-deploy-trigger.txt</code> → 触发 Deploy Hexo Blog #29</td>
 <td>✅ 24s 完成</td>
@@ -477,10 +494,12 @@
 <td>清理测试文件，推送 → 触发 #30</td>
 <td>✅ 正常</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
-<h2 id="⏳-待完成：宝塔面板-Nginx-站点配置"><a href="#⏳-待完成：宝塔面板-Nginx-站点配置" class="headerlink" title="⏳ 待完成：宝塔面板 Nginx 站点配置"></a>⏳ 待完成：宝塔面板 Nginx 站点配置</h2><blockquote>
-<p>GitHub Actions 已将 <code>public/</code> 文件 SCP 到 <code>/var/www/my-site/</code>，但 Nginx 还没有为博客域名创建虚拟主机配置——因此浏览器访问仍会报”连接被关闭”。</p>
+<h2 id="⏳-待完成：宝塔面板-Nginx-站点配置">⏳ 待完成：宝塔面板 Nginx 站点配置</h2>
+<blockquote>
+<p>GitHub Actions 已将 <code>public/</code> 文件 SCP 到 <code>/var/www/my-site/</code>，但 Nginx 还没有为博客域名创建虚拟主机配置——因此浏览器访问仍会报&quot;连接被关闭&quot;。</p>
 </blockquote>
 <p><strong>需在宝塔面板操作</strong>：</p>
 <ol>
@@ -491,7 +510,8 @@
 <li>再点 SSL → 申请 Let’s Encrypt 免费证书</li>
 </ol>
 <hr>
-<h2 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h2><table>
+<h2 id="问题汇总">问题汇总</h2>
+<table>
 <thead>
 <tr>
 <th>编号</th>
@@ -501,7 +521,8 @@
 <th>状态</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>2.2.1</td>
 <td>服务器</td>
 <td>Hexo <code>public/</code> 目录不存在</td>
@@ -571,12 +592,14 @@
 <td>⏳</td>
 <td>✅ 已完成 — push to main → Hexo build → GitHub Pages + SCP 到服务器双部署</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <hr>
-<h2 id="当前进度"><a href="#当前进度" class="headerlink" title="当前进度"></a>当前进度</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">✅ 1. DNS 解析（adaydream.cn → 47.116.103.176）                ← @ 和 www A 记录均指向 47.116.103.176</span><br><span class="line">✅ 2. Hexo 配置（_config.yml deploy 已注释）                     ← 避免与 Actions 冲突</span><br><span class="line">✅ 3. GitHub Actions 双目标部署                                   ← push → build → GitHub Pages + SCP 到服务器</span><br><span class="line">✅ 4. GitHub Secrets（SSH_HOST/USER/KEY）                         ← SSH 连通，rsync 部署成功</span><br><span class="line">✅ 5. Nginx 站点配置（手动创建 vhost conf）                         ← 宝塔面板无法访问，手动完成</span><br><span class="line">✅ 6. SSL 证书（Let&#x27;s Encrypt / certbot）                          ← 已申请，自动续签</span><br><span class="line">⏳ 7. ICP 备案                                                    ← 阿里云拦截，备案后恢复</span><br></pre></td></tr></table></figure>
-
+<h2 id="当前进度">当前进度</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">✅ 1. DNS 解析（adaydream.cn → 47.116.103.176）                ← @ 和 www A 记录均指向 47.116.103.176</span><br><span class="line">✅ 2. Hexo 配置（_config.yml deploy 已注释）                     ← 避免与 Actions 冲突</span><br><span class="line">✅ 3. GitHub Actions 双目标部署                                   ← push → build → GitHub Pages + SCP 到服务器</span><br><span class="line">✅ 4. GitHub Secrets（SSH_HOST/USER/KEY）                         ← SSH 连通，rsync 部署成功</span><br><span class="line">✅ 5. Nginx 站点配置（手动创建 vhost conf）                         ← 宝塔面板无法访问，手动完成</span><br><span class="line">✅ 6. SSL 证书（Let&#x27;s Encrypt / certbot）                          ← 已申请，自动续签</span><br><span class="line">⏳ 7. ICP 备案                                                    ← 阿里云拦截，备案后恢复</span><br></pre></td></tr></table></figure>
 <p><strong>当前状态</strong>：技术部署全部完成，但因 ICP 备案缺失，域名 <code>adaydream.cn</code> 被阿里云边缘网络拦截。需通过阿里云提交首次 ICP 备案申请，审核通过后自动解封。</p>
-<h3 id="SSL-证书"><a href="#SSL-证书" class="headerlink" title="SSL 证书"></a>SSL 证书</h3><p>2026-07-09 通过 certbot 申请 Let’s Encrypt：</p>
+<h3 id="SSL-证书">SSL 证书</h3>
+<p>2026-07-09 通过 certbot 申请 Let’s Encrypt：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> certbot --nginx --nginx-server-root /www/server/nginx/conf -d adaydream.cn -d www.adaydream.cn</span><br></pre></td></tr></table></figure>
 <p>证书自动续签由 certbot timer 管理，无需手动操作。证书文件路径：<code>/etc/letsencrypt/live/adaydream.cn/</code>。</p>
 <hr>
@@ -584,10 +607,12 @@
 <p>📅 最终更新：2026-07-09</p>
 </blockquote>
 <hr>
-<h2 id="补充记录：Nginx-配置-rsync-排错"><a href="#补充记录：Nginx-配置-rsync-排错" class="headerlink" title="补充记录：Nginx 配置 + rsync 排错"></a>补充记录：Nginx 配置 + rsync 排错</h2><h3 id="Nginx-站点（手动创建）"><a href="#Nginx-站点（手动创建）" class="headerlink" title="Nginx 站点（手动创建）"></a>Nginx 站点（手动创建）</h3><p>因宝塔面板不可用，直接写配置：</p>
+<h2 id="补充记录：Nginx-配置-rsync-排错">补充记录：Nginx 配置 + rsync 排错</h2>
+<h3 id="Nginx-站点（手动创建）">Nginx 站点（手动创建）</h3>
+<p>因宝塔面板不可用，直接写配置：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">mkdir</span> -p /www/server/panel/vhost/nginx/</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">tee</span> /www/server/panel/vhost/nginx/adaydream.cn.conf &lt;&lt; <span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name adaydream.cn www.adaydream.cn;</span><br><span class="line">    root /var/www/my-site;</span><br><span class="line">    index index.html index.htm;</span><br><span class="line">    location / &#123; try_files <span class="variable">$uri</span> <span class="variable">$uri</span>/ =404; &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"><span class="built_in">sudo</span> nginx -t &amp;&amp; <span class="built_in">sudo</span> nginx -s reload</span><br></pre></td></tr></table></figure>
-
-<h3 id="rsync-部署排错（三次迭代）"><a href="#rsync-部署排错（三次迭代）" class="headerlink" title="rsync 部署排错（三次迭代）"></a>rsync 部署排错（三次迭代）</h3><table>
+<h3 id="rsync-部署排错（三次迭代）">rsync 部署排错（三次迭代）</h3>
+<table>
 <thead>
 <tr>
 <th>尝试</th>
@@ -595,7 +620,8 @@
 <th>结果</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td><code>appleboy/scp-action@v0</code></td>
 <td>❌ <code>@v0</code> 版本不存在，8s 静默失败</td>
@@ -610,33 +636,38 @@
 <td>原生 <code>rsync</code> 命令</td>
 <td>❌ <code>bash: rsync: command not found</code> — 服务器没装 rsync</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><strong>根因</strong>：阿里云 Rocky Linux 镜像未预装 rsync。<code>sudo dnf install rsync -y</code> 解决。</p>
 <p>最终 deploy.yml（第 36-41 行）使用原生 rsync：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">cloud</span> <span class="string">server</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    mkdir -p ~/.ssh</span></span><br><span class="line"><span class="string">    echo &quot;$&#123;&#123; secrets.SSH_KEY &#125;&#125;&quot; &gt; ~/.ssh/deploy_key</span></span><br><span class="line"><span class="string">    chmod 600 ~/.ssh/deploy_key</span></span><br><span class="line"><span class="string">    rsync -avz --delete -e &quot;ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key&quot; \</span></span><br><span class="line"><span class="string">      public/ $&#123;&#123; secrets.SSH_USER &#125;&#125;@$&#123;&#123; secrets.SSH_HOST &#125;&#125;:/var/www/my-site/</span></span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p>2026-07-09 #35 验证通过，26s 完成，服务器 <code>/var/www/my-site/</code> 文件为 Hexo 构建产物。</p>
 </blockquote>
 <hr>
-<h2 id="阶段五：ICP-备案缺失导致网站无法访问-🔴"><a href="#阶段五：ICP-备案缺失导致网站无法访问-🔴" class="headerlink" title="阶段五：ICP 备案缺失导致网站无法访问 🔴"></a>阶段五：ICP 备案缺失导致网站无法访问 🔴</h2><blockquote>
-<p><strong>日期</strong>：2026-07-09<br><strong>问题</strong>：用户反馈 adaydream.cn 在浏览器中无法连接（”连接已重置”）<br><strong>状态</strong>：⏳ 待 ICP 备案</p>
+<h2 id="阶段五：ICP-备案缺失导致网站无法访问-🔴">阶段五：ICP 备案缺失导致网站无法访问 🔴</h2>
+<blockquote>
+<p><strong>日期</strong>：2026-07-09<br>
+<strong>问题</strong>：用户反馈 <a href="http://adaydream.cn">adaydream.cn</a> 在浏览器中无法连接（“连接已重置”）<br>
+<strong>状态</strong>：⏳ 待 ICP 备案</p>
 </blockquote>
-<h3 id="5-1-问题现象"><a href="#5-1-问题现象" class="headerlink" title="5.1 问题现象"></a>5.1 问题现象</h3><p>用户在浏览器中访问 <code>https://adaydream.cn</code>，浏览器报”连接已重置”（ERR_CONNECTION_RESET），网站完全无法打开。此前（7月8日）部署完成后，通过 <code>47.116.103.176</code>（IP 直连）验证过服务器 Nginx 正常，但从未通过域名实际测试。</p>
-<h3 id="5-2-排查过程（逐层穿透）"><a href="#5-2-排查过程（逐层穿透）" class="headerlink" title="5.2 排查过程（逐层穿透）"></a>5.2 排查过程（逐层穿透）</h3><h4 id="第-1-步：验证服务器基础状态"><a href="#第-1-步：验证服务器基础状态" class="headerlink" title="第 1 步：验证服务器基础状态"></a>第 1 步：验证服务器基础状态</h4><p>首先确认服务器本身是否正常运行——排除”服务器挂了”的可能性：</p>
+<h3 id="5-1-问题现象">5.1 问题现象</h3>
+<p>用户在浏览器中访问 <code>https://adaydream.cn</code>，浏览器报&quot;连接已重置&quot;（ERR_CONNECTION_RESET），网站完全无法打开。此前（7月8日）部署完成后，通过 <code>47.116.103.176</code>（IP 直连）验证过服务器 Nginx 正常，但从未通过域名实际测试。</p>
+<h3 id="5-2-排查过程（逐层穿透）">5.2 排查过程（逐层穿透）</h3>
+<h4 id="第-1-步：验证服务器基础状态">第 1 步：验证服务器基础状态</h4>
+<p>首先确认服务器本身是否正常运行——排除&quot;服务器挂了&quot;的可能性：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -I http://47.116.103.176</span><br><span class="line"><span class="comment"># HTTP/1.1 200 OK, Server: nginx, Content-Length: 46173 ✅</span></span><br></pre></td></tr></table></figure>
-
 <p>服务器正常返回 200，内容是最新的 Hexo 构建产物。Nginx 服务正常、文件部署正常。</p>
-<h4 id="第-2-步：测试域名访问"><a href="#第-2-步：测试域名访问" class="headerlink" title="第 2 步：测试域名访问"></a>第 2 步：测试域名访问</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HTTP 到域名</span></span><br><span class="line">curl -I http://adaydream.cn</span><br><span class="line"><span class="comment"># HTTP/1.1 403 Forbidden, Server: Beaver ❌</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># HTTPS 到域名</span></span><br><span class="line">curl -I -k https://adaydream.cn</span><br><span class="line"><span class="comment"># curl: (35) SSL/TLS connection failed ❌  (TLS 握手被 RST)</span></span><br></pre></td></tr></table></figure>
-
+<h4 id="第-2-步：测试域名访问">第 2 步：测试域名访问</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HTTP 到域名</span></span><br><span class="line">curl -I http://adaydream.cn</span><br><span class="line"><span class="comment"># HTTP/1.1 403 Forbidden, Server: Beaver ❌</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># HTTPS 到域名</span></span><br><span class="line">curl -I -k https://adaydream.cn</span><br><span class="line"><span class="comment"># curl: (35) SSL/TLS connection failed ❌  (TLS 握手被 RST)</span></span><br></pre></td></tr></table></figure>
 <p><strong>关键发现</strong>：IP 直连正常，域名访问失败。HTTP 返回的 Server 头是 “Beaver” 而非 “nginx”——说明响应不是来自我们的 Nginx。</p>
-<h4 id="第-3-步：排除本地代理干扰"><a href="#第-3-步：排除本地代理干扰" class="headerlink" title="第 3 步：排除本地代理干扰"></a>第 3 步：排除本地代理干扰</h4><p>检查本地环境，发现 <strong>Clash Verge</strong> 正在运行（系统代理 <code>127.0.0.1:7897</code>，进程 <code>clash-verge.exe</code> + <code>verge-mihomo.exe</code>）。</p>
+<h4 id="第-3-步：排除本地代理干扰">第 3 步：排除本地代理干扰</h4>
+<p>检查本地环境，发现 <strong>Clash Verge</strong> 正在运行（系统代理 <code>127.0.0.1:7897</code>，进程 <code>clash-verge.exe</code> + <code>verge-mihomo.exe</code>）。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 停止 Clash Verge 后重测</span></span><br><span class="line">curl -I --noproxy <span class="string">&#x27;*&#x27;</span> http://adaydream.cn</span><br><span class="line"><span class="comment"># 仍然 403 Forbidden, Server: Beaver ❌</span></span><br></pre></td></tr></table></figure>
-
-<p>停止 Clash 后问题依旧。”Beaver” 不是本地代理，而是来自网络上游。</p>
-<h4 id="第-4-步：多-TLS-版本-多-SNI-交叉测试-🔍-关键突破"><a href="#第-4-步：多-TLS-版本-多-SNI-交叉测试-🔍-关键突破" class="headerlink" title="第 4 步：多 TLS 版本 + 多 SNI 交叉测试 🔍 关键突破"></a>第 4 步：多 TLS 版本 + 多 SNI 交叉测试 🔍 关键突破</h4><p>用一个 2×2 矩阵精确测试 TLS 行为：</p>
+<p>停止 Clash 后问题依旧。“Beaver” 不是本地代理，而是来自网络上游。</p>
+<h4 id="第-4-步：多-TLS-版本-多-SNI-交叉测试-🔍-关键突破">第 4 步：多 TLS 版本 + 多 SNI 交叉测试 🔍 关键突破</h4>
+<p>用一个 2×2 矩阵精确测试 TLS 行为：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 维度一：TLS 1.3 vs 1.2，固定 SNI=adaydream.cn</span></span><br><span class="line">openssl s_client -connect 47.116.103.176:443 -servername adaydream.cn</span><br><span class="line"><span class="comment"># → TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384 ✅ 成功！</span></span><br><span class="line"></span><br><span class="line">openssl s_client -connect 47.116.103.176:443 -servername adaydream.cn -tls1_2</span><br><span class="line"><span class="comment"># → Cipher: (NONE), read 0 bytes ❌ 失败！（读 0 字节，写了 212 字节后 RST）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 维度二：不同 SNI 值，固定 TLS 1.2</span></span><br><span class="line">openssl s_client -connect 47.116.103.176:443 -servername test.example.com -tls1_2</span><br><span class="line"><span class="comment"># → TLSv1.2, Cipher: ECDHE-RSA-AES256-GCM-SHA384 ✅ 成功！</span></span><br><span class="line"></span><br><span class="line">openssl s_client -connect 47.116.103.176:443 -tls1_2  <span class="comment"># 不发送 SNI</span></span><br><span class="line"><span class="comment"># → TLSv1.2, Cipher: ECDHE-RSA-AES256-GCM-SHA384 ✅ 成功！</span></span><br></pre></td></tr></table></figure>
-
 <table>
 <thead>
 <tr>
@@ -645,18 +676,19 @@
 <th>TLS 1.2</th>
 </tr>
 </thead>
-<tbody><tr>
-<td><strong>SNI&#x3D;adaydream.cn</strong></td>
+<tbody>
+<tr>
+<td><strong><a target="_blank" rel="noopener" href="http://SNI=adaydream.cn">SNI=adaydream.cn</a></strong></td>
 <td>✅ 通过</td>
 <td>❌ RST（0 bytes read）</td>
 </tr>
 <tr>
-<td><strong>SNI&#x3D;<a target="_blank" rel="noopener" href="http://www.adaydream.cn/">www.adaydream.cn</a></strong></td>
+<td><strong><a target="_blank" rel="noopener" href="http://SNI=www.adaydream.cn">SNI=www.adaydream.cn</a></strong></td>
 <td>✅ 通过</td>
 <td>❌ RST（0 bytes read）</td>
 </tr>
 <tr>
-<td><strong>SNI&#x3D;test.example.com</strong></td>
+<td><strong><a target="_blank" rel="noopener" href="http://SNI=test.example.com">SNI=test.example.com</a></strong></td>
 <td>✅ 通过</td>
 <td>✅ 通过</td>
 </tr>
@@ -666,40 +698,43 @@
 <td>✅ 通过</td>
 </tr>
 <tr>
-<td><strong>aliyun.com（对照组）</strong></td>
+<td><strong><a target="_blank" rel="noopener" href="http://aliyun.com">aliyun.com</a>（对照组）</strong></td>
 <td>✅ 通过</td>
 <td>✅ 通过</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><strong>结论：只有 <code>*.adaydream.cn</code> 的 SNI + TLS 1.2 组合被阻断。这说明有设备在解析 TLS ClientHello 中的 SNI 字段，且只针对特定域名。</strong></p>
-<h4 id="第-5-步：服务器端抓包验证"><a href="#第-5-步：服务器端抓包验证" class="headerlink" title="第 5 步：服务器端抓包验证"></a>第 5 步：服务器端抓包验证</h4><p>在服务器上运行 tcpdump，同时从外部发起失败请求：</p>
+<h4 id="第-5-步：服务器端抓包验证">第 5 步：服务器端抓包验证</h4>
+<p>在服务器上运行 tcpdump，同时从外部发起失败请求：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tcpdump -i any <span class="string">&#x27;port 443 and host 47.116.103.176&#x27;</span> -c 30 -nn</span><br><span class="line"><span class="comment"># 结果：0 packets captured  ← ClientHello 根本没到服务器！</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>TLS 1.2 ClientHello 在到达服务器之前就被网络中的某个设备拦截并丢弃了（RST 是那个设备伪造的，不是服务器发的）。</strong></p>
 <p>排除法确认 RST 来源：</p>
 <ul>
 <li>❌ 服务器防火墙：iptables 为空，FirewallD 未运行</li>
-<li>❌ 服务器 Nginx：服务器本地测试 TLS 1.2 + SNI&#x3D;adaydream.cn 完全正常</li>
+<li>❌ 服务器 Nginx：服务器本地测试 TLS 1.2 + <a target="_blank" rel="noopener" href="http://SNI=adaydream.cn">SNI=adaydream.cn</a> 完全正常</li>
 <li>❌ Clash Verge：停止后问题依旧</li>
 <li>✅ <strong>阿里云边缘网络</strong>：唯一剩下的变量</li>
 </ul>
-<h4 id="第-6-步：发现真相-🎯"><a href="#第-6-步：发现真相-🎯" class="headerlink" title="第 6 步：发现真相 🎯"></a>第 6 步：发现真相 🎯</h4><p>查看 HTTP 403 返回的完整 Body：</p>
+<h4 id="第-6-步：发现真相-🎯">第 6 步：发现真相 🎯</h4>
+<p>查看 HTTP 403 返回的完整 Body：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Non-compliance ICP Filing<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="variable language_">window</span>.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;mainFrame&quot;</span>).<span class="property">src</span> =</span></span><br><span class="line"><span class="language-javascript">    <span class="string">&quot;http://www.aliyun.com/beian/beian-block?id=00000000005508231438&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p><strong>根因确认：域名 <code>adaydream.cn</code> 未完成 ICP 备案。</strong></p>
-<h3 id="5-3-阿里云-ICP-备案拦截机制"><a href="#5-3-阿里云-ICP-备案拦截机制" class="headerlink" title="5.3 阿里云 ICP 备案拦截机制"></a>5.3 阿里云 ICP 备案拦截机制</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">用户浏览器 (adaydream.cn)</span><br><span class="line">  → DNS 解析 → 47.116.103.176</span><br><span class="line">  → 流量经过阿里云边缘网络</span><br><span class="line">  → 阿里云 DPI 检查域名 ICP 备案状态</span><br><span class="line">  → adaydream.cn 无备案记录 → 触发拦截</span><br><span class="line">      ├── HTTP (80端口)   → 返回 403 警告页 (Server: Beaver)</span><br><span class="line">      ├── HTTPS TLS 1.2   → 解析 SNI → 发现未备案 → 发送 TCP RST</span><br><span class="line">      └── HTTPS TLS 1.3   → DPI 对 TLS 1.3 SNI 解析不完整 → 偶尔通过</span><br></pre></td></tr></table></figure>
-
-<p><strong>为什么 TLS 1.3 能通过？</strong> TLS 1.3 的 ClientHello 中 SNI 扩展格式与 TLS 1.2 有差异。阿里云 DPI 系统的 TLS 解析模块对 TLS 1.3 的覆盖不完整，导致部分连接未被拦截。这解释了为什么 openssl 默认（TLS 1.3）能连接而 curl&#x2F;浏览器（可能先尝试 TLS 1.2）失败。</p>
-<h3 id="5-4-宝塔面板操作：添加站点"><a href="#5-4-宝塔面板操作：添加站点" class="headerlink" title="5.4 宝塔面板操作：添加站点"></a>5.4 宝塔面板操作：添加站点</h3><blockquote>
+<h3 id="5-3-阿里云-ICP-备案拦截机制">5.3 阿里云 ICP 备案拦截机制</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">用户浏览器 (adaydream.cn)</span><br><span class="line">  → DNS 解析 → 47.116.103.176</span><br><span class="line">  → 流量经过阿里云边缘网络</span><br><span class="line">  → 阿里云 DPI 检查域名 ICP 备案状态</span><br><span class="line">  → adaydream.cn 无备案记录 → 触发拦截</span><br><span class="line">      ├── HTTP (80端口)   → 返回 403 警告页 (Server: Beaver)</span><br><span class="line">      ├── HTTPS TLS 1.2   → 解析 SNI → 发现未备案 → 发送 TCP RST</span><br><span class="line">      └── HTTPS TLS 1.3   → DPI 对 TLS 1.3 SNI 解析不完整 → 偶尔通过</span><br></pre></td></tr></table></figure>
+<p><strong>为什么 TLS 1.3 能通过？</strong> TLS 1.3 的 ClientHello 中 SNI 扩展格式与 TLS 1.2 有差异。阿里云 DPI 系统的 TLS 解析模块对 TLS 1.3 的覆盖不完整，导致部分连接未被拦截。这解释了为什么 openssl 默认（TLS 1.3）能连接而 curl/浏览器（可能先尝试 TLS 1.2）失败。</p>
+<h3 id="5-4-宝塔面板操作：添加站点">5.4 宝塔面板操作：添加站点</h3>
+<blockquote>
 <p>本段记录 2026-07-09 通过宝塔面板完成 Nginx 站点创建的步骤。</p>
 </blockquote>
 <p><strong>宝塔面板 <code>http://47.116.103.176:8888</code> 无法访问</strong>（此前 M1 已记录）。所有配置通过 SSH 命令行手动完成。</p>
 <p>当前 Nginx 站点配置（已生效）：</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /www/server/panel/vhost/nginx/adaydream.cn.conf</span></span><br><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> adaydream.cn www.adaydream.cn;</span><br><span class="line">    <span class="attribute">return</span> <span class="number">301</span> https://<span class="variable">$host</span><span class="variable">$request_uri</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">server_name</span> adaydream.cn www.adaydream.cn;</span><br><span class="line">    <span class="attribute">root</span> /var/www/my-site;</span><br><span class="line">    <span class="attribute">index</span> index.html index.htm;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_certificate</span>     /etc/letsencrypt/live/adaydream.cn/fullchain.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/adaydream.cn/privkey.pem;</span><br><span class="line">    <span class="attribute">include</span> /etc/letsencrypt/options-ssl-nginx.conf;</span><br><span class="line">    <span class="attribute">ssl_dhparam</span> /etc/letsencrypt/ssl-dhparams.pem;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ =<span class="number">404</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>宝塔面板”添加站点”的本质</strong>：在 <code>/www/server/panel/vhost/nginx/</code> 下生成一个 <code>&lt;域名&gt;.conf</code> 文件。手动编写同样效果的 conf 文件等价于面板操作——区别只是面板收不到管理记录。</p>
-<h3 id="5-5-解决方案：ICP-备案"><a href="#5-5-解决方案：ICP-备案" class="headerlink" title="5.5 解决方案：ICP 备案"></a>5.5 解决方案：ICP 备案</h3><p>需要通过阿里云提交 ICP 备案申请。操作入口：<a target="_blank" rel="noopener" href="https://beian.aliyun.com/">阿里云备案系统</a>。</p>
-<h4 id="ICP-备案流程"><a href="#ICP-备案流程" class="headerlink" title="ICP 备案流程"></a>ICP 备案流程</h4><table>
+<p><strong>宝塔面板&quot;添加站点&quot;的本质</strong>：在 <code>/www/server/panel/vhost/nginx/</code> 下生成一个 <code>&lt;域名&gt;.conf</code> 文件。手动编写同样效果的 conf 文件等价于面板操作——区别只是面板收不到管理记录。</p>
+<h3 id="5-5-解决方案：ICP-备案">5.5 解决方案：ICP 备案</h3>
+<p>需要通过阿里云提交 ICP 备案申请。操作入口：<a target="_blank" rel="noopener" href="https://beian.aliyun.com/">阿里云备案系统</a>。</p>
+<h4 id="ICP-备案流程">ICP 备案流程</h4>
+<table>
 <thead>
 <tr>
 <th>步骤</th>
@@ -707,7 +742,8 @@
 <th>耗时</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1. 登录备案系统</td>
 <td>阿里云控制台 → 备案 → 开始备案</td>
 <td>—</td>
@@ -719,7 +755,7 @@
 </tr>
 <tr>
 <td>3. 填写网站信息</td>
-<td>域名 <code>adaydream.cn</code>、服务器 IP <code>47.116.103.176</code>、网站名称（如”ADayDream 博客”）、服务内容选”博客&#x2F;个人空间”</td>
+<td>域名 <code>adaydream.cn</code>、服务器 IP <code>47.116.103.176</code>、网站名称（如&quot;ADayDream 博客&quot;）、服务内容选&quot;博客/个人空间&quot;</td>
 <td>—</td>
 </tr>
 <tr>
@@ -742,11 +778,13 @@
 <td>获得 ICP 备案号，拦截自动解除</td>
 <td>—</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <blockquote>
 <p>⚠️ 备案期间域名无法访问是正常状态。备案成功后阿里云会自动解除拦截。</p>
 </blockquote>
-<h4 id="备案期间临时替代方案"><a href="#备案期间临时替代方案" class="headerlink" title="备案期间临时替代方案"></a>备案期间临时替代方案</h4><table>
+<h4 id="备案期间临时替代方案">备案期间临时替代方案</h4>
+<table>
 <thead>
 <tr>
 <th>方案</th>
@@ -754,7 +792,8 @@
 <th>备注</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>GitHub Pages</td>
 <td><code>https://blooming-cherry.github.io</code></td>
 <td>已有部署，可直接访问</td>
@@ -769,20 +808,25 @@
 <td>将 A 记录指向 GitHub Pages IP</td>
 <td>备案完成后切回阿里云</td>
 </tr>
-</tbody></table>
-<h3 id="5-6-备案成功后操作清单"><a href="#5-6-备案成功后操作清单" class="headerlink" title="5.6 备案成功后操作清单"></a>5.6 备案成功后操作清单</h3><ul>
-<li><input disabled="" type="checkbox"> 在网页底部添加 ICP 备案号（如 <code>浙ICP备XXXXXXXX号-1</code>）</li>
-<li><input disabled="" type="checkbox"> 备案号链接到 <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">工信部备案查询</a></li>
-<li><input disabled="" type="checkbox"> 在阿里云控制台提交公安联网备案（如当地要求）</li>
-<li><input disabled="" type="checkbox"> 验证 <code>https://adaydream.cn</code> 可正常访问（HTTP→HTTPS 跳转 + TLS 1.2&#x2F;1.3 双栈）</li>
+</tbody>
+</table>
+<h3 id="5-6-备案成功后操作清单">5.6 备案成功后操作清单</h3>
+<ul>
+<li>[ ] 在网页底部添加 ICP 备案号（如 <code>浙ICP备XXXXXXXX号-1</code>）</li>
+<li>[ ] 备案号链接到 <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">工信部备案查询</a></li>
+<li>[ ] 在阿里云控制台提交公安联网备案（如当地要求）</li>
+<li>[ ] 验证 <code>https://adaydream.cn</code> 可正常访问（HTTP→HTTPS 跳转 + TLS 1.2/1.3 双栈）</li>
 </ul>
 <hr>
 <blockquote>
-<p>📅 日志生成日期：2026-07-08<br>📅 最后更新：2026-07-09</p>
+<p>📅 日志生成日期：2026-07-08<br>
+📅 最后更新：2026-07-09</p>
 <p>📝 整理自回溯对话，按时间正序排列。</p>
 </blockquote>
 <hr>
-<h2 id="错误与反思"><a href="#错误与反思" class="headerlink" title="错误与反思"></a>错误与反思</h2><h3 id="一、技术操作错误"><a href="#一、技术操作错误" class="headerlink" title="一、技术操作错误"></a>一、技术操作错误</h3><table>
+<h2 id="错误与反思">错误与反思</h2>
+<h3 id="一、技术操作错误">一、技术操作错误</h3>
+<table>
 <thead>
 <tr>
 <th>编号</th>
@@ -792,17 +836,18 @@
 <th>教训</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>E1</strong></td>
 <td><code>appleboy/scp-action@v0</code> 不存在</td>
-<td>Actions 8 秒”成功”但文件未更新</td>
+<td>Actions 8 秒&quot;成功&quot;但文件未更新</td>
 <td><code>@v0</code> 不是该 action 的有效版本标签，GitHub Actions 解析失败后直接跳过</td>
 <td>使用第三方 action 前先查文档确认版本号，不要猜测</td>
 </tr>
 <tr>
 <td><strong>E2</strong></td>
 <td><code>burnett01/[email]</code> 静默失败</td>
-<td>24 秒”成功”但文件未更新</td>
+<td>24 秒&quot;成功&quot;但文件未更新</td>
 <td>该 action 内部参数格式与我们的配置不匹配，且没有输出有效错误信息</td>
 <td>第三方 action 出问题时优先改用原生命令，更透明可调试</td>
 </tr>
@@ -853,7 +898,7 @@
 <td>bash 感叹号历史展开</td>
 <td><code>echo &quot;&lt;h1&gt;Welcome!&lt;/h1&gt;&quot;</code> 报 <code>event not found</code></td>
 <td><code>!</code> 在双引号内触发 bash history expansion</td>
-<td>使用单引号 <code>&#39;...&#39;</code> 包裹含感叹号的字符串</td>
+<td>使用单引号 <code>'...'</code> 包裹含感叹号的字符串</td>
 </tr>
 <tr>
 <td><strong>E10</strong></td>
@@ -871,34 +916,36 @@
 </tr>
 <tr>
 <td><strong>E12</strong></td>
-<td>以为部署完成 &#x3D; 网站可访问</td>
-<td>浏览器访问 adaydream.cn 报”连接已重置”，但服务器 IP 直连正常，GitHub Actions 绿色</td>
+<td>以为部署完成 = 网站可访问</td>
+<td>浏览器访问 <a href="http://adaydream.cn">adaydream.cn</a> 报&quot;连接已重置&quot;，但服务器 IP 直连正常，GitHub Actions 绿色</td>
 <td>域名 DNS 指向阿里云服务器，而服务器在中国大陆，域名没有完成 ICP 备案</td>
-<td>中国大陆服务器 + 域名 &#x3D; 必须先 ICP 备案。部署到服务器 ≠ 网站上线，必须通过域名实际验证</td>
+<td>中国大陆服务器 + 域名 = 必须先 ICP 备案。部署到服务器 ≠ 网站上线，必须通过域名实际验证</td>
 </tr>
 <tr>
 <td><strong>E13</strong></td>
 <td>将 TLS 1.2 握手失败归因为服务器配置问题</td>
 <td>排查方向一度指向 Nginx SSL 配置、证书权限、OpenSSL 版本兼容等</td>
 <td>服务器本地 TLS 1.2 完全正常，RST 来自阿里云边缘网络的 ICP 拦截</td>
-<td>当”IP 直连正常但域名失败”时，优先考虑网络路径中是否有中间设备（WAF&#x2F;防火墙&#x2F;合规系统）在干预</td>
+<td>当&quot;IP 直连正常但域名失败&quot;时，优先考虑网络路径中是否有中间设备（WAF/防火墙/合规系统）在干预</td>
 </tr>
 <tr>
 <td><strong>E14</strong></td>
-<td>被”Beaver” Server 头误导</td>
+<td>被&quot;Beaver&quot; Server 头误导</td>
 <td>看到 <code>Server: Beaver</code> 以为服务器上有其他 Web 服务或代理</td>
 <td>“Beaver” 是阿里云 ICP 拦截系统的标识，不在我们的服务器上</td>
-<td>HTTP 响应中的 <code>Server</code> 头不一定来自目标服务器——中间设备可以替换&#x2F;注入响应内容</td>
+<td>HTTP 响应中的 <code>Server</code> 头不一定来自目标服务器——中间设备可以替换/注入响应内容</td>
 </tr>
 <tr>
 <td><strong>E15</strong></td>
 <td>未在部署完成后第一时间用域名验证</td>
 <td>7月8日 IP 直连测试通过后就认为部署完成了</td>
-<td>域名 DNS 已生效多日，但一致未通过 <code>curl -H &#39;Host:adaydream.cn&#39;</code> 或直接 curl 域名来验证</td>
+<td>域名 DNS 已生效多日，但一致未通过 <code>curl -H 'Host:adaydream.cn'</code> 或直接 curl 域名来验证</td>
 <td>部署完成的定义必须是<strong>通过最终访问方式（域名 + HTTPS）验证成功</strong>，仅 IP 测试不够</td>
 </tr>
-</tbody></table>
-<h3 id="二、概念性理解不足"><a href="#二、概念性理解不足" class="headerlink" title="二、概念性理解不足"></a>二、概念性理解不足</h3><table>
+</tbody>
+</table>
+<h3 id="二、概念性理解不足">二、概念性理解不足</h3>
+<table>
 <thead>
 <tr>
 <th>编号</th>
@@ -906,29 +953,30 @@
 <th>实际</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>M1</strong></td>
 <td>以为宝塔面板 Web 界面可以随时访问</td>
-<td>宝塔面板 <code>http://47.116.103.176:8888</code> 无法打开，原因未排查（防火墙&#x2F;服务状态），最终所有配置通过 SSH 命令行手动完成</td>
+<td>宝塔面板 <code>http://47.116.103.176:8888</code> 无法打开，原因未排查（防火墙/服务状态），最终所有配置通过 SSH 命令行手动完成</td>
 </tr>
 <tr>
 <td><strong>M2</strong></td>
-<td>以为 GitHub Actions 绿色 ✅ &#x3D; 部署成功</td>
+<td>以为 GitHub Actions 绿色 ✅ = 部署成功</td>
 <td>Actions 的绿色只表示 job exit code 为 0。我们连续三次误判：SCP action 版本不存在→静默失败→绿色；rsync action 参数不对→静默失败→绿色；原生 rsync 因服务器没装→连接断开→但之前加了 <code>|| echo FAILED</code> 兜底→绿色。<strong>绿色不代表真实生效，必须以目标服务器上的文件内容为准</strong></td>
 </tr>
 <tr>
 <td><strong>M3</strong></td>
-<td>以为 <code>public/</code> 目录丢了&#x2F;Hexo 生成有问题</td>
+<td>以为 <code>public/</code> 目录丢了/Hexo 生成有问题</td>
 <td>服务器上的文件自始至终都是 git clone 的源码而非构建产物。<code>public/</code> 不存在是因为根本就没有部署成功过，不是 Hexo 的问题。排查方向一开始就错了</td>
 </tr>
 <tr>
 <td><strong>M4</strong></td>
-<td>以为部署到服务器 &#x3D; <code>git clone</code> + 服务器本地构建</td>
+<td>以为部署到服务器 = <code>git clone</code> + 服务器本地构建</td>
 <td>正确方案是 GitHub Actions 统一构建，再 rsync <code>public/</code> 到服务器。服务器不需要装 Node.js、不需要跑 <code>hexo generate</code>，只需 Nginx 指向部署目录即可</td>
 </tr>
 <tr>
 <td><strong>M5</strong></td>
-<td>宝塔面板的”添加站点”和手动写 Nginx conf 是两回事</td>
+<td>宝塔面板的&quot;添加站点&quot;和手动写 Nginx conf 是两回事</td>
 <td>本质上都是生成 Nginx server 块配置文件。宝塔只是一个 GUI 包装，手动 <code>tee</code> 到 vhost 目录效果完全一致，区别只是宝塔收不到管理</td>
 </tr>
 <tr>
@@ -946,16 +994,18 @@
 <td>以为 TLS 版本差异必然说明服务器配置问题</td>
 <td>TLS 1.3 成功但 TLS 1.2 失败，第一反应是 Nginx SSL 配置有 Bug</td>
 </tr>
-</tbody></table>
-<h3 id="三、排查方法论总结"><a href="#三、排查方法论总结" class="headerlink" title="三、排查方法论总结"></a>三、排查方法论总结</h3><ol>
-<li><strong>验证永远在远端，不要相信本地的”看起来成功了”</strong> —— 每次改完后，在服务器上 <code>ls -la /var/www/my-site/</code> 和 <code>cat index.html</code> 确认文件真正更新了</li>
+</tbody>
+</table>
+<h3 id="三、排查方法论总结">三、排查方法论总结</h3>
+<ol>
+<li><strong>验证永远在远端，不要相信本地的&quot;看起来成功了&quot;</strong> —— 每次改完后，在服务器上 <code>ls -la /var/www/my-site/</code> 和 <code>cat index.html</code> 确认文件真正更新了</li>
 <li><strong>排错优先加日志，不要猜</strong> —— 加了 <code>ssh -v</code> debug 步骤后，5 秒就发现了 <code>rsync: command not found</code> 根因。之前无日志的三轮尝试浪费了大量时间</li>
 <li><strong>复杂工具出问题 → 降级为原生命令</strong> —— SCP action → rsync action → 原生 rsync，每一步降级都让问题更透明</li>
 <li><strong>密钥对比要看指纹</strong> —— <code>ssh-keygen -lf file.pub</code> 比肉眼对比 base64 字符串可靠一万倍</li>
 <li><strong>DNS 生效需要等，但可以用 <code>nslookup</code> 立刻验证当前状态</strong> —— 不要猜 DNS 有没有生效，直接查</li>
-<li><strong>“IP 直连 OK，域名不行”的第一反应应该是”有什么在按域名过滤？”</strong> —— 不是”服务器哪配错了”。这种模式下，服务器配置大概率没问题，问题在中间设备（WAF&#x2F;防火墙&#x2F;合规系统&#x2F;GFW）</li>
-<li><strong>用 2×2 矩阵交叉测试可以快速锁定根因</strong> —— 今天的 TLS 版本 × SNI 值 交叉测试，5 分钟就确定了”只有 <code>*.adaydream.cn</code> + TLS 1.2” 被阻断，直接排除了配置错误、网络故障等几十种可能性</li>
-<li><strong>tcpdump 是判断”RST 谁发的”的唯一可靠方式</strong> —— 客户端看到 RST 时，只有在目标服务器上同时抓包（0 包到达 &#x3D; RST 是中间设备伪造的），才能区分”服务器拒绝了连接”还是”中间设备在拦截”</li>
+<li><strong>“IP 直连 OK，域名不行&quot;的第一反应应该是&quot;有什么在按域名过滤？”</strong> —— 不是&quot;服务器哪配错了&quot;。这种模式下，服务器配置大概率没问题，问题在中间设备（WAF/防火墙/合规系统/GFW）</li>
+<li><strong>用 2×2 矩阵交叉测试可以快速锁定根因</strong> —— 今天的 TLS 版本 × SNI 值 交叉测试，5 分钟就确定了&quot;只有 <code>*.adaydream.cn</code> + TLS 1.2&quot; 被阻断，直接排除了配置错误、网络故障等几十种可能性</li>
+<li><strong>tcpdump 是判断&quot;RST 谁发的&quot;的唯一可靠方式</strong> —— 客户端看到 RST 时，只有在目标服务器上同时抓包（0 包到达 = RST 是中间设备伪造的），才能区分&quot;服务器拒绝了连接&quot;还是&quot;中间设备在拦截&quot;</li>
 <li><strong>HTTP 403 Body 是诊断的宝藏</strong> —— 看到 <code>Server: Beaver</code> 时应该立刻查看 HTTP Body，而不只是看 HTTP 状态码。Body 中的 “Non-compliance ICP Filing” 直接揭示了根因</li>
 <li><strong>部署完成的验证必须用最终访问方式</strong> —— 部署到阿里云 ≠ 网站上线。验证标准是 <code>curl https://你的域名</code> 返回 200，而不是 <code>curl http://服务器IP</code> 返回 200</li>
 </ol>
@@ -1020,7 +1070,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hexo-%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E6%97%A5%E5%BF%97%EF%BC%9A%E4%BB%8E%E6%9C%AC%E5%9C%B0%E5%88%B0%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2"><span class="nav-number">1.</span> <span class="nav-text">Hexo 博客部署日志：从本地到自动部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%80%EF%BC%9A%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88Windows%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">阶段一：本地开发环境（Windows）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96-%E2%9C%85"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 项目初始化 ✅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 前置条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%BE%85%E5%8A%9E%EF%BC%9A%E9%85%8D%E7%BD%AE-GitHub-Actions-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-%E2%8F%B3"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 待办：配置 GitHub Actions 自动部署 ⏳</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E9%83%A8%E7%BD%B2%EF%BC%88%E9%98%BF%E9%87%8C%E4%BA%91%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">阶段二：服务器端部署（阿里云）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 服务器基本信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Hexo-%E9%A1%B9%E7%9B%AE%E5%B7%B2%E5%9C%A8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 Hexo 项目已在服务器上</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Nginx-%E7%AB%99%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 Nginx 站点配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E7%AB%99%E7%82%B9%E6%96%87%E4%BB%B6%E9%83%A8%E7%BD%B2"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 站点文件部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9AGit-GitHub-%E9%9B%86%E6%88%90"><span class="nav-number">1.3.</span> <span class="nav-text">阶段三：Git &#x2F; GitHub 集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Git-%E4%BB%93%E5%BA%93%E5%85%8B%E9%9A%86"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 Git 仓库克隆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-HTTPS-%E8%AE%BF%E9%97%AE%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 HTTPS 访问问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%E6%8A%A5%E9%94%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 浏览器访问报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E5%9B%9B%EF%BC%9ADNS-%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">阶段四：DNS 域名解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E9%98%BF%E9%87%8C%E4%BA%91%E6%8E%A7%E5%88%B6%E5%8F%B0"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 阿里云控制台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9AGitHub-Actions-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8F%8C%E7%9B%AE%E6%A0%87%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">阶段三：GitHub Actions 自动部署（双目标）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%B7%A5%E4%BD%9C%E6%B5%81%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.1.</span> <span class="nav-text">3.1 工作流文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-GitHub-Secrets-%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.2.</span> <span class="nav-text">3.2 GitHub Secrets 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Hexo-%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.3.</span> <span class="nav-text">3.3 Hexo 本地配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E9%AA%8C%E8%AF%81%E8%AE%B0%E5%BD%95"><span class="nav-number">1.5.4.</span> <span class="nav-text">3.4 验证记录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%8F%B3-%E5%BE%85%E5%AE%8C%E6%88%90%EF%BC%9A%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF-Nginx-%E7%AB%99%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.6.</span> <span class="nav-text">⏳ 待完成：宝塔面板 Nginx 站点配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB"><span class="nav-number">1.7.</span> <span class="nav-text">问题汇总</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E8%BF%9B%E5%BA%A6"><span class="nav-number">1.8.</span> <span class="nav-text">当前进度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL-%E8%AF%81%E4%B9%A6"><span class="nav-number">1.8.1.</span> <span class="nav-text">SSL 证书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85%E8%AE%B0%E5%BD%95%EF%BC%9ANginx-%E9%85%8D%E7%BD%AE-rsync-%E6%8E%92%E9%94%99"><span class="nav-number">1.9.</span> <span class="nav-text">补充记录：Nginx 配置 + rsync 排错</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx-%E7%AB%99%E7%82%B9%EF%BC%88%E6%89%8B%E5%8A%A8%E5%88%9B%E5%BB%BA%EF%BC%89"><span class="nav-number">1.9.1.</span> <span class="nav-text">Nginx 站点（手动创建）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rsync-%E9%83%A8%E7%BD%B2%E6%8E%92%E9%94%99%EF%BC%88%E4%B8%89%E6%AC%A1%E8%BF%AD%E4%BB%A3%EF%BC%89"><span class="nav-number">1.9.2.</span> <span class="nav-text">rsync 部署排错（三次迭代）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%94%EF%BC%9AICP-%E5%A4%87%E6%A1%88%E7%BC%BA%E5%A4%B1%E5%AF%BC%E8%87%B4%E7%BD%91%E7%AB%99%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE-%F0%9F%94%B4"><span class="nav-number">1.10.</span> <span class="nav-text">阶段五：ICP 备案缺失导致网站无法访问 🔴</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E9%97%AE%E9%A2%98%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.10.1.</span> <span class="nav-text">5.1 问题现象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B%EF%BC%88%E9%80%90%E5%B1%82%E7%A9%BF%E9%80%8F%EF%BC%89"><span class="nav-number">1.10.2.</span> <span class="nav-text">5.2 排查过程（逐层穿透）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-1-%E6%AD%A5%EF%BC%9A%E9%AA%8C%E8%AF%81%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9F%BA%E7%A1%80%E7%8A%B6%E6%80%81"><span class="nav-number">1.10.2.1.</span> <span class="nav-text">第 1 步：验证服务器基础状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-2-%E6%AD%A5%EF%BC%9A%E6%B5%8B%E8%AF%95%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE"><span class="nav-number">1.10.2.2.</span> <span class="nav-text">第 2 步：测试域名访问</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-3-%E6%AD%A5%EF%BC%9A%E6%8E%92%E9%99%A4%E6%9C%AC%E5%9C%B0%E4%BB%A3%E7%90%86%E5%B9%B2%E6%89%B0"><span class="nav-number">1.10.2.3.</span> <span class="nav-text">第 3 步：排除本地代理干扰</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-4-%E6%AD%A5%EF%BC%9A%E5%A4%9A-TLS-%E7%89%88%E6%9C%AC-%E5%A4%9A-SNI-%E4%BA%A4%E5%8F%89%E6%B5%8B%E8%AF%95-%F0%9F%94%8D-%E5%85%B3%E9%94%AE%E7%AA%81%E7%A0%B4"><span class="nav-number">1.10.2.4.</span> <span class="nav-text">第 4 步：多 TLS 版本 + 多 SNI 交叉测试 🔍 关键突破</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-5-%E6%AD%A5%EF%BC%9A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E6%8A%93%E5%8C%85%E9%AA%8C%E8%AF%81"><span class="nav-number">1.10.2.5.</span> <span class="nav-text">第 5 步：服务器端抓包验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-6-%E6%AD%A5%EF%BC%9A%E5%8F%91%E7%8E%B0%E7%9C%9F%E7%9B%B8-%F0%9F%8E%AF"><span class="nav-number">1.10.2.6.</span> <span class="nav-text">第 6 步：发现真相 🎯</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E9%98%BF%E9%87%8C%E4%BA%91-ICP-%E5%A4%87%E6%A1%88%E6%8B%A6%E6%88%AA%E6%9C%BA%E5%88%B6"><span class="nav-number">1.10.3.</span> <span class="nav-text">5.3 阿里云 ICP 备案拦截机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF%E6%93%8D%E4%BD%9C%EF%BC%9A%E6%B7%BB%E5%8A%A0%E7%AB%99%E7%82%B9"><span class="nav-number">1.10.4.</span> <span class="nav-text">5.4 宝塔面板操作：添加站点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9AICP-%E5%A4%87%E6%A1%88"><span class="nav-number">1.10.5.</span> <span class="nav-text">5.5 解决方案：ICP 备案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ICP-%E5%A4%87%E6%A1%88%E6%B5%81%E7%A8%8B"><span class="nav-number">1.10.5.1.</span> <span class="nav-text">ICP 备案流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%87%E6%A1%88%E6%9C%9F%E9%97%B4%E4%B8%B4%E6%97%B6%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="nav-number">1.10.5.2.</span> <span class="nav-text">备案期间临时替代方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6-%E5%A4%87%E6%A1%88%E6%88%90%E5%8A%9F%E5%90%8E%E6%93%8D%E4%BD%9C%E6%B8%85%E5%8D%95"><span class="nav-number">1.10.6.</span> <span class="nav-text">5.6 备案成功后操作清单</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E4%B8%8E%E5%8F%8D%E6%80%9D"><span class="nav-number">1.11.</span> <span class="nav-text">错误与反思</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%8A%80%E6%9C%AF%E6%93%8D%E4%BD%9C%E9%94%99%E8%AF%AF"><span class="nav-number">1.11.1.</span> <span class="nav-text">一、技术操作错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A6%82%E5%BF%B5%E6%80%A7%E7%90%86%E8%A7%A3%E4%B8%8D%E8%B6%B3"><span class="nav-number">1.11.2.</span> <span class="nav-text">二、概念性理解不足</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%8E%92%E6%9F%A5%E6%96%B9%E6%B3%95%E8%AE%BA%E6%80%BB%E7%BB%93"><span class="nav-number">1.11.3.</span> <span class="nav-text">三、排查方法论总结</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Hexo 博客部署日志：从本地到自动部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%80%EF%BC%9A%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88Windows%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">阶段一：本地开发环境（Windows）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96-%E2%9C%85"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 项目初始化 ✅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 前置条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%BE%85%E5%8A%9E%EF%BC%9A%E9%85%8D%E7%BD%AE-GitHub-Actions-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-%E2%8F%B3"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 待办：配置 GitHub Actions 自动部署 ⏳</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E9%83%A8%E7%BD%B2%EF%BC%88%E9%98%BF%E9%87%8C%E4%BA%91%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">阶段二：服务器端部署（阿里云）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 服务器基本信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Hexo-%E9%A1%B9%E7%9B%AE%E5%B7%B2%E5%9C%A8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 Hexo 项目已在服务器上</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Nginx-%E7%AB%99%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 Nginx 站点配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E7%AB%99%E7%82%B9%E6%96%87%E4%BB%B6%E9%83%A8%E7%BD%B2"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 站点文件部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9AGit-GitHub-%E9%9B%86%E6%88%90"><span class="nav-number">1.3.</span> <span class="nav-text">阶段三：Git &#x2F; GitHub 集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Git-%E4%BB%93%E5%BA%93%E5%85%8B%E9%9A%86"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 Git 仓库克隆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-HTTPS-%E8%AE%BF%E9%97%AE%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 HTTPS 访问问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%E6%8A%A5%E9%94%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 浏览器访问报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E5%9B%9B%EF%BC%9ADNS-%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">阶段四：DNS 域名解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E9%98%BF%E9%87%8C%E4%BA%91%E6%8E%A7%E5%88%B6%E5%8F%B0"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 阿里云控制台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9AGitHub-Actions-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8F%8C%E7%9B%AE%E6%A0%87%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">阶段三：GitHub Actions 自动部署（双目标）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%B7%A5%E4%BD%9C%E6%B5%81%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.1.</span> <span class="nav-text">3.1 工作流文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-GitHub-Secrets-%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.2.</span> <span class="nav-text">3.2 GitHub Secrets 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Hexo-%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.3.</span> <span class="nav-text">3.3 Hexo 本地配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E9%AA%8C%E8%AF%81%E8%AE%B0%E5%BD%95"><span class="nav-number">1.5.4.</span> <span class="nav-text">3.4 验证记录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%8F%B3-%E5%BE%85%E5%AE%8C%E6%88%90%EF%BC%9A%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF-Nginx-%E7%AB%99%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.6.</span> <span class="nav-text">⏳ 待完成：宝塔面板 Nginx 站点配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB"><span class="nav-number">1.7.</span> <span class="nav-text">问题汇总</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E8%BF%9B%E5%BA%A6"><span class="nav-number">1.8.</span> <span class="nav-text">当前进度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL-%E8%AF%81%E4%B9%A6"><span class="nav-number">1.8.1.</span> <span class="nav-text">SSL 证书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85%E8%AE%B0%E5%BD%95%EF%BC%9ANginx-%E9%85%8D%E7%BD%AE-rsync-%E6%8E%92%E9%94%99"><span class="nav-number">1.9.</span> <span class="nav-text">补充记录：Nginx 配置 + rsync 排错</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx-%E7%AB%99%E7%82%B9%EF%BC%88%E6%89%8B%E5%8A%A8%E5%88%9B%E5%BB%BA%EF%BC%89"><span class="nav-number">1.9.1.</span> <span class="nav-text">Nginx 站点（手动创建）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rsync-%E9%83%A8%E7%BD%B2%E6%8E%92%E9%94%99%EF%BC%88%E4%B8%89%E6%AC%A1%E8%BF%AD%E4%BB%A3%EF%BC%89"><span class="nav-number">1.9.2.</span> <span class="nav-text">rsync 部署排错（三次迭代）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%94%EF%BC%9AICP-%E5%A4%87%E6%A1%88%E7%BC%BA%E5%A4%B1%E5%AF%BC%E8%87%B4%E7%BD%91%E7%AB%99%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE-%F0%9F%94%B4"><span class="nav-number">1.10.</span> <span class="nav-text">阶段五：ICP 备案缺失导致网站无法访问 🔴</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E9%97%AE%E9%A2%98%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.10.1.</span> <span class="nav-text">5.1 问题现象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B%EF%BC%88%E9%80%90%E5%B1%82%E7%A9%BF%E9%80%8F%EF%BC%89"><span class="nav-number">1.10.2.</span> <span class="nav-text">5.2 排查过程（逐层穿透）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-1-%E6%AD%A5%EF%BC%9A%E9%AA%8C%E8%AF%81%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9F%BA%E7%A1%80%E7%8A%B6%E6%80%81"><span class="nav-number">1.10.2.1.</span> <span class="nav-text">第 1 步：验证服务器基础状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-2-%E6%AD%A5%EF%BC%9A%E6%B5%8B%E8%AF%95%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE"><span class="nav-number">1.10.2.2.</span> <span class="nav-text">第 2 步：测试域名访问</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-3-%E6%AD%A5%EF%BC%9A%E6%8E%92%E9%99%A4%E6%9C%AC%E5%9C%B0%E4%BB%A3%E7%90%86%E5%B9%B2%E6%89%B0"><span class="nav-number">1.10.2.3.</span> <span class="nav-text">第 3 步：排除本地代理干扰</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-4-%E6%AD%A5%EF%BC%9A%E5%A4%9A-TLS-%E7%89%88%E6%9C%AC-%E5%A4%9A-SNI-%E4%BA%A4%E5%8F%89%E6%B5%8B%E8%AF%95-%F0%9F%94%8D-%E5%85%B3%E9%94%AE%E7%AA%81%E7%A0%B4"><span class="nav-number">1.10.2.4.</span> <span class="nav-text">第 4 步：多 TLS 版本 + 多 SNI 交叉测试 🔍 关键突破</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-5-%E6%AD%A5%EF%BC%9A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E6%8A%93%E5%8C%85%E9%AA%8C%E8%AF%81"><span class="nav-number">1.10.2.5.</span> <span class="nav-text">第 5 步：服务器端抓包验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC-6-%E6%AD%A5%EF%BC%9A%E5%8F%91%E7%8E%B0%E7%9C%9F%E7%9B%B8-%F0%9F%8E%AF"><span class="nav-number">1.10.2.6.</span> <span class="nav-text">第 6 步：发现真相 🎯</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E9%98%BF%E9%87%8C%E4%BA%91-ICP-%E5%A4%87%E6%A1%88%E6%8B%A6%E6%88%AA%E6%9C%BA%E5%88%B6"><span class="nav-number">1.10.3.</span> <span class="nav-text">5.3 阿里云 ICP 备案拦截机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF%E6%93%8D%E4%BD%9C%EF%BC%9A%E6%B7%BB%E5%8A%A0%E7%AB%99%E7%82%B9"><span class="nav-number">1.10.4.</span> <span class="nav-text">5.4 宝塔面板操作：添加站点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9AICP-%E5%A4%87%E6%A1%88"><span class="nav-number">1.10.5.</span> <span class="nav-text">5.5 解决方案：ICP 备案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ICP-%E5%A4%87%E6%A1%88%E6%B5%81%E7%A8%8B"><span class="nav-number">1.10.5.1.</span> <span class="nav-text">ICP 备案流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%87%E6%A1%88%E6%9C%9F%E9%97%B4%E4%B8%B4%E6%97%B6%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="nav-number">1.10.5.2.</span> <span class="nav-text">备案期间临时替代方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6-%E5%A4%87%E6%A1%88%E6%88%90%E5%8A%9F%E5%90%8E%E6%93%8D%E4%BD%9C%E6%B8%85%E5%8D%95"><span class="nav-number">1.10.6.</span> <span class="nav-text">5.6 备案成功后操作清单</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E4%B8%8E%E5%8F%8D%E6%80%9D"><span class="nav-number">1.11.</span> <span class="nav-text">错误与反思</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%8A%80%E6%9C%AF%E6%93%8D%E4%BD%9C%E9%94%99%E8%AF%AF"><span class="nav-number">1.11.1.</span> <span class="nav-text">一、技术操作错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A6%82%E5%BF%B5%E6%80%A7%E7%90%86%E8%A7%A3%E4%B8%8D%E8%B6%B3"><span class="nav-number">1.11.2.</span> <span class="nav-text">二、概念性理解不足</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%8E%92%E6%9F%A5%E6%96%B9%E6%B3%95%E8%AE%BA%E6%80%BB%E7%BB%93"><span class="nav-number">1.11.3.</span> <span class="nav-text">三、排查方法论总结</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1036,7 +1086,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1104,12 +1154,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">13k</span>
+    <span title="站点总字数">15k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -1229,6 +1279,8 @@ window.addEventListener('pjax:success', () => {
 
 
     <div id="pjax">
+  
+
   
 
   
