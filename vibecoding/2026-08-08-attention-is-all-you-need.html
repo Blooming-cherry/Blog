@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"adaydream.cn","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="Transformer 论文《Attention Is All You Need》全文中文翻译 —— 自注意力机制、模型架构、训练与结果完整解读，附全部图表。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Attention is all you need（中文翻译）">
+<meta property="og:url" content="https://adaydream.cn/vibecoding/2026-08-08-attention-is-all-you-need.html">
+<meta property="og:site_name" content="“松花酿酒，春水煎茶”">
+<meta property="og:description" content="Transformer 论文《Attention Is All You Need》全文中文翻译 —— 自注意力机制、模型架构、训练与结果完整解读，附全部图表。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig1.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig2a.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig2b.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig3.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig4a.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig4b.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig5a.png">
+<meta property="og:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig5b.png">
+<meta property="article:published_time" content="2026-08-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-08T10:07:15.021Z">
+<meta property="article:author" content="奶油苏打和冕型灯">
+<meta property="article:tag" content="技术, 学习, 记录">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://adaydream.cn/attachments/2026-08-08-attention-is-all-you-need.blog/fig1.png">
+
+<link rel="canonical" href="https://adaydream.cn/vibecoding/2026-08-08-attention-is-all-you-need">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Attention is all you need（中文翻译） | “松花酿酒，春水煎茶”
+</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">“松花酿酒，春水煎茶”</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">来一杯春季特调的毛峰芽尖</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-music">
+
+    <a href="/music/" rel="section"><i class="fa fa-music fa-fw"></i>music</a>
+
+  </li>
+        <li class="menu-item menu-item-vibe-coding">
+
+    <a href="/vibecoding/" rel="section"><i class="fa fa-pen fa-fw"></i>vibe-coding</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+  
+  
+
+          <div class="content page posts-expand">
+            
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Attention is all you need（中文翻译）
+</h1>
+
+<div class="post-meta">
+    <div class="post-description">Transformer 论文《Attention Is All You Need》全文中文翻译 —— 自注意力机制、模型架构、训练与结果完整解读，附全部图表。</div>
+  
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+          <blockquote>
+<p><strong>原文标题</strong>：Attention Is All You Need<br>
+<strong>arXiv 编号</strong>：1706.03762v7 [<a target="_blank" rel="noopener" href="http://cs.CL">cs.CL</a>]（2023 年 8 月 2 日版）<br>
+<strong>作者</strong>：Ashish Vaswani、Noam Shazeer、Niki Parmar、Jakob Uszkoreit、Llion Jones、Aidan N. Gomez、Lukasz Kaiser、Illia Polosukhin<br>
+<strong>发表</strong>：31st Conference on Neural Information Processing Systems (NIPS 2017), Long Beach, CA, USA</p>
+<p><strong>翻译说明</strong>：本文为论文全文中文翻译。专有名词、人名、参考文献、表格中的数据与模型名称均保留原文；数学公式按原文 LaTeX 重新排版。文中方括号 [n] 为原文参考文献编号。</p>
+</blockquote>
+<hr>
+<h2 id="摘要">摘要</h2>
+<p>占主导地位的序列转换（sequence transduction）模型基于复杂的循环（recurrent）或卷积（convolutional）神经网络，它们包含一个编码器（encoder）和一个解码器（decoder）。性能最好的模型还会通过注意力（attention）机制将编码器和解码器连接起来。我们提出了一种新的简单网络架构——<strong>Transformer</strong>，它完全基于注意力机制，彻底舍弃了循环和卷积。在两项机器翻译任务上的实验表明，这些模型在质量上更优，同时更易于并行化，并且训练时间显著缩短。我们的模型在 WMT 2014 英德翻译任务上达到 <strong>28.4 BLEU</strong>，比此前包括集成（ensemble）在内的最佳结果提高了 2 个多 BLEU。在 WMT 2014 英法翻译任务上，我们的模型在 8 块 GPU 上训练 3.5 天后，以 <strong>41.8 BLEU</strong> 创下新的单模型最先进（state-of-the-art）分数，训练成本仅为文献中最优模型的一小部分。我们还成功将 Transformer 应用于英语成分句法分析（constituency parsing），在数据充足和数据有限两种情况下都表现良好，证明了其良好的泛化能力。</p>
+<blockquote>
+<p><strong>脚注（贡献说明）</strong>：均等贡献。作者顺序为随机排序。Jakob 提出用 self-attention 替代 RNN 并启动了评估这一想法的尝试。Ashish 与 Illia 设计并实现了最初的 Transformer 模型，并在该项工作的每一个方面都深度参与。Noam 提出了 scaled dot-product attention、multi-head attention 和免参数的位置表示，并几乎是唯一参与了几乎所有细节的人。Niki 在我们最初的代码库和 tensor2tensor 中设计、实现、调优并评估了无数模型变体。Llion 也实验了新颖的模型变体，并负责我们的初始代码库、高效的推理和可视化。Lukasz 和 Aidan 花了无数个漫长的日夜设计并实现 tensor2tensor 的各个部分，替换了我们早期的代码库，极大改善了结果并大幅加速了我们的研究。</p>
+<p>（注：部分工作完成于 Google Brain，部分完成于 Google Research。）</p>
+</blockquote>
+<hr>
+<h2 id="1-引言">1 引言</h2>
+<p>循环神经网络（RNN），特别是长短期记忆网络（LSTM）[13] 和门控循环神经网络（GRU）[7]，已被牢固确立为序列建模和序列转换问题（如语言建模和机器翻译 [35, 2, 5]）上最先进的方法。此后众多工作继续推动循环语言模型和编码器-解码器架构的发展 [38, 24, 15]。</p>
+<p>循环模型通常沿着输入和输出序列的符号位置对计算进行因式分解。通过将位置与计算时间步对齐，它们生成一个隐藏状态序列 h_t，它是前一隐藏状态 h_(t-1) 和位置 t 的输入的函数。这种固有的顺序特性阻碍了训练样本内部的并行化，而在较长序列上这一点变得至关重要，因为内存限制限制了跨样本的批处理。近期工作通过因式分解技巧 [21] 和条件计算 [32] 显著提升了计算效率，后者在提升性能的同时还改善了模型表现。然而，顺序计算的根本约束依然存在。</p>
+<p>注意力机制已成为各种任务中令人信服的序列建模和转换模型不可或缺的组成部分，它允许对依赖关系进行建模，而不必考虑其在输入或输出序列中的距离 [2, 19]。然而，除极少数情况外 [27]，这种注意力机制都是与循环网络结合使用的。</p>
+<p>在这项工作中，我们提出了 <strong>Transformer</strong>——一种摒弃循环、完全依赖注意力机制在输入和输出之间建立全局依赖关系的模型架构。Transformer 允许显著更多的并行化，并且仅需在 8 块 P100 GPU 上训练短短十二小时即可在翻译质量上达到新的最先进水平。</p>
+<h2 id="2-背景">2 背景</h2>
+<p>减少顺序计算的目标也构成了 Extended Neural GPU [16]、ByteNet [18] 和 ConvS2S [9] 的基础，它们都使用卷积神经网络作为基本构建块，对所有输入和输出位置并行计算隐藏表示。在这些模型中，关联两个任意输入或输出位置信号所需的操作数量随位置之间的距离增长——对 ConvS2S 呈线性增长，对 ByteNet 呈对数增长。这使得学习远距离位置之间的依赖关系更加困难 [12]。在 Transformer 中，这一数量被降低为<strong>常数级</strong>操作，尽管代价是通过对注意力加权位置求平均而降低了有效分辨率，我们通过 3.2 节中描述的多头注意力（Multi-Head Attention）来抵消这一影响。</p>
+<p>自注意力（self-attention），有时称为内部注意力（intra-attention），是一种关联单个序列中不同位置的注意力机制，用以计算该序列的表示。自注意力已被成功用于多种任务，包括阅读理解、抽象式摘要、文本蕴含以及学习与任务无关的句子表示 [4, 27, 28, 22]。</p>
+<p>端到端记忆网络（End-to-end memory networks）基于循环注意力机制而非序列对齐的循环，并已被证明在简单语言问答和语言建模任务上表现良好 [34]。</p>
+<p>然而，据我们所知，Transformer 是第一个<strong>完全依赖自注意力</strong>来计算输入和输出表示、而不使用序列对齐的 RNN 或卷积的转换模型。在以下章节中，我们将描述 Transformer、阐释自注意力的动机，并讨论它相对 [17, 18] 和 [9] 等模型的优势。</p>
+<h2 id="3-模型架构">3 模型架构</h2>
+<p>大多数有竞争力的神经序列转换模型都采用编码器-解码器结构 [5, 2, 35]。在这里，编码器将输入符号表示序列 (x₁, …, xₙ) 映射为连续表示序列 <strong>z</strong> = (z₁, …, zₙ)。给定 <strong>z</strong>，解码器每次一个元素地生成符号输出序列 (y₁, …, yₘ)。在每一步中，模型都是自回归的 [10]，在生成下一个符号时将先前生成的符号作为额外输入。</p>
+<blockquote>
+<p><strong>图 1</strong>：Transformer 模型架构。</p>
+</blockquote>
+<p><img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig1.png" alt="图1：Transformer 模型架构"></p>
+<p>Transformer 遵循这一整体架构，对编码器和解码器都使用堆叠的自注意力和逐位置（position-wise）全连接层，分别如图 1 的左右两半所示。</p>
+<h3 id="3-1-编码器和解码器堆栈">3.1 编码器和解码器堆栈</h3>
+<p><strong>编码器（Encoder）</strong>：编码器由 N = 6 个相同层的堆栈组成。每层有两个子层。第一个子层是多头自注意力机制，第二个子层是简单的、逐位置的全连接前馈网络。我们在两个子层周围都使用残差连接 [11]，随后进行层归一化（layer normalization）[1]。即，每个子层的输出为 <strong>LayerNorm(x + Sublayer(x))</strong>，其中 Sublayer(x) 是该子层本身实现的函数。为便于这些残差连接，模型中所有子层以及嵌入层都产生维度为 d_model = 512 的输出。</p>
+<p><strong>解码器（Decoder）</strong>：解码器同样由 N = 6 个相同层的堆栈组成。除每个编码器层中的两个子层外，解码器还插入第三个子层，对编码器堆栈的输出执行多头注意力。与编码器类似，我们在每个子层周围使用残差连接，随后进行层归一化。我们还修改了解码器堆栈中的自注意力子层，以防止位置关注到后续位置。这种掩码（masking）结合输出嵌入偏移一个位置的事实，确保了位置 i 的预测只能依赖于位置小于 i 的已知输出。</p>
+<h3 id="3-2-注意力">3.2 注意力</h3>
+<p>注意力函数可以描述为将查询（query）和一组键值对（key-value pairs）映射为输出，其中查询、键、值和输出都是向量。输出被计算为值的加权和，其中分配给每个值的权重由查询与相应键的兼容性函数（compatibility function）计算得出。</p>
+<h4 id="3-2-1-缩放点积注意力（Scaled-Dot-Product-Attention）">3.2.1 缩放点积注意力（Scaled Dot-Product Attention）</h4>
+<p>我们称我们的特定注意力为&quot;缩放点积注意力&quot;（图 2）。输入包括维度为 d_k 的查询和键，以及维度为 d_v 的值。我们计算查询与所有键的点积，除以 √d_k，然后应用 softmax 函数以获得值的权重。</p>
+<p>在实践中，我们同时对一组查询计算注意力函数，将它们打包成一个矩阵 Q。键和值也被打包成矩阵 K 和 V。我们计算输出矩阵为：</p>
+<blockquote>
+<p><strong>公式 1</strong>：<br>
+Attention(Q, K, V) = softmax( QKᵀ / √d_k ) V</p>
+</blockquote>
+<p>两种最常用的注意力函数是加性注意力（additive attention）[2] 和点积（乘法）注意力。点积注意力与我们的算法相同，只是没有 1/√d_k 的缩放因子。加性注意力使用带单个隐藏层的前馈网络计算兼容性函数。虽然两者在理论复杂度上相似，但点积注意力在实践中更快、更节省空间，因为它可以用高度优化的矩阵乘法代码实现。</p>
+<p>虽然对于较小的 d_k 值，两种机制表现相似；但对于较大的 d_k 值，加性注意力优于未缩放的的点积注意力 [3]。我们推测，对于较大的 d_k 值，点积的幅度会变大，将 softmax 函数推入梯度极小的区域⁴。为抵消这一效应，我们将点积乘以 1/√d_k 进行缩放。</p>
+<blockquote>
+<p>⁴ <strong>脚注</strong>：为了说明为什么点积会变大，假设 q 和 k 的分量是均值为 0、方差为 1 的独立随机变量。那么它们的点积 q·k = Σ(i=1…d_k) qᵢkᵢ 的均值为 0、方差为 d_k。</p>
+</blockquote>
+<h4 id="3-2-2-多头注意力（Multi-Head-Attention）">3.2.2 多头注意力（Multi-Head Attention）</h4>
+<p>我们发现，与其使用 d_model 维的键、值和查询执行单个注意力函数，不如将查询、键和值用不同的、学习到的线性投影分别线性投影到 d_k、d_k 和 d_v 维，共进行 h 次。对查询、键和值的每个投影版本，我们并行执行注意力函数，产生 d_v 维的输出值。这些输出被拼接起来并再次投影，得到最终值，如图 2 所示。多头注意力允许模型在不同位置<strong>联合关注</strong>来自不同表示子空间的信息。对于单个注意力头，求平均会抑制这一点。</p>
+<blockquote>
+<p><strong>公式</strong>：<br>
+MultiHead(Q, K, V) = Concat(head₁, …, head_h) Wᵒ<br>
+其中 headᵢ = Attention(QWᵢ^Q, KWᵢ^K, VWᵢ^V)</p>
+</blockquote>
+<p>其中投影是参数矩阵 Wᵢ^Q ∈ R^(d_model×d_k)、Wᵢ^K ∈ R^(d_model×d_k)、Wᵢ^V ∈ R^(d_model×d_v)，以及 Wᵒ ∈ R^(hd_v×d_model)。</p>
+<p>在这项工作中，我们使用 h = 8 个并行注意力层（即 8 个头）。对每个头，我们使用 d_k = d_v = d_model/h = 64。由于每个头的维度降低，总计算成本与全维度的单头注意力相似。</p>
+<h4 id="3-2-3-注意力在我们模型中的应用">3.2.3 注意力在我们模型中的应用</h4>
+<p>Transformer 以三种不同方式使用多头注意力：</p>
+<ul>
+<li>在&quot;编码器-解码器注意力&quot;层中，查询来自前一个解码器层，记忆（memory）的键和值来自编码器的输出。这允许解码器中的每个位置关注输入序列中的所有位置。这模仿了 [38, 2, 9] 等序列到序列模型中典型的编码器-解码器注意力机制。</li>
+<li>编码器包含自注意力层。在自注意力层中，所有键、值和查询来自同一个地方，即编码器上一层的输出。编码器中的每个位置可以关注编码器前一层中的所有位置。</li>
+<li>类似地，解码器中的自注意力层允许解码器中的每个位置关注解码器中直到并包括该位置的所有位置。我们需要防止解码器中的左向信息流，以保持自回归特性。我们在缩放点积注意力内部通过将 softmax 输入中对应非法连接的所有值掩码（设为 -∞）来实现这一点。见图 2。</li>
+</ul>
+<blockquote>
+<p><strong>图 2</strong>：（左）缩放点积注意力。（右）多头注意力由多个并行运行的注意力层组成。</p>
+</blockquote>
+<p><img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig2a.png" alt="缩放点积注意力"><br>
+<img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig2b.png" alt="多头注意力"></p>
+<h3 id="3-3-位置逐位前馈网络（Position-wise-Feed-Forward-Networks）">3.3 位置逐位前馈网络（Position-wise Feed-Forward Networks）</h3>
+<p>除注意力子层外，编码器和解码器中的每一层都包含一个全连接前馈网络，它对每个位置分别且相同地应用。它由两个线性变换和中间的 ReLU 激活组成：</p>
+<blockquote>
+<p><strong>公式 2</strong>：<br>
+FFN(x) = max(0, xW₁ + b₁) W₂ + b₂</p>
+</blockquote>
+<p>虽然线性变换在不同位置上是相同的，但它们在层与层之间使用不同的参数。另一种描述方式是将其视为两个核大小为 1 的卷积。输入和输出的维度为 d_model = 512，内层维度为 d_ff = 2048。</p>
+<h3 id="3-4-嵌入和-Softmax">3.4 嵌入和 Softmax</h3>
+<p>与其他序列转换模型类似，我们使用学习到的嵌入（embedding）将输入词元和输出词元转换为 d_model 维的向量。我们还使用通常的学习到的线性变换和 softmax 函数将解码器输出转换为预测的下一个词元（token）概率。在我们的模型中，我们在两个嵌入层和 pre-softmax 线性变换之间共享相同的权重矩阵，类似于 [30]。在嵌入层中，我们将这些权重乘以 √d_model。</p>
+<blockquote>
+<p><strong>表 1</strong>：不同层类型的最大路径长度、每层复杂度以及最少顺序操作数。n 为序列长度，d 为表示维度，k 为卷积核大小，r 为受限自注意力中的邻域大小。</p>
+<table>
+<thead>
+<tr>
+<th>层类型</th>
+<th>每层复杂度</th>
+<th>顺序操作</th>
+<th>最大路径长度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Self-Attention</td>
+<td>O(n² · d)</td>
+<td>O(1)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Recurrent</td>
+<td>O(n · d²)</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>O(k · n · d²)</td>
+<td>O(1)</td>
+<td>O(log_k n)</td>
+</tr>
+<tr>
+<td>Self-Attention (restricted)</td>
+<td>O(r · n · d)</td>
+<td>O(1)</td>
+<td>O(n/r)</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="3-5-位置编码（Positional-Encoding）">3.5 位置编码（Positional Encoding）</h3>
+<p>由于我们的模型不包含循环也没有卷积，为了让模型利用序列的顺序，我们必须注入一些关于序列中词元的相对或绝对位置的信息。为此，我们在编码器和解码器堆栈底部的输入嵌入中加入&quot;位置编码&quot;（positional encodings）。位置编码与嵌入具有相同的维度 d_model，以便两者可以相加。位置编码有很多种选择，可以是学习得到的，也可以是固定的 [9]。</p>
+<p>在这项工作中，我们使用不同频率的正弦和余弦函数：</p>
+<blockquote>
+<p><strong>公式</strong>：<br>
+PE_(pos, 2i) = sin( pos / 10000^(2i/d_model) )<br>
+PE_(pos, 2i+1) = cos( pos / 10000^(2i/d_model) )</p>
+</blockquote>
+<p>其中 pos 是位置，i 是维度。也就是说，位置编码的每个维度对应一个正弦波。波长构成从 2π 到 10000·2π 的几何级数。我们选择这个函数是因为我们假设它能让模型容易学会按相对位置进行注意力，因为对于任何固定的偏移 k，PE_(pos+k) 都可以表示为 PE_pos 的线性函数。</p>
+<p>我们还实验了使用学习到的位置嵌入 [9] 替代，发现两种版本产生几乎相同的结果（见表 3 行 (E)）。我们选择正弦波版本，因为它可能允许模型外推（extrapolate）到比训练中遇到的更长的序列长度。</p>
+<h2 id="4-为什么用自注意力（Why-Self-Attention）">4 为什么用自注意力（Why Self-Attention）</h2>
+<p>在本节中，我们比较自注意力层与通常用于将一个变长符号表示序列 (x₁, …, xₙ) 映射为另一个等长序列 (z₁, …, zₙ)（其中 xᵢ, zᵢ ∈ R^d）的循环层和卷积层的各个方面，例如典型序列转换编码器或解码器中的隐藏层。我们基于三个期望（desiderata）来论证自注意力的使用：</p>
+<p>其一，是每层的总计算复杂度。其二，是可以并行化的计算量，以所需的最少顺序操作数来衡量。其三，是网络中长距离依赖之间的路径长度。学习长距离依赖是许多序列转换任务的关键挑战。影响学习此类依赖能力的一个关键因素，是前向和反向信号在网络中必须穿越的路径长度。输入和输出序列中任意位置组合之间的路径越短，学习长距离依赖就越容易 [12]。因此，我们还比较由不同类型层构成的网络中任意两个输入和输出位置之间的最大路径长度。</p>
+<p>如表 1 所示，自注意力层以<strong>常数</strong>数量的顺序执行操作连接所有位置，而循环层需要 O(n) 个顺序操作。就计算复杂度而言，当序列长度 n 小于表示维度 d 时，自注意力层比循环层更快，这在机器翻译最先进模型使用的句子表示（如词片 word-piece [38] 和字节对 byte-pair [31] 表示）中通常如此。为了改善涉及非常长序列的任务的计算性能，自注意力可以被限制为只考虑输入序列中以相应输出位置为中心的、大小为 r 的邻域。这会将最大路径长度增加到 O(n/r)。我们计划在未来的工作中进一步研究这一方法。</p>
+<p>单个核宽度 k &lt; n 的卷积层不能连接所有输入和输出位置对。要做到这一点，在连续核的情况下需要堆叠 O(n/k) 个卷积层，或在膨胀卷积（dilated convolution）[18] 的情况下需要 O(log_k n) 个，这增加了网络中任意两个位置之间最长路径的长度。卷积层通常比循环层更昂贵，约为 k 倍。然而，可分离卷积（separable convolution）[6] 将复杂度显著降低到 O(k·n·d + n·d²)。即使 k = n，可分离卷积的复杂度也等于自注意力层与逐点前馈层的组合，这正是我们在模型中采用的方法。</p>
+<p>作为附带好处，自注意力可能产生更可解释的模型。我们检查了来自我们模型的注意力分布，并在附录中展示和讨论了示例。不仅单个注意力头明显学习执行不同的任务，许多头还表现出与句子的句法和语义结构相关的行为。</p>
+<h2 id="5-训练">5 训练</h2>
+<p>本节描述我们模型的训练机制。</p>
+<h3 id="5-1-训练数据与分批">5.1 训练数据与分批</h3>
+<p>我们在标准的 WMT 2014 英德数据集上训练，该数据集包含约 450 万句子对。句子使用字节对编码（byte-pair encoding）[3] 编码，具有约 37000 词元的共享源-目标词表。对于英法，我们使用显著更大的 WMT 2014 英法数据集，包含 3600 万句子，并将词元分割为 32000 词的词片（word-piece）词表 [38]。句子对按近似序列长度分批。每个训练批次包含一组句子对，大约包含 25000 个源词元和 25000 个目标词元。</p>
+<h3 id="5-2-硬件与时程">5.2 硬件与时程</h3>
+<p>我们在一台配备 8 块 NVIDIA P100 GPU 的机器上训练模型。对于使用全文所述超参数的 base 模型，每个训练步骤约需 0.4 秒。我们总共训练 base 模型 100,000 步，即 12 小时。对于 big 模型（见表 3 底行），每步时间为 1.0 秒。big 模型训练了 300,000 步（3.5 天）。</p>
+<h3 id="5-3-优化器">5.3 优化器</h3>
+<p>我们使用 Adam 优化器 [20]，β₁ = 0.9，β₂ = 0.98，ε = 10⁻⁹。我们在训练过程中根据以下公式改变学习率：</p>
+<blockquote>
+<p><strong>公式 3</strong>：<br>
+lrate = d_model^(-0.5) · min( step_num^(-0.5), step_num · warmup_steps^(-1.5) )</p>
+</blockquote>
+<p>这对应于在前 warmup_steps 个训练步骤中<strong>线性增加</strong>学习率，此后按步数的平方根倒数成比例<strong>下降</strong>。我们使用 warmup_steps = 4000。</p>
+<h3 id="5-4-正则化">5.4 正则化</h3>
+<p>我们在训练期间采用三种类型的正则化：</p>
+<ul>
+<li><strong>残差 Dropout</strong>：我们向每个子层的输出应用 dropout [33]，在将其加到子层输入并归一化之前。此外，我们对编码器和解码器堆栈中嵌入与位置编码之和应用 dropout。对于 base 模型，我们使用 P_drop = 0.1 的比率。</li>
+<li><strong>标签平滑（Label Smoothing）</strong>：在训练期间，我们使用值为 ε_ls = 0.1 的标签平滑 [36]。这会损害困惑度（perplexity），因为模型学会更加不确定，但会提高准确率和 BLEU 分数。</li>
+</ul>
+<h2 id="6-结果">6 结果</h2>
+<h3 id="6-1-机器翻译">6.1 机器翻译</h3>
+<p>在 WMT 2014 英德翻译任务上，big Transformer 模型（表 2 中的 Transformer (big)）比此前报告的最佳模型（包括集成）高出 2.0 多个 BLEU，以 28.4 的 BLEU 分数创下新的最先进水平。该模型的配置列于表 3 底行。训练在 8 块 P100 GPU 上进行 3.5 天。即使我们的 base 模型，也以任何竞争模型训练成本的一小部分，超越了所有此前发表的模型和集成。在 WMT 2014 英法翻译任务上，我们的 big 模型以 41.0 的 BLEU 分数超越了所有此前发表的单模型，训练成本不到此前最先进模型的 1/4。为英法训练的 Transformer (big) 模型使用 dropout 率 P_drop = 0.1，而不是 0.3。对于 base 模型，我们使用通过平均最后 5 个检查点（每 10 分钟写入一次）得到的单个模型。对于 big 模型，我们平均最后 20 个检查点。我们使用束大小为 4、长度惩罚 α = 0.6 的束搜索（beam search）[38]。这些超参数是在开发集上实验后选择的。我们在推理时将最大输出长度设置为输入长度 + 50，但尽可能提前终止 [38]。</p>
+<p>表 2 总结了我们的结果，并将我们的翻译质量和训练成本与文献中的其他模型架构进行了比较。我们通过将训练时间、使用的 GPU 数量和每块 GPU 的持续单精度浮点容量估计相乘，来估计训练一个模型所用的浮点操作数量⁵。</p>
+<blockquote>
+<p>⁵ <strong>脚注</strong>：我们对 K80、K40、M40 和 P100 分别使用 2.8、3.7、6.0 和 9.5 TFLOPS 的值。</p>
+</blockquote>
+<blockquote>
+<p><strong>表 2</strong>：在 English-to-German 和 English-to-French 的 newstest2014 测试上，Transformer 以更少的训练成本取得了比此前最先进模型更高的 BLEU 分数。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>BLEU EN-DE</th>
+<th>BLEU EN-FR</th>
+<th>训练成本 (FLOPs) EN-DE</th>
+<th>训练成本 (FLOPs) EN-FR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ByteNet [18]</td>
+<td>23.75</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Deep-Att + PosUnk [39]</td>
+<td></td>
+<td>39.2</td>
+<td></td>
+<td>1.0×10²⁰</td>
+</tr>
+<tr>
+<td>GNMT + RL [38]</td>
+<td>24.6</td>
+<td>39.92</td>
+<td>2.3×10¹⁹</td>
+<td>1.4×10²⁰</td>
+</tr>
+<tr>
+<td>ConvS2S [9]</td>
+<td>25.16</td>
+<td>40.46</td>
+<td>9.6×10¹⁸</td>
+<td>1.5×10²⁰</td>
+</tr>
+<tr>
+<td>MoE [32]</td>
+<td>26.03</td>
+<td>40.56</td>
+<td>2.0×10¹⁹</td>
+<td>1.2×10²⁰</td>
+</tr>
+<tr>
+<td>Deep-Att + PosUnk Ensemble [39]</td>
+<td></td>
+<td>40.4</td>
+<td></td>
+<td>8.0×10²⁰</td>
+</tr>
+<tr>
+<td>GNMT + RL Ensemble [38]</td>
+<td>26.30</td>
+<td>41.16</td>
+<td>1.8×10²⁰</td>
+<td>1.1×10²¹</td>
+</tr>
+<tr>
+<td>ConvS2S Ensemble [9]</td>
+<td>26.36</td>
+<td><strong>41.29</strong></td>
+<td>7.7×10¹⁹</td>
+<td>1.2×10²¹</td>
+</tr>
+<tr>
+<td>Transformer (base model)</td>
+<td>27.3</td>
+<td>38.1</td>
+<td><strong>3.3×10¹⁸</strong>（合并两列）</td>
+<td></td>
+</tr>
+<tr>
+<td>Transformer (big)</td>
+<td><strong>28.4</strong></td>
+<td><strong>41.8</strong></td>
+<td>2.3×10¹⁹（合并两列）</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><em>注：空白单元格为原论文表格原文如此；base 与 big 模型的训练成本在原表中合并显示于&quot;训练成本&quot;两列。</em></p>
+</blockquote>
+<h3 id="6-2-模型变体">6.2 模型变体</h3>
+<p>为了评估 Transformer 不同组件的重要性，我们以不同方式改变 base 模型，在英德翻译开发集 newstest2013 上衡量性能变化。我们使用前一节所述的束搜索，但不进行检查点平均。我们在表 3 中展示了这些结果。</p>
+<p>在表 3 行 (A) 中，如 3.2.2 节所述，我们改变注意力头数量以及注意力的键和值维度，保持计算量恒定。虽然单头注意力比最佳设置差 0.9 BLEU，但头过多时质量也会下降。</p>
+<p>在表 3 行 (B) 中，我们观察到减小注意力键大小 d_k 会损害模型质量。这表明确定兼容性并不容易，比点积更复杂的兼容性函数可能是有益的。我们进一步在行 © 和 (D) 中观察到，正如预期，更大的模型更好，且 dropout 对避免过拟合非常有帮助。在行 (E) 中，我们用学习到的位置嵌入 [9] 替代正弦位置编码，观察到与 base 模型几乎相同的结果。</p>
+<blockquote>
+<p><strong>表 3</strong>：Transformer 架构的变体。未列出的值与 base 模型相同。所有指标均在英德翻译开发集 newstest2013 上。列出的困惑度是按词片（word-piece）计算的（对应我们的字节对编码），不应与按词计算的困惑度比较。</p>
+<table>
+<thead>
+<tr>
+<th>变体</th>
+<th>N</th>
+<th>d_model</th>
+<th>d_ff</th>
+<th>h</th>
+<th>d_k</th>
+<th>d_v</th>
+<th>P_drop</th>
+<th>ε_ls</th>
+<th>训练步数</th>
+<th>PPL(dev)</th>
+<th>BLEU(dev)</th>
+<th>参数×10⁶</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base</td>
+<td>6</td>
+<td>512</td>
+<td>2048</td>
+<td>8</td>
+<td>64</td>
+<td>64</td>
+<td>0.1</td>
+<td>0.1</td>
+<td>100K</td>
+<td>4.92</td>
+<td>25.8</td>
+<td>65</td>
+</tr>
+<tr>
+<td>(A)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>1</td>
+<td>512</td>
+<td>512</td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.29</td>
+<td>24.9</td>
+<td></td>
+</tr>
+<tr>
+<td>(A)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>4</td>
+<td>128</td>
+<td>128</td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.00</td>
+<td>25.5</td>
+<td></td>
+</tr>
+<tr>
+<td>(A)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>16</td>
+<td>32</td>
+<td>32</td>
+<td></td>
+<td></td>
+<td></td>
+<td>4.91</td>
+<td>25.8</td>
+<td></td>
+</tr>
+<tr>
+<td>(A)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>32</td>
+<td>16</td>
+<td>16</td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.01</td>
+<td>25.4</td>
+<td></td>
+</tr>
+<tr>
+<td>(B)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>16</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.16</td>
+<td>25.1</td>
+<td>58</td>
+</tr>
+<tr>
+<td>(B)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>32</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.01</td>
+<td>25.4</td>
+<td>60</td>
+</tr>
+<tr>
+<td>©</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>6.11</td>
+<td>23.7</td>
+<td>36</td>
+</tr>
+<tr>
+<td>©</td>
+<td>4</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.19</td>
+<td>25.3</td>
+<td>50</td>
+</tr>
+<tr>
+<td>©</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>4.88</td>
+<td>25.5</td>
+<td>80</td>
+</tr>
+<tr>
+<td>©</td>
+<td></td>
+<td>256</td>
+<td></td>
+<td></td>
+<td>32</td>
+<td>32</td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.75</td>
+<td>24.5</td>
+<td>28</td>
+</tr>
+<tr>
+<td>©</td>
+<td></td>
+<td>1024</td>
+<td></td>
+<td></td>
+<td>128</td>
+<td>128</td>
+<td></td>
+<td></td>
+<td></td>
+<td>4.66</td>
+<td>26.0</td>
+<td>168</td>
+</tr>
+<tr>
+<td>©</td>
+<td></td>
+<td></td>
+<td>1024</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>5.12</td>
+<td>25.4</td>
+<td>53</td>
+</tr>
+<tr>
+<td>©</td>
+<td></td>
+<td></td>
+<td>4096</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>4.75</td>
+<td>26.2</td>
+<td>90</td>
+</tr>
+<tr>
+<td>(D)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td>5.77</td>
+<td>24.6</td>
+<td></td>
+</tr>
+<tr>
+<td>(D)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.2</td>
+<td></td>
+<td></td>
+<td>4.95</td>
+<td>25.5</td>
+<td></td>
+</tr>
+<tr>
+<td>(D)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.0</td>
+<td></td>
+<td>4.67</td>
+<td>25.3</td>
+<td></td>
+</tr>
+<tr>
+<td>(D)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.2</td>
+<td></td>
+<td>5.47</td>
+<td>25.7</td>
+<td></td>
+</tr>
+<tr>
+<td>(E)</td>
+<td></td>
+<td>用学习得到的位置嵌入代替正弦波</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>4.92</td>
+<td>25.7</td>
+<td></td>
+</tr>
+<tr>
+<td>big</td>
+<td>6</td>
+<td>1024</td>
+<td>4096</td>
+<td>16</td>
+<td></td>
+<td></td>
+<td>0.3</td>
+<td></td>
+<td>300K</td>
+<td><strong>4.33</strong></td>
+<td><strong>26.4</strong></td>
+<td>213</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="6-3-英语成分句法分析（English-Constituency-Parsing）">6.3 英语成分句法分析（English Constituency Parsing）</h3>
+<p>为了评估 Transformer 是否能泛化到其他任务，我们在英语成分句法分析上进行了实验。该任务提出了具体挑战：输出受强结构约束，且显著长于输入。此外，RNN 序列到序列模型在小数据环境下未能达到最先进水平 [37]。</p>
+<p>我们在 Penn Treebank [25] 的华尔街日报（WSJ）部分上训练了一个 4 层 transformer，d_model = 1024，约 40K 训练句子。我们还在半监督设置下训练，使用更大的高置信度语料库和 BerkeleyParser 语料库，约 1700 万句子 [37]。对于仅 WSJ 的设置，我们使用 16K 词元的词表；对于半监督设置，使用 32K 词元的词表。</p>
+<p>我们只进行了少量实验来在第 22 节开发集上选择 dropout（注意力 dropout 和残差 dropout，见 5.4 节）、学习率和束大小，所有其他参数与英德 base 翻译模型保持相同。在推理期间，我们将最大输出长度增加到输入长度 + 300。对于仅 WSJ 和半监督设置，我们都使用束大小 21 和 α = 0.3。</p>
+<p>表 4 中的结果表明，尽管缺乏针对任务的调优，我们的模型表现得出奇地好，除循环神经网络文法（Recurrent Neural Network Grammar）[8] 外，其结果优于所有此前报告的模型。</p>
+<p>与 RNN 序列到序列模型 [37] 相反，即使仅使用 40K 句子的 WSJ 训练集训练，Transformer 也优于 BerkeleyParser [29]。</p>
+<blockquote>
+<p><strong>表 4</strong>：Transformer 能很好地泛化到英语成分句法分析（结果为 WSJ 第 23 节）。</p>
+<table>
+<thead>
+<tr>
+<th>解析器</th>
+<th>训练方式</th>
+<th>WSJ 23 F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vinyals &amp; Kaiser et al. (2014) [37]</td>
+<td>仅 WSJ，判别式</td>
+<td>88.3</td>
+</tr>
+<tr>
+<td>Petrov et al. (2006) [29]</td>
+<td>仅 WSJ，判别式</td>
+<td>90.4</td>
+</tr>
+<tr>
+<td>Zhu et al. (2013) [40]</td>
+<td>仅 WSJ，判别式</td>
+<td>90.4</td>
+</tr>
+<tr>
+<td>Dyer et al. (2016) [8]</td>
+<td>仅 WSJ，判别式</td>
+<td>91.7</td>
+</tr>
+<tr>
+<td><strong>Transformer（4 层）</strong></td>
+<td>仅 WSJ，判别式</td>
+<td>91.3</td>
+</tr>
+<tr>
+<td>Zhu et al. (2013) [40]</td>
+<td>半监督</td>
+<td>91.3</td>
+</tr>
+<tr>
+<td>Huang &amp; Harper (2009) [14]</td>
+<td>半监督</td>
+<td>91.3</td>
+</tr>
+<tr>
+<td>McClosky et al. (2006) [26]</td>
+<td>半监督</td>
+<td>92.1</td>
+</tr>
+<tr>
+<td>Vinyals &amp; Kaiser et al. (2014) [37]</td>
+<td>半监督</td>
+<td>92.1</td>
+</tr>
+<tr>
+<td><strong>Transformer（4 层）</strong></td>
+<td>半监督</td>
+<td>92.7</td>
+</tr>
+<tr>
+<td>Luong et al. (2015) [23]</td>
+<td>多任务</td>
+<td>93.0</td>
+</tr>
+<tr>
+<td>Dyer et al. (2016) [8]</td>
+<td>生成式</td>
+<td>93.3</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h2 id="7-结论">7 结论</h2>
+<p>在这项工作中，我们提出了 Transformer——<strong>第一个完全基于注意力的序列转换模型</strong>，用多头自注意力替代了编码器-解码器架构中最常用的循环层。</p>
+<p>对于翻译任务，Transformer 的训练速度显著快于基于循环层或卷积层的架构。在 WMT 2014 英德和 WMT 2014 英法两个翻译任务上，我们都达到了新的最先进水平。在前一任务中，我们最好的模型甚至超越了此前报告的所有集成。</p>
+<p>我们对基于注意力的模型的未来感到兴奋，并计划将它们应用到其他任务。我们计划将 Transformer 扩展到涉及文本之外输入和输出模态（modality）的问题，并研究局部的、受限的注意力机制，以高效处理大型输入和输出，如图像、音频和视频。使生成过程更少顺序化是我们另一个研究目标。</p>
+<p>我们用于训练和评估模型的代码可在 <a target="_blank" rel="noopener" href="https://github.com/tensorflow/tensor2tensor">https://github.com/tensorflow/tensor2tensor</a> 获得。</p>
+<p><strong>致谢</strong>：我们感谢 Nal Kalchbrenner 和 Stephan Gouws 富有成果的评论、更正和启发。</p>
+<hr>
+<h2 id="附录-A：注意力可视化">附录 A：注意力可视化</h2>
+<p><strong>图 3</strong>：注意力机制跟踪长距离依赖的一个示例——第 6 层中第 5 层的编码器自注意力。许多注意力头关注动词 “making” 的一个远距离依赖，补全了短语 “making…more difficult”。此处仅显示单词 “making” 的注意力。不同颜色代表不同的头。建议彩色查看。</p>
+<p><img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig3.png" alt="图3：注意力机制跟踪长距离依赖"></p>
+<p><strong>图 4</strong>：同样是第 6 层中第 5 层的两个注意力头，显然参与了回指消解（anaphora resolution）。上图：头 5 的完整注意力。下图：仅从单词 “its” 出发、对于注意力头 5 和 6 的隔离注意力。注意，对于该单词，注意力非常集中（sharp）。</p>
+<p><img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig4a.png" alt="图4上图：头5的完整注意力"><br>
+<img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig4b.png" alt="图4下图：单词its的隔离注意力"></p>
+<p><strong>图 5</strong>：许多注意力头表现出似乎与句子结构相关的行为。我们在上文中给出了两个这样的示例，来自第 6 层中第 5 层编码器自注意力的两个不同头。这些头显然学会了执行不同的任务。</p>
+<p><img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig5a.png" alt="图5示例一"><br>
+<img data-src="../attachments/2026-08-08-attention-is-all-you-need.blog/fig5b.png" alt="图5示例二"></p>
+<hr>
+<h2 id="参考文献（保留原文）">参考文献（保留原文）</h2>
+<p>[1] Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hinton. Layer normalization. arXiv preprint arXiv:1607.06450, 2016.</p>
+<p>[2] Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio. Neural machine translation by jointly learning to align and translate. CoRR, abs/1409.0473, 2014.</p>
+<p>[3] Denny Britz, Anna Goldie, Minh-Thang Luong, and Quoc V. Le. Massive exploration of neural machine translation architectures. CoRR, abs/1703.03906, 2017.</p>
+<p>[4] Jianpeng Cheng, Li Dong, and Mirella Lapata. Long short-term memory-networks for machine reading. arXiv preprint arXiv:1601.06733, 2016.</p>
+<p>[5] Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Fethi Bougares, Holger Schwenk, and Yoshua Bengio. Learning phrase representations using rnn encoder-decoder for statistical machine translation. CoRR, abs/1406.1078, 2014.</p>
+<p>[6] Francois Chollet. Xception: Deep learning with depthwise separable convolutions. arXiv preprint arXiv:1610.02357, 2016.</p>
+<p>[7] Junyoung Chung, Çaglar Gülçehre, Kyunghyun Cho, and Yoshua Bengio. Empirical evaluation of gated recurrent neural networks on sequence modeling. CoRR, abs/1412.3555, 2014.</p>
+<p>[8] Chris Dyer, Adhiguna Kuncoro, Miguel Ballesteros, and Noah A. Smith. Recurrent neural network grammars. In Proc. of NAACL, 2016.</p>
+<p>[9] Jonas Gehring, Michael Auli, David Grangier, Denis Yarats, and Yann N. Dauphin. Convolutional sequence to sequence learning. arXiv preprint arXiv:1705.03122v2, 2017.</p>
+<p>[10] Alex Graves. Generating sequences with recurrent neural networks. arXiv preprint arXiv:1308.0850, 2013.</p>
+<p>[11] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pages 770–778, 2016.</p>
+<p>[12] Sepp Hochreiter, Yoshua Bengio, Paolo Frasconi, and Jürgen Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies, 2001.</p>
+<p>[13] Sepp Hochreiter and Jürgen Schmidhuber. Long short-term memory. Neural computation, 9(8):1735–1780, 1997.</p>
+<p>[14] Zhongqiang Huang and Mary Harper. Self-training PCFG grammars with latent annotations across languages. In Proceedings of the 2009 Conference on Empirical Methods in Natural Language Processing, pages 832–841. ACL, August 2009.</p>
+<p>[15] Rafal Jozefowicz, Oriol Vinyals, Mike Schuster, Noam Shazeer, and Yonghui Wu. Exploring the limits of language modeling. arXiv preprint arXiv:1602.02410, 2016.</p>
+<p>[16] Lukasz Kaiser and Samy Bengio. Can active memory replace attention? In Advances in Neural Information Processing Systems, (NIPS), 2016.</p>
+<p>[17] Lukasz Kaiser and Ilya Sutskever. Neural GPUs learn algorithms. In International Conference on Learning Representations (ICLR), 2016.</p>
+<p>[18] Nal Kalchbrenner, Lasse Espeholt, Karen Simonyan, Aaron van den Oord, Alex Graves, and Koray Kavukcuoglu. Neural machine translation in linear time. arXiv preprint arXiv:1610.10099v2, 2017.</p>
+<p>[19] Yoon Kim, Carl Denton, Luong Hoang, and Alexander M. Rush. Structured attention networks. In International Conference on Learning Representations, 2017.</p>
+<p>[20] Diederik Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR, 2015.</p>
+<p>[21] Oleksii Kuchaiev and Boris Ginsburg. Factorization tricks for LSTM networks. arXiv preprint arXiv:1703.10722, 2017.</p>
+<p>[22] Zhouhan Lin, Minwei Feng, Cicero Nogueira dos Santos, Mo Yu, Bing Xiang, Bowen Zhou, and Yoshua Bengio. A structured self-attentive sentence embedding. arXiv preprint arXiv:1703.03130, 2017.</p>
+<p>[23] Minh-Thang Luong, Quoc V. Le, Ilya Sutskever, Oriol Vinyals, and Lukasz Kaiser. Multi-task sequence to sequence learning. arXiv preprint arXiv:1511.06114, 2015.</p>
+<p>[24] Minh-Thang Luong, Hieu Pham, and Christopher D Manning. Effective approaches to attention-based neural machine translation. arXiv preprint arXiv:1508.04025, 2015.</p>
+<p>[25] Mitchell P Marcus, Mary Ann Marcinkiewicz, and Beatrice Santorini. Building a large annotated corpus of english: The penn treebank. Computational linguistics, 19(2):313–330, 1993.</p>
+<p>[26] David McClosky, Eugene Charniak, and Mark Johnson. Effective self-training for parsing. In Proceedings of the Human Language Technology Conference of the NAACL, Main Conference, pages 152–159. ACL, June 2006.</p>
+<p>[27] Ankur Parikh, Oscar Täckström, Dipanjan Das, and Jakob Uszkoreit. A decomposable attention model. In Empirical Methods in Natural Language Processing, 2016.</p>
+<p>[28] Romain Paulus, Caiming Xiong, and Richard Socher. A deep reinforced model for abstractive summarization. arXiv preprint arXiv:1705.04304, 2017.</p>
+<p>[29] Slav Petrov, Leon Barrett, Romain Thibaux, and Dan Klein. Learning accurate, compact, and interpretable tree annotation. In Proceedings of the 21st International Conference on Computational Linguistics and 44th Annual Meeting of the ACL, pages 433–440. ACL, July 2006.</p>
+<p>[30] Ofir Press and Lior Wolf. Using the output embedding to improve language models. arXiv preprint arXiv:1608.05859, 2016.</p>
+<p>[31] Rico Sennrich, Barry Haddow, and Alexandra Birch. Neural machine translation of rare words with subword units. arXiv preprint arXiv:1508.07909, 2015.</p>
+<p>[32] Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, Andy Davis, Quoc Le, Geoffrey Hinton, and Jeff Dean. Outrageously large neural networks: The sparsely-gated mixture-of-experts layer. arXiv preprint arXiv:1701.06538, 2017.</p>
+<p>[33] Nitish Srivastava, Geoffrey E Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov. Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1):1929–1958, 2014.</p>
+<p>[34] Sainbayar Sukhbaatar, Arthur Szlam, Jason Weston, and Rob Fergus. End-to-end memory networks. In C. Cortes, N. D. Lawrence, D. D. Lee, M. Sugiyama, and R. Garnett, editors, Advances in Neural Information Processing Systems 28, pages 2440–2448. Curran Associates, Inc., 2015.</p>
+<p>[35] Ilya Sutskever, Oriol Vinyals, and Quoc VV Le. Sequence to sequence learning with neural networks. In Advances in Neural Information Processing Systems, pages 3104–3112, 2014.</p>
+<p>[36] Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jonathon Shlens, and Zbigniew Wojna. Rethinking the inception architecture for computer vision. CoRR, abs/1512.00567, 2015.</p>
+<p>[37] Vinyals &amp; Kaiser, Koo, Petrov, Sutskever, and Hinton. Grammar as a foreign language. In Advances in Neural Information Processing Systems, 2015.</p>
+<p>[38] Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, et al. Google’s neural machine translation system: Bridging the gap between human and machine translation. arXiv preprint arXiv:1609.08144, 2016.</p>
+<p>[39] Jie Zhou, Ying Cao, Xuguang Wang, Peng Li, and Wei Xu. Deep recurrent models with fast-forward connections for neural machine translation. CoRR, abs/1606.04199, 2016.</p>
+<p>[40] Muhua Zhu, Yue Zhang, Wenliang Chen, Min Zhang, and Jingbo Zhu. Fast and accurate shift-reduce constituent parsing. In Proceedings of the 51st Annual Meeting of the ACL (Volume 1: Long Papers), pages 434–443. ACL, August 2013.</p>
+
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
+    
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">2 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">3 模型架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E7%BC%96%E7%A0%81%E5%99%A8%E5%92%8C%E8%A7%A3%E7%A0%81%E5%99%A8%E5%A0%86%E6%A0%88"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 编码器和解码器堆栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 注意力</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E7%BC%A9%E6%94%BE%E7%82%B9%E7%A7%AF%E6%B3%A8%E6%84%8F%E5%8A%9B%EF%BC%88Scaled-Dot-Product-Attention%EF%BC%89"><span class="nav-number">4.2.1.</span> <span class="nav-text">3.2.1 缩放点积注意力（Scaled Dot-Product Attention）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%EF%BC%88Multi-Head-Attention%EF%BC%89"><span class="nav-number">4.2.2.</span> <span class="nav-text">3.2.2 多头注意力（Multi-Head Attention）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-3-%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%9C%A8%E6%88%91%E4%BB%AC%E6%A8%A1%E5%9E%8B%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">4.2.3.</span> <span class="nav-text">3.2.3 注意力在我们模型中的应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E4%BD%8D%E7%BD%AE%E9%80%90%E4%BD%8D%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%EF%BC%88Position-wise-Feed-Forward-Networks%EF%BC%89"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 位置逐位前馈网络（Position-wise Feed-Forward Networks）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%B5%8C%E5%85%A5%E5%92%8C-Softmax"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 嵌入和 Softmax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%EF%BC%88Positional-Encoding%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 位置编码（Positional Encoding）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E8%87%AA%E6%B3%A8%E6%84%8F%E5%8A%9B%EF%BC%88Why-Self-Attention%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">4 为什么用自注意力（Why Self-Attention）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E8%AE%AD%E7%BB%83"><span class="nav-number">6.</span> <span class="nav-text">5 训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E4%B8%8E%E5%88%86%E6%89%B9"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 训练数据与分批</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E7%A1%AC%E4%BB%B6%E4%B8%8E%E6%97%B6%E7%A8%8B"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 硬件与时程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E4%BC%98%E5%8C%96%E5%99%A8"><span class="nav-number">6.3.</span> <span class="nav-text">5.3 优化器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">6.4.</span> <span class="nav-text">5.4 正则化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E7%BB%93%E6%9E%9C"><span class="nav-number">7.</span> <span class="nav-text">6 结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91"><span class="nav-number">7.1.</span> <span class="nav-text">6.1 机器翻译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E6%A8%A1%E5%9E%8B%E5%8F%98%E4%BD%93"><span class="nav-number">7.2.</span> <span class="nav-text">6.2 模型变体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E8%8B%B1%E8%AF%AD%E6%88%90%E5%88%86%E5%8F%A5%E6%B3%95%E5%88%86%E6%9E%90%EF%BC%88English-Constituency-Parsing%EF%BC%89"><span class="nav-number">7.3.</span> <span class="nav-text">6.3 英语成分句法分析（English Constituency Parsing）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-number">8.</span> <span class="nav-text">7 结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95-A%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">9.</span> <span class="nav-text">附录 A：注意力可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE%EF%BC%88%E4%BF%9D%E7%95%99%E5%8E%9F%E6%96%87%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">参考文献（保留原文）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="奶油苏打和冕型灯"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">奶油苏打和冕型灯</p>
+  <div class="site-description" itemprop="description">在下不才，于图门下求道，辟此秘境，记录技术学习点滴。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Blooming-cherry" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Blooming-cherry" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yifan230@gmail.com" title="E-Mail → mailto:yifan230@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://music.163.com/#/user/home?id=6326055984" title="网易云音乐 → https:&#x2F;&#x2F;music.163.com&#x2F;#&#x2F;user&#x2F;home?id&#x3D;6326055984" rel="noopener" target="_blank"><i class="fa fa-music fa-fw"></i>网易云音乐</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/3461564099201962" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;3461564099201962" rel="noopener" target="_blank"><i class="fa fa-play-circle fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://echoesfromshell.netlify.app/" title="https:&#x2F;&#x2F;echoesfromshell.netlify.app" rel="noopener" target="_blank">EchoesFromShell</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://seewater.cc/" title="https:&#x2F;&#x2F;seewater.cc" rel="noopener" target="_blank">SeeWater</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">奶油苏打和冕型灯</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">15k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">14 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+<!-- Arknights credit -->
+<script>
+(function(){
+  function injectCredit() {
+    var footer = document.querySelector('.footer');
+    if (!footer) return;
+    // Remove any stale duplicates first
+    var stale = footer.querySelectorAll('.arknights-credit');
+    stale.forEach(function(el) { el.remove(); });
+    var credit = document.createElement('div');
+    credit.className = 'arknights-credit';
+    credit.style.cssText = 'margin-top:6px;font-size:12px;color:#999;text-align:center;';
+    credit.innerHTML = 'Inspired by <a href="https://ak.hypergryph.com/" target="_blank" style="color:#999;">Arknights / 明日方舟</a> &copy; Hypergryph / Studio Montagne';
+    footer.appendChild(credit);
+  }
+  injectCredit();
+  // Re-inject after PJAX page swaps (footer may have been replaced)
+  document.addEventListener('pjax:success', injectCredit);
+})();
+</script>
+
+<!-- Monster Siren URL Loader -->
+<script src="/js/siren-url-loader.js"></script>
+
+<!-- Global Mini Vinyl Player -->
+<div id="mpOverlay" style="display:none"></div>
+<div id="mpPlaylist" style="display:none"></div>
+<div id="miniPlayer">
+  <button class="mp-ctrl" id="mpPrev" title="上一首"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+  <div id="mpDisc" title="展开播放列表"><div id="mpCover"></div></div>
+  <span id="mpTitle">—</span>
+  <button id="mpBtn" title="播放/暂停">
+    <span class="mp-icon-play">▶</span>
+    <span class="mp-icon-pause" style="display:none">⏸</span>
+  </button>
+  <button class="mp-ctrl" id="mpNext" title="下一首"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+</div>
+
+<script>
+(function(){
+  var PL = [
+    {cid:"125042",name:"Sanctuary Inside",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/8aad7b966f7a8069f07c094251c5a2eb/6A12C018/siren/audio/20250430/61d007fbdd059d6c77d24359aa85c1f4.wav",cover:"https://web.hycdn.cn/siren/pic/20250430/384e007ed1908ce919a3bf704a5b36ff.png",album:"Sanctuary Inside"},
+    {cid:"306814",name:"Best Moments of...",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/d0f258fb5ec485c658e88aaebf68b821/6A12C018/siren/audio/20231019/d730dee09f6a74272784b2d5de200123.wav",cover:"https://web.hycdn.cn/siren/pic/20231019/ae52bd635f6a7e89be3c3d481788ce82.png",album:"Best Moments of..."},
+    {cid:"953953",name:"Little Wish",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/e0b903a9b2601ce6cf544c7580d6f1bf/6A12C019/siren/audio/20250801/10c5003150590f14844e554df545e8b4.wav",cover:"https://web.hycdn.cn/siren/pic/20250801/7d4b586dddf00b4e2a43c809f3fe4b45.jpg",album:"Little Wish"},
+    {cid:"306846",name:"Your Star",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/d3d870c65bbc0197bee6e97c306eaebb/6A12C019/siren/audio/20220608/8f704dc83ffaebe4a9786627564f1b22.mp3",cover:"https://web.hycdn.cn/siren/pic/20220608/7ceda0fb37acc8cdfc7f25e8352dbbc8.jpg",album:"Your Star"},
+    {cid:"697699",name:"Grow on My Time",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/db459452c39abc245786c4c16d7f491c/6A12C019/siren/audio/20250606/f9746a00e5f44840bacfb51cbe228f3e.wav",cover:"https://web.hycdn.cn/siren/pic/20250606/02da85b2cc73f426ef6cfec4910d31d9.jpg",album:"Grow on My Time"},
+    {cid:"953984",name:"Before Summer",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/bf58f2860d163be53ff969ecb64247d3/6A12C019/siren/audio/20230601/7725b49fdb287aa281103add3fd99c4e.wav",cover:"https://web.hycdn.cn/siren/pic/20230601/d052f9558a4ef28409556ba761cdd861.jpg",album:"Before Summer"},
+    {cid:"232224",name:"Innocence",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/59cb1b3aa2d6442ea9a31a55ba7c7b7d/6A12C019/siren/audio/20260430/ad9bf0b9ea6ca69a4d97cf479101b65f.wav",cover:"https://web.hycdn.cn/siren/pic/20260430/87e3010a27c3f0f85422fa6f1f33483e.jpg",album:"Innocence"},
+    {cid:"306815",name:"Effervescence",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/57deef730043c92d12fd94e18844f899/6A12C0C9/siren/audio/20230809/68b2cd453671e11d132fd2d3cd911879.wav",cover:"https://web.hycdn.cn/siren/pic/20230809/ecc4c113772a8e8a8cdde6aa303a3ad6.jpg",album:"火山旅梦OST"}
+  ];
+
+  // Resolve fresh URL from proxy cache, fallback to hardcoded
+  function resolveUrl(track) {
+    if (window.__sirenUrls && window.__sirenUrls[track.cid]) {
+      return window.__sirenUrls[track.cid];
+    }
+    return track.url;
+  }
+
+  // PJAX guard: body-end.swig re-executes inside #pjax on every navigation.
+  // Rebind new DOM to the existing Audio instead of creating a duplicate.
+  if (window.__vinyl) {
+    var V = window.__vinyl;
+    var mp2 = document.getElementById('miniPlayer');
+    var mpDisc2 = document.getElementById('mpDisc');
+    var mpCover2 = document.getElementById('mpCover');
+    var mpTitle2 = document.getElementById('mpTitle');
+    var mpBtn2 = document.getElementById('mpBtn');
+    var mpPrev2 = document.getElementById('mpPrev');
+    var mpNext2 = document.getElementById('mpNext');
+    var iconPlay2 = mpBtn2.querySelector('.mp-icon-play');
+    var iconPause2 = mpBtn2.querySelector('.mp-icon-pause');
+    var plPanel2 = document.getElementById('mpPlaylist');
+    var overlay2 = document.getElementById('mpOverlay');
+    var plOpen2 = false;
+
+    mpCover2.style.backgroundImage = 'url(' + V.playlist[V.getIdx()].cover + ')';
+    mpTitle2.textContent = V.playlist[V.getIdx()].name;
+    var playing = !V.audio.paused;
+    mpDisc2.classList.toggle('spinning', playing);
+    iconPlay2.style.display = playing ? 'none' : 'block';
+    iconPause2.style.display = playing ? 'block' : 'none';
+
+    function updateHighlight2() {
+      var rows = plPanel2.querySelectorAll('.mpp-row');
+      rows.forEach(function(r, i) { r.classList.toggle('active', i === V.getIdx()); });
+    }
+    plPanel2.innerHTML = '';
+    V.playlist.forEach(function(t, i) {
+      var row = document.createElement('div');
+      row.className = 'mpp-row';
+      row.innerHTML = '<span class="mpp-num">' + (i < 9 ? '0' + (i + 1) : i + 1) + '</span><span class="mpp-name">' + t.name + '</span><span class="mpp-artist">' + t.artist + '</span>';
+      row.addEventListener('click', function() {
+        V.load(i);
+        if (V.audio.paused) V.toggle();
+        plPanel2.style.display = 'none';
+        overlay2.style.display = 'none';
+        mpDisc2.classList.remove('expanded');
+        plOpen2 = false;
+      });
+      plPanel2.appendChild(row);
+    });
+    updateHighlight2();
+
+    function openPanel2() { plOpen2 = true; plPanel2.style.display = 'block'; overlay2.style.display = 'block'; mpDisc2.classList.add('expanded'); }
+    function closePanel2() { plOpen2 = false; plPanel2.style.display = 'none'; overlay2.style.display = 'none'; mpDisc2.classList.remove('expanded'); }
+    mpDisc2.addEventListener('click', function() { if (plOpen2) closePanel2(); else openPanel2(); });
+    overlay2.addEventListener('click', closePanel2);
+    mpBtn2.addEventListener('click', function() { V.toggle(); });
+    mpPrev2.addEventListener('click', function() { V.prev(); });
+    mpNext2.addEventListener('click', function() { V.next(); });
+    var onMusic = window.location.pathname.indexOf('/music') !== -1;
+    mp2.style.display = onMusic ? 'none' : '';
+    if (!V.audio.__syncBound) {
+      V.audio.__syncBound = true;
+      function syncUI() {
+        var d = document.getElementById('mpDisc');
+        var ip = document.querySelector('#mpBtn .mp-icon-play');
+        var ipa = document.querySelector('#mpBtn .mp-icon-pause');
+        var p = !V.audio.paused;
+        if (d) d.classList.toggle('spinning', p);
+        if (ip) ip.style.display = p ? 'none' : 'block';
+        if (ipa) ipa.style.display = p ? 'block' : 'none';
+      }
+      V.audio.addEventListener('play', syncUI);
+      V.audio.addEventListener('pause', syncUI);
+      var origLoad = V.load;
+      V.load = function(i) {
+        origLoad(i);
+        var cov = document.getElementById('mpCover');
+        var tit = document.getElementById('mpTitle');
+        if (cov) cov.style.backgroundImage = 'url(' + V.playlist[i].cover + ')';
+        if (tit) tit.textContent = V.playlist[i].name;
+        var rows = document.querySelectorAll('.mpp-row');
+        rows.forEach(function(r, j) { r.classList.toggle('active', j === i); });
+      };
+      var origCheck = V.checkMusicPage;
+      V.checkMusicPage = function() {
+        origCheck();
+        var m = document.getElementById('miniPlayer');
+        if (m) { var onM = window.location.pathname.indexOf('/music') !== -1; m.style.display = onM ? 'none' : ''; }
+      };
+    }
+    return;
+  }
+
+  var audio = new Audio();
+  audio.volume = 0.3;
+  var idx = 0;
+  var playing = false;
+  var mp = document.getElementById('miniPlayer');
+  var mpDisc = document.getElementById('mpDisc');
+  var mpCover = document.getElementById('mpCover');
+  var mpTitle = document.getElementById('mpTitle');
+  var mpBtn = document.getElementById('mpBtn');
+  var mpPrev = document.getElementById('mpPrev');
+  var mpNext = document.getElementById('mpNext');
+  var iconPlay = mpBtn.querySelector('.mp-icon-play');
+  var iconPause = mpBtn.querySelector('.mp-icon-pause');
+  var plPanel = document.getElementById('mpPlaylist');
+  var overlay = document.getElementById('mpOverlay');
+  var plOpen = false;
+
+  // Restore from localStorage
+  try {
+    var s = JSON.parse(localStorage.getItem('vs'));
+    if (s && s.i < PL.length) { idx = s.i; audio.currentTime = s.t || 0; }
+  } catch(e) {}
+
+  function save() {
+    try { localStorage.setItem('vs', JSON.stringify({i:idx, t:audio.currentTime, p:playing})); } catch(e) {}
+  }
+
+  function load(i) {
+    var changed = (idx !== i);
+    idx = i;
+    var t = PL[i];
+    if (changed || !audio.src) { audio.src = resolveUrl(t); audio.setAttribute('data-idx', i); }
+    mpCover.style.backgroundImage = 'url(' + t.cover + ')';
+    mpTitle.textContent = t.name;
+    updatePlaylistHighlight();
+    save();
+    if (playing) audio.play();
+  }
+
+  function setPlaying(p) {
+    playing = p;
+    mpDisc.classList.toggle('spinning', p);
+    iconPlay.style.display = p ? 'none' : 'block';
+    iconPause.style.display = p ? 'block' : 'none';
+    updateB2t();
+    save();
+  }
+
+  function toggle() {
+    if (playing) { audio.pause(); setPlaying(false); }
+    else { audio.play().then(function(){ setPlaying(true); }).catch(function(){}); }
+  }
+
+  function next() { load((idx + 1) % PL.length); }
+  function prev() { load((idx - 1 + PL.length) % PL.length); }
+
+  function updateB2t() {
+    var b2t = document.querySelector('.back-to-top');
+    if (b2t) {
+      b2t.classList.toggle('vinyl-on', playing);
+      if (!b2t.querySelector('.b2t-disc')) {
+        var disc = document.createElement('div');
+        disc.className = 'b2t-disc';
+        b2t.appendChild(disc);
+      }
+    }
+  }
+
+  function checkMusicPage() {
+    var onMusic = window.location.pathname.indexOf('/music') !== -1;
+    mp.style.display = onMusic ? 'none' : '';
+  }
+
+  // --- Playlist panel ---
+  function buildPlaylist() {
+    plPanel.innerHTML = '';
+    PL.forEach(function(t, i) {
+      var row = document.createElement('div');
+      row.className = 'mpp-row';
+      row.innerHTML = '<span class="mpp-num">' + (i < 9 ? '0' + (i + 1) : i + 1) + '</span><span class="mpp-name">' + t.name + '</span><span class="mpp-artist">' + t.artist + '</span>';
+      row.addEventListener('click', function() {
+        load(i);
+        if (!playing) toggle();
+        closePlaylist();
+      });
+      plPanel.appendChild(row);
+    });
+    updatePlaylistHighlight();
+  }
+
+  function updatePlaylistHighlight() {
+    var rows = plPanel.querySelectorAll('.mpp-row');
+    rows.forEach(function(r, i) { r.classList.toggle('active', i === idx); });
+  }
+
+  function openPlaylist() {
+    plOpen = true;
+    plPanel.style.display = 'block';
+    overlay.style.display = 'block';
+    mpDisc.classList.add('expanded');
+  }
+
+  function closePlaylist() {
+    plOpen = false;
+    plPanel.style.display = 'none';
+    overlay.style.display = 'none';
+    mpDisc.classList.remove('expanded');
+  }
+
+  mpDisc.addEventListener('click', function() {
+    if (plOpen) closePlaylist(); else openPlaylist();
+  });
+  overlay.addEventListener('click', closePlaylist);
+  buildPlaylist();
+
+  // --- Audio events ---
+  audio.addEventListener('loadedmetadata', save);
+  audio.addEventListener('ended', function() {
+    playing = true;
+    next();
+  });
+  audio.addEventListener('play', function(){ setPlaying(true); });
+  audio.addEventListener('pause', function(){ setPlaying(false); });
+  audio.addEventListener('timeupdate', function(){
+    if (audio.currentTime && !(Math.floor(audio.currentTime) % 2)) save();
+  });
+  audio.addEventListener('error', function(){ setPlaying(false); });
+
+  mpBtn.addEventListener('click', toggle);
+  mpPrev.addEventListener('click', prev);
+  mpNext.addEventListener('click', next);
+
+  // PJAX: update UI after page transitions
+  document.addEventListener('pjax:success', function() {
+    checkMusicPage();
+    updateB2t();
+  });
+
+  // Init
+  checkMusicPage();
+  updateB2t();
+
+  // Expose for music page
+  window.__vinyl = {
+    audio: audio, playlist: PL,
+    getIdx: function(){ return idx; },
+    load: load, toggle: toggle, next: next, prev: prev,
+    setPlaying: setPlaying, checkMusicPage: checkMusicPage
+  };
+
+  // Initial load + auto-play
+  load(idx);
+  if (s && s.p && window.location.pathname.indexOf('/music') === -1) {
+    audio.play().then(function(){ setPlaying(true); }).catch(function(){});
+  }
+})();
+</script>
+
+<!-- Live2D 看板娘 -->
+<style>
+#waifu {
+  transform: scale(0.42);
+  transform-origin: left bottom;
+}
+/* 工具栏缩小 + 左移 */
+#waifu-tool {
+  transform: scale(0.7);
+  transform-origin: left bottom;
+  left: 8px !important;
+  right: auto !important;
+}
+@media (max-width: 768px) {
+  #waifu { display: none; }
+}
+</style>
+
+<script src="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/live2d.min.js"></script>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu.css">
+
+<!-- 拦截 CDN 请求：过滤模型 + sagiri 语音走本地 -->
+<script>
+(function(){
+  // 抑制 widget v1.0.1 Cubism2 hitTest 报错
+  var _warn = console.warn, _error = console.error;
+  console.warn = function() {
+    var m = Array.prototype.join.call(arguments, ' ');
+    if (m.indexOf('hit_areas') !== -1 || m.indexOf('D_REF') !== -1 || m.indexOf('_$NP') !== -1) return;
+    return _warn.apply(console, arguments);
+  };
+  console.error = function() {
+    var m = Array.prototype.join.call(arguments, ' ');
+    if (m.indexOf('hit_areas') !== -1 || m.indexOf('D_REF') !== -1 || m.indexOf('_$NP') !== -1) return;
+    return _error.apply(console, arguments);
+  };
+
+  var origFetch = window.fetch;
+  var CDN = 'https://cdn.jsdelivr.net/npm/yzs-live2d_src@1.1.0';
+
+  window.fetch = function(url, opts) {
+    if (typeof url !== 'string') return origFetch.apply(this, arguments);
+
+    // 过滤模型列表 → 只保留三人
+    if (url.indexOf('yzs-live2d_src') !== -1 && url.indexOf('model_list.json') !== -1) {
+      return Promise.resolve(new Response(JSON.stringify({
+        models: ["umaru", "sagiri", "chino"],
+        messages: [
+          "U.M.R. はい! 小埋参上!",
+          "埃罗芒阿老师来啦！",
+          "欢迎光临 Rabbit House ~"
+        ]
+      }), { headers: { 'Content-Type': 'application/json' } }));
+    }
+
+    // sagiri 的 index.json → 走本地（含 B 站语音引用）
+    if (url.indexOf('yzs-live2d_src') !== -1 && url.indexOf('sagiri/index.json') !== -1) {
+      return origFetch('/js/model/sagiri/index.json', opts);
+    }
+
+    // sagiri 的语音文件 → 走本地（B 站提取的 WAV）
+    if (url.indexOf('yzs-live2d_src') !== -1 && url.indexOf('sagiri/voice/') !== -1) {
+      return origFetch(url.replace(CDN + '/model/sagiri/', '/js/model/sagiri/'), opts);
+    }
+
+    return origFetch.apply(this, arguments);
+  };
+})();
+</script>
+
+<!-- 全局音量控制 -->
+<script>
+(function(){
+  if (window.__lv2AudioHooked) return;
+  window.__lv2AudioHooked = true;
+  var VOL = 0.5;
+  var COOLDOWN = 7000;
+  var lastPlay = {};
+  var liveAudios = {};
+
+  function modelOf(url) {
+    if (!url) return null;
+    var s = String(url);
+    if (s.indexOf('/umaru/') !== -1) return 'umaru';
+    if (s.indexOf('/sagiri/') !== -1) return 'sagiri';
+    if (s.indexOf('/chino/') !== -1) return 'chino';
+    return null;
+  }
+
+  function stopOthers(model) {
+    Object.keys(liveAudios).forEach(function(m) {
+      if (m === model) return;
+      (liveAudios[m] || []).forEach(function(a) {
+        try { a.pause(); if (a.currentTime !== undefined) a.currentTime = 0; } catch(e) {}
+      });
+      liveAudios[m] = [];
+    });
+  }
+
+  var OrigAudio = window.Audio;
+  window.Audio = function(url) {
+    var a = new OrigAudio(url);
+    a.volume = VOL;
+
+    var model = modelOf(url);
+    if (model && !a.__lv2Monitored) {
+      a.__lv2Monitored = true;
+      a.__lv2Model = model;
+
+      var _play = a.play;
+      a.play = function() {
+        var now = Date.now();
+        if (lastPlay[model] && (now - lastPlay[model] < COOLDOWN)) {
+          return Promise.resolve();
+        }
+        stopOthers(model);
+        lastPlay[model] = now;
+        if (!liveAudios[model]) liveAudios[model] = [];
+        liveAudios[model].push(a);
+        return _play.call(a).catch(function(){});
+      };
+
+      a.addEventListener('ended', function() {
+        var arr = liveAudios[model];
+        if (!arr) return;
+        var idx = arr.indexOf(a);
+        if (idx !== -1) arr.splice(idx, 1);
+      });
+      a.addEventListener('pause', function() {
+        var arr = liveAudios[model];
+        if (!arr) return;
+        var idx = arr.indexOf(a);
+        if (idx !== -1) arr.splice(idx, 1);
+      });
+    }
+
+    return a;
+  };
+  window.Audio.prototype = OrigAudio.prototype;
+})();
+</script>
+
+
+<script>
+(function(){
+  // 抑制 Cubism2 运行时 hit_areas 引用异常
+  window.addEventListener('error', function(e) {
+    var m = e.message || '';
+    if (m.indexOf('_$NP') !== -1 || m.indexOf('D_REF') !== -1 || m.indexOf('null') !== -1 && e.filename && e.filename.indexOf('live2d.min.js') !== -1) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  var s = document.createElement('script');
+  s.type = 'module';
+  s.src = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu-tips.js';
+  s.onload = function() {
+    if (typeof initWidget !== 'function') return;
+    initWidget({
+      waifuPath: '/js/live2d-config.json',
+      cdnPath: 'https://cdn.jsdelivr.net/npm/yzs-live2d_src@1.1.0/',
+      cubism2Path: 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/live2d.min.js',
+      cubism5Path: 'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
+      tools: ['switch-model', 'switch-texture', 'photo', 'info', 'quit'],
+      logLevel: 'warn',
+      drag: false
+    });
+  };
+  document.head.appendChild(s);
+})();
+</script>
+
+<!-- 鼠标拖尾粒子 -->
+
+<!-- 鼠标拖尾粒子 -->
+<canvas id="mouseTrail" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999"></canvas>
+<script>
+(function(){
+  var canvas = document.getElementById('mouseTrail');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var maxParticles = 40;
+  var mouse = { x: -100, y: -100 };
+  var raf;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  document.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    var now = Date.now();
+    for (var i = 0; i < 2; i++) {
+      if (particles.length >= maxParticles) break;
+      particles.push({
+        x: mouse.x,
+        y: mouse.y,
+        r: Math.random() * 3 + 1.5,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        life: 1,
+        decay: Math.random() * 0.02 + 0.015,
+        hue: Math.random() * 60 + 200
+      });
+    }
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+      if (p.life <= 0) { particles.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+      ctx.fillStyle = 'hsla(' + p.hue + ', 80%, 65%, ' + (p.life * 0.6) + ')';
+      ctx.fill();
+    }
+    raf = requestAnimationFrame(draw);
+  }
+  draw();
+
+  // PJAX guard
+  document.addEventListener('pjax:success', function() {
+    canvas = document.getElementById('mouseTrail');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    resize();
+  });
+})();
+</script>
+
+    </div>
+</body>
+</html>
