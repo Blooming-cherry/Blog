@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-08-08
+
+- **[Attention is all you need](2026-08-08-attention-is-all-you-need.html)** — Transformer 论文《Attention Is All You Need》全文中文翻译：自注意力机制、模型架构、训练与结果，附全部图表
+
 ### 2026-07-26
 
 - **[C++ STL 容器 & 哈希结构 知识速查](2026-07-26-cpp-stl-hash-cheatsheet.html)** — vector / string / unordered_map / map / deque / priority_queue 全容器速查 + 6 种哈希构造 + 4 种冲突解决底层原理
