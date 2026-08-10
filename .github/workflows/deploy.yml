@@ -30,12 +30,6 @@ jobs:
       - name: Build Hexo
         run: npx hexo generate
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: technical/public
-
       - name: Deploy to cloud server
         run: |
           mkdir -p ~/.ssh
