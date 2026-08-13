@@ -20,4 +20,4 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" terminal/index.html ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/adaydream/index.html
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" terminal/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/adaydream/
