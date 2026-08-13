@@ -12,6 +12,7 @@ public/
 
 # Obsidian vault config
 .obsidian/
+.trash/
 
 # System files
 .DS_Store

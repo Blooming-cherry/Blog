@@ -1,4 +1,4 @@
-﻿---
+---
 title: Attention is all you need（中文翻译）
 date: 2026-08-08
 layout: page
