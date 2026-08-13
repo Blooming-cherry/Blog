@@ -1,7 +1,7 @@
 # Excluded top-level directories
-terminal/
 personal/
 arknights-art-repo/
+rhinelablogo/
 
 # Dependencies
 node_modules/
