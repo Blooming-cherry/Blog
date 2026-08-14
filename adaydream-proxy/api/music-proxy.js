@@ -2,6 +2,7 @@
 // Deploy with: cd adaydream-proxy && npx vercel
 
 const SONGS = [
+  { cid: "880337", name: "Control's Wishes", artist: "塞壬唱片-MSR", album: "孤星OST", cover: "https://web.hycdn.cn/siren/pic/20230508/8f7be68ffa9dea9da961df0997466617.jpg" },
   { cid: "125042", name: "Sanctuary Inside", artist: "塞壬唱片-MSR", album: "Sanctuary Inside", cover: "https://web.hycdn.cn/siren/pic/20250430/384e007ed1908ce919a3bf704a5b36ff.png" },
   { cid: "306814", name: "Best Moments of...", artist: "塞壬唱片-MSR", album: "Best Moments of...", cover: "https://web.hycdn.cn/siren/pic/20231019/ae52bd635f6a7e89be3c3d481788ce82.png" },
   { cid: "953953", name: "Little Wish", artist: "塞壬唱片-MSR", album: "Little Wish", cover: "https://web.hycdn.cn/siren/pic/20250801/7d4b586dddf00b4e2a43c809f3fe4b45.jpg" },

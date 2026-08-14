@@ -653,6 +653,17 @@
       });
     }
 
+    // 从 Vercel 代理拉取当前有效音频链接，规避 HyCDN 防盗链 token 轮换失效
+    if (m) {
+      fetch('https://adaydream-proxy.vercel.app/api/music-proxy')
+        .then(r => r.json())
+        .then(d => {
+          const song = (d.data || []).find(s => s.cid === '880337');
+          if (song && song.url) m.src = song.url;
+        })
+        .catch(() => {});
+    }
+
     // Blocks staggered reveal
     const blocks = document.querySelectorAll('.Blocks .Block');
     blocks.forEach((block, i) => {
@@ -711,9 +722,7 @@
     }
   });
 </script>
-<audio id="bgm"
-       src="https://res01.hycdn.cn/34a1279ebbf41dfff5ead1c4ec25ad9d/6A7DDCA5/siren/audio/20230508/4dab46d341dc172c38866a0aad1fdd34.wav"
-       loop preload="none"></audio>
+<audio id="bgm" loop preload="none"></audio>
 
 </body>
 </html>
