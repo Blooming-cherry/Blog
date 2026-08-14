@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-08-13
+
+- **[主站导航页部署日志](2026-08-13-adaydream-terminal-deploy-log.html)** — Rhine Lab 终端导航页上线 adaydream.cn 主站：音乐源选型 / DOMContentLoaded 修复 / Nginx 部署 / GitHub Actions 自动同步
+
 ### 2026-08-08
 
 - **[Attention is all you need](2026-08-08-attention-is-all-you-need.html)** — Transformer 论文《Attention Is All You Need》全文中文翻译：自注意力机制、模型架构、训练与结果，附全部图表
