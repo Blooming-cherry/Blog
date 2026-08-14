@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-08-14
+
+- **[主站背景乐修复日志](2026-08-14-adaydream-music-proxy-fix-log.html)** — wav 直链令牌轮换失效 → Vercel 代理动态拉取；Git Account Linking 拦截的绕过（非 Git 目录部署）
+
 ### 2026-08-13
 
 - **[主站导航页部署日志](2026-08-13-adaydream-terminal-deploy-log.html)** — Rhine Lab 终端导航页上线 adaydream.cn 主站：音乐源选型 / DOMContentLoaded 修复 / Nginx 部署 / GitHub Actions 自动同步

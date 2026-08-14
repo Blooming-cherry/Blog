@@ -20,7 +20,7 @@ comments: false
 | 项目 | 值 |
 |------|-----|
 | 云服务商 | 阿里云 ECS |
-| 公网 IP | `47.116.103.176` |
+| 公网 IP | `x.x.x.x` |
 | 系统 | Alibaba Cloud Linux |
 | Web 面板 | 宝塔面板 |
 | Nginx | 1.28.3，配置目录 `/www/server/panel/vhost/nginx/` |
@@ -82,8 +82,8 @@ comments: false
 ## 当前架构
 
 ```
-adaydream.cn        → 47.116.103.176:/var/www/adaydream（终端导航页）✅（DNS A 记录待加）
-blog.adaydream.cn   → 47.116.103.176:/var/www/blog（Hexo 博客）✅
+adaydream.cn        → x.x.x.x:/var/www/adaydream（终端导航页）✅（DNS A 记录待加）
+blog.adaydream.cn   → x.x.x.x:/var/www/blog（Hexo 博客）✅
 sonnect.adaydream.cn→ （预留，导航页，待部署）
 ```
 
@@ -101,6 +101,6 @@ sonnect.adaydream.cn→ （预留，导航页，待部署）
 
 ## 待办
 
-- [ ] 阿里云 DNS 加 `@` A 记录 → `47.116.103.176`（部署最后一步）
+- [ ] 阿里云 DNS 加 `@` A 记录 → `x.x.x.x`（部署最后一步）
 - [ ] 补充页面 favicon 与 og 分享标签
 - [ ] 留意 wav 直链令牌轮换：HyCDN 防盗链令牌过期后需重新调 API 更新 `src`

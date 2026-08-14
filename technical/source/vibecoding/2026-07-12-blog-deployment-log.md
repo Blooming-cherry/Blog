@@ -12,7 +12,7 @@ comments: false
 > **涉及节点**：
 > - 本地 Windows 开发机
 > - GitHub (`Blooming-cherry/blooming-cherry.github.io`)
-> - 阿里云轻量应用服务器（上海）`47.116.103.176`，宝塔面板，用户 `admin`
+> - 阿里云轻量应用服务器（上海）`x.x.x.x`，宝塔面板，用户 `admin`
 >
 > **状态**：🔄 大部分完成 — GitHub Actions 自动部署已跑通（GitHub Pages + 阿里云服务器双部署）；待完成：宝塔面板 Nginx 站点、SSL 证书。
 
@@ -48,7 +48,7 @@ Git 仓库：[email]:Blooming-cherry/blooming-cherry.github.io.git
 | 项目 | 值 |
 |------|-----|
 | 主机名 | `iZuf6a5zotmktmnd9w4deeZ` |
-| 公网 IP | `47.116.103.176` |
+| 公网 IP | `x.x.x.x` |
 | 用户 | `admin`（非 root） |
 | 面板 | 宝塔（aaPanel） |
 | Node | v22.22.2 |
@@ -125,7 +125,7 @@ sudo ls /www/server/panel/vhost/nginx/
 # waf2monitor_data.conf
 ```
 
-**结论**：没有为博客站点创建 Nginx vhost 配置文件。这是导致下文 `47.116.103.176 关闭了连接` 错误的根因——Nginx 根本不知道该把博客域名指向哪个目录。
+**结论**：没有为博客站点创建 Nginx vhost 配置文件。这是导致下文 `x.x.x.x 关闭了连接` 错误的根因——Nginx 根本不知道该把博客域名指向哪个目录。
 
 **状态**：⚠️ 需要在宝塔面板中创建网站，或手动编写 vhost .conf 文件。
 
@@ -229,9 +229,9 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 ### 3.3 浏览器访问报错
 
-**🔴 问题 3.3.1：`47.116.103.176 关闭了连接`**
+**🔴 问题 3.3.1：`x.x.x.x 关闭了连接`**
 
-**现象**：浏览器访问时提示 `47.116.103.176 关闭了连接`。
+**现象**：浏览器访问时提示 `x.x.x.x 关闭了连接`。
 
 **根因**：这是 2.3.1 的直接后果——Nginx 没有为该域名/端口配置任何 server 块（因为 /www/server/panel/vhost/nginx/ 下无站点 .conf 文件），无法处理该请求，TCP 连接被拒绝或立即关闭。
 
@@ -249,7 +249,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 | 层面 | 操作 | 位置 |
 |------|------|------|
-| DNS 解析（必做） | 添加 A/AAAA 记录：域名 → `47.116.103.176` | 阿里云 DNS 控制台（域名服务），或宝塔面板的"域名"入口 |
+| DNS 解析（必做） | 添加 A/AAAA 记录：域名 → `x.x.x.x` | 阿里云 DNS 控制台（域名服务），或宝塔面板的"域名"入口 |
 | Nginx 站点配置（必做） | 创建 vhost：告诉 Nginx 这个域名对应 `/var/www/my-site` | 宝塔面板 → 网站 → 添加站点 |
 
 两者缺一不可。
@@ -286,7 +286,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 | Secret | 值 | 用途 |
 |--------|-----|------|
-| `SSH_HOST` | `47.116.103.176` | 阿里云服务器 IP |
+| `SSH_HOST` | `x.x.x.x` | 阿里云服务器 IP |
 | `SSH_USER` | `admin` | 服务器用户名 |
 | `SSH_KEY` | *(SSH 私钥)* | 用于 SCP 免密登录 |
 
@@ -333,8 +333,8 @@ chmod 600 /root/.ssh/config                             # Permission denied
 | 2.4.2 | 服务器 | `sudo cp` 源路径解析为 `/root/` | 🟡 中等 | ✅ 已解决 — 不再使用服务器本地 cp |
 | 3.1.1 | Git | SSH 公钥认证失败 | 🔴 阻塞 | ✅ 已解决 — debug 确认 SSH 连通；服务器 `dnf install rsync` 后部署成功 |
 | 3.2.1 | HTTPS | HTTPS 无法访问 | 🟡 中等 | ✅ 已解决 — certbot + Let's Encrypt 证书 |
-| 3.3.1 | 浏览器 | `47.116.103.176 关闭连接` | 🔴 阻塞 | ✅ 已解决 — Nginx 站点已配置 |
-| 4.1 | DNS | 待确认域名解析 | 🟡 中等 | ✅ 已解决 — `@` 和 `www` A 记录均指向 `47.116.103.176` |
+| 3.3.1 | 浏览器 | `x.x.x.x 关闭连接` | 🔴 阻塞 | ✅ 已解决 — Nginx 站点已配置 |
+| 4.1 | DNS | 待确认域名解析 | 🟡 中等 | ✅ 已解决 — `@` 和 `www` A 记录均指向 `x.x.x.x` |
 | 5.1 | ICP 备案 | 域名未完成 ICP 备案，阿里云边缘网络拦截 HTTP + HTTPS | 🔴 阻塞 | ⏳ 待提交阿里云首次备案申请 |
 | — | GitHub Actions | 自动部署尚未配置 | ⏳ | ✅ 已完成 — push to main → Hexo build → GitHub Pages + SCP 到服务器双部署 |
 
@@ -343,7 +343,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 ## 当前进度
 
 ```
-✅ 1. DNS 解析（adaydream.cn → 47.116.103.176）                ← @ 和 www A 记录均指向 47.116.103.176
+✅ 1. DNS 解析（adaydream.cn → x.x.x.x）                ← @ 和 www A 记录均指向 x.x.x.x
 ✅ 2. Hexo 配置（_config.yml deploy 已注释）                     ← 避免与 Actions 冲突
 ✅ 3. GitHub Actions 双目标部署                                   ← push → build → GitHub Pages + SCP 到服务器
 ✅ 4. GitHub Secrets（SSH_HOST/USER/KEY）                         ← SSH 连通，rsync 部署成功
@@ -420,7 +420,7 @@ sudo nginx -t && sudo nginx -s reload
 
 ### 5.1 问题现象
 
-用户在浏览器中访问 `https://adaydream.cn`，浏览器报"连接已重置"（ERR_CONNECTION_RESET），网站完全无法打开。此前（7月8日）部署完成后，通过 `47.116.103.176`（IP 直连）验证过服务器 Nginx 正常，但从未通过域名实际测试。
+用户在浏览器中访问 `https://adaydream.cn`，浏览器报"连接已重置"（ERR_CONNECTION_RESET），网站完全无法打开。此前（7月8日）部署完成后，通过 `x.x.x.x`（IP 直连）验证过服务器 Nginx 正常，但从未通过域名实际测试。
 
 ### 5.2 排查过程（逐层穿透）
 
@@ -429,7 +429,7 @@ sudo nginx -t && sudo nginx -s reload
 首先确认服务器本身是否正常运行——排除"服务器挂了"的可能性：
 
 ```bash
-curl -I http://47.116.103.176
+curl -I http://x.x.x.x
 # HTTP/1.1 200 OK, Server: nginx, Content-Length: 46173 ✅
 ```
 
@@ -467,17 +467,17 @@ curl -I --noproxy '*' http://adaydream.cn
 
 ```bash
 # 维度一：TLS 1.3 vs 1.2，固定 SNI=adaydream.cn
-openssl s_client -connect 47.116.103.176:443 -servername adaydream.cn
+openssl s_client -connect x.x.x.x:443 -servername adaydream.cn
 # → TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384 ✅ 成功！
 
-openssl s_client -connect 47.116.103.176:443 -servername adaydream.cn -tls1_2
+openssl s_client -connect x.x.x.x:443 -servername adaydream.cn -tls1_2
 # → Cipher: (NONE), read 0 bytes ❌ 失败！（读 0 字节，写了 212 字节后 RST）
 
 # 维度二：不同 SNI 值，固定 TLS 1.2
-openssl s_client -connect 47.116.103.176:443 -servername test.example.com -tls1_2
+openssl s_client -connect x.x.x.x:443 -servername test.example.com -tls1_2
 # → TLSv1.2, Cipher: ECDHE-RSA-AES256-GCM-SHA384 ✅ 成功！
 
-openssl s_client -connect 47.116.103.176:443 -tls1_2  # 不发送 SNI
+openssl s_client -connect x.x.x.x:443 -tls1_2  # 不发送 SNI
 # → TLSv1.2, Cipher: ECDHE-RSA-AES256-GCM-SHA384 ✅ 成功！
 ```
 
@@ -496,7 +496,7 @@ openssl s_client -connect 47.116.103.176:443 -tls1_2  # 不发送 SNI
 在服务器上运行 tcpdump，同时从外部发起失败请求：
 
 ```bash
-sudo tcpdump -i any 'port 443 and host 47.116.103.176' -c 30 -nn
+sudo tcpdump -i any 'port 443 and host x.x.x.x' -c 30 -nn
 # 结果：0 packets captured  ← ClientHello 根本没到服务器！
 ```
 
@@ -530,7 +530,7 @@ window.onload = function () {
 
 ```
 用户浏览器 (adaydream.cn)
-  → DNS 解析 → 47.116.103.176
+  → DNS 解析 → x.x.x.x
   → 流量经过阿里云边缘网络
   → 阿里云 DPI 检查域名 ICP 备案状态
   → adaydream.cn 无备案记录 → 触发拦截
@@ -545,7 +545,7 @@ window.onload = function () {
 
 > 本段记录 2026-07-09 通过宝塔面板完成 Nginx 站点创建的步骤。
 
-**宝塔面板 `http://47.116.103.176:8888` 无法访问**（此前 M1 已记录）。所有配置通过 SSH 命令行手动完成。
+**宝塔面板 `http://x.x.x.x:8888` 无法访问**（此前 M1 已记录）。所有配置通过 SSH 命令行手动完成。
 
 当前 Nginx 站点配置（已生效）：
 
@@ -587,7 +587,7 @@ server {
 |------|------|------|
 | 1. 登录备案系统 | 阿里云控制台 → 备案 → 开始备案 | — |
 | 2. 填写主办者信息 | 个人备案：姓名、身份证号、手机号、邮箱 | — |
-| 3. 填写网站信息 | 域名 `adaydream.cn`、服务器 IP `47.116.103.176`、网站名称（如"ADayDream 博客"）、服务内容选"博客/个人空间" | — |
+| 3. 填写网站信息 | 域名 `adaydream.cn`、服务器 IP `x.x.x.x`、网站名称（如"ADayDream 博客"）、服务内容选"博客/个人空间" | — |
 | 4. 上传证件 | 身份证正反面照片 + 人脸核身 | — |
 | 5. 阿里云初审 | 阿里云客服电话核实 | 1-2 工作日 |
 | 6. 管局审核 | 工信部最终审批 | 约 2-4 周 |
@@ -600,7 +600,7 @@ server {
 | 方案 | 地址 | 备注 |
 |------|------|------|
 | GitHub Pages | `https://blooming-cherry.github.io` | 已有部署，可直接访问 |
-| IP 直连 | `https://47.116.103.176` | SSL 证书域名不匹配会报警告，可添加浏览器例外 |
+| IP 直连 | `https://x.x.x.x` | SSL 证书域名不匹配会报警告，可添加浏览器例外 |
 | DNS 临时切换 | 将 A 记录指向 GitHub Pages IP | 备案完成后切回阿里云 |
 
 ### 5.6 备案成功后操作清单
@@ -630,7 +630,7 @@ server {
 | **E3** | 服务器未安装 `rsync` | `bash: rsync: command not found`，rsync 协议数据错 | 阿里云 Rocky Linux 镜像未预装 rsync，而我们假设基础工具都存在 | 新服务器环境应先排查常见工具的安装状态：`which rsync scp git` |
 | **E4** | Nginx 路径用错 | `/etc/nginx/`、`/etc/nginx/sites-available/`、`/etc/nginx/conf.d/` 全部不存在 | 宝塔面板的 Nginx 安装在 `/www/server/nginx/`，不走 Linux 标准路径 | 先看宝塔实际安装路径：`which nginx` → `nginx -t` 会输出实际配置路径 |
 | **E5** | certbot 找不到 Nginx | `nginx -c /etc/nginx/nginx.conf` 报 No such file | certbot 默认假设 Nginx 配置在 `/etc/nginx/`，宝塔不在标准位置 | 宝塔环境下 certbot 需要 `--nginx-server-root /www/server/nginx/conf` |
-| **E6** | DNS A 记录 IP 打错 | `47.116.10.176` 而非 `47.116.103.176`，且错了两次 | 手工输入 IP 时第三个段漏了 `3` | 关键配置（IP、域名）宁可复制粘贴，不要手打 |
+| **E6** | DNS A 记录 IP 打错 | A 记录 IP 第三段把 `103` 错打成 `10`，且错了两次 | 手工输入 IP 时第三个段漏了 `3` | 关键配置（IP、域名）宁可复制粘贴，不要手打 |
 | **E7** | `www` CNAME 指向 GitHub Pages | certbot 验证 `www.adaydream.cn` 时连到 GitHub IP `185.199.111.153` 返回 404 | 改了裸域 A 记录但忘记改 `www` 的 CNAME | 修改 DNS 时把 `@` 和 `www` 两条记录一起检查 |
 | **E8** | `sudo` + `~` 路径解析错误 | `sudo cp -r ~/my-site/public/* /var/www/` → 报 `/root/my-site/` 不存在 | `sudo` 下 `~` 展开为 `/root/` 而非 `/home/admin/` | `sudo` 命令中始终使用绝对路径，不要依赖 `~` |
 | **E9** | bash 感叹号历史展开 | `echo "<h1>Welcome!</h1>"` 报 `event not found` | `!` 在双引号内触发 bash history expansion | 使用单引号 `'...'` 包裹含感叹号的字符串 |
@@ -645,7 +645,7 @@ server {
 
 | 编号 | 误区 | 实际 |
 |------|------|------|
-| **M1** | 以为宝塔面板 Web 界面可以随时访问 | 宝塔面板 `http://47.116.103.176:8888` 无法打开，原因未排查（防火墙/服务状态），最终所有配置通过 SSH 命令行手动完成 |
+| **M1** | 以为宝塔面板 Web 界面可以随时访问 | 宝塔面板 `http://x.x.x.x:8888` 无法打开，原因未排查（防火墙/服务状态），最终所有配置通过 SSH 命令行手动完成 |
 | **M2** | 以为 GitHub Actions 绿色 ✅ = 部署成功 | Actions 的绿色只表示 job exit code 为 0。我们连续三次误判：SCP action 版本不存在→静默失败→绿色；rsync action 参数不对→静默失败→绿色；原生 rsync 因服务器没装→连接断开→但之前加了 `\|\| echo FAILED` 兜底→绿色。**绿色不代表真实生效，必须以目标服务器上的文件内容为准** |
 | **M3** | 以为 `public/` 目录丢了/Hexo 生成有问题 | 服务器上的文件自始至终都是 git clone 的源码而非构建产物。`public/` 不存在是因为根本就没有部署成功过，不是 Hexo 的问题。排查方向一开始就错了 |
 | **M4** | 以为部署到服务器 = `git clone` + 服务器本地构建 | 正确方案是 GitHub Actions 统一构建，再 rsync `public/` 到服务器。服务器不需要装 Node.js、不需要跑 `hexo generate`，只需 Nginx 指向部署目录即可 |

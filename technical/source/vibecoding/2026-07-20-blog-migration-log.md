@@ -16,7 +16,7 @@ comments: false
 | 项目 | 值 |
 |------|-----|
 | 云服务商 | 阿里云 ECS |
-| 公网 IP | `47.116.103.176` |
+| 公网 IP | `x.x.x.x` |
 | 系统 | Alibaba Cloud Linux |
 | Nginx | 宝塔面板安装，配置目录 `/www/server/panel/vhost/nginx/` |
 | Nginx 主配置 | `/www/server/nginx/conf/nginx.conf` |
@@ -32,7 +32,7 @@ comments: false
 
 | 主机记录 | 类型 | 记录值 |
 |----------|------|--------|
-| `blog` | A | `47.116.103.176` |
+| `blog` | A | `x.x.x.x` |
 
 > 注意：`*.blog.adaydream.cn`（泛解析）不匹配 `blog.adaydream.cn` 本身，必须单独加一条 `blog`。
 
@@ -143,7 +143,7 @@ sudo certbot certonly --webroot -w /var/www/blog -d blog.adaydream.cn
 
 ```
 adaydream.cn          → （主域名，暂不解析）
-blog.adaydream.cn     → 47.116.103.176:/var/www/blog（Hexo 博客）✅
+blog.adaydream.cn     → x.x.x.x:/var/www/blog（Hexo 博客）✅
 sonnect.adaydream.cn  → （预留，导航页，待部署）
 netbird.adaydream.cn  → （已放弃，DNS 记录待删除）
 ```
