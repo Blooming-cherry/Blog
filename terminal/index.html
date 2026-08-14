@@ -653,9 +653,9 @@
       });
     }
 
-    // 从 Vercel 代理拉取当前有效音频链接，规避 HyCDN 防盗链 token 轮换失效
+    // 从本站 music.json 拉取定时刷新的音频直链，规避 HyCDN 防盗链 token 轮换失效
     if (m) {
-      fetch('https://adaydream-proxy.vercel.app/api/music-proxy')
+      fetch('https://adaydream.cn/music.json')
         .then(r => r.json())
         .then(d => {
           const song = (d.data || []).find(s => s.cid === '880337');

@@ -35,4 +35,4 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          rsync -avz --delete --exclude='.well-known/' -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" public/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/blog/
+          rsync -avz --delete --exclude='.well-known/' --exclude='music.json' -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" public/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/blog/

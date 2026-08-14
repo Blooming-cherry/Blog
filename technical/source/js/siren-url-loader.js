@@ -1,9 +1,9 @@
 /**
  * Monster Siren URL Loader
- * Fetches fresh audio URLs from proxy, caches in localStorage (30min TTL).
+ * Fetches fresh audio URLs from the site's music.json, caches in localStorage (30min TTL).
  * Sets window.__sirenUrls before the player initializes.
  */
-var PROXY_URL = "https://adaydream-proxy.vercel.app/api/music-proxy";
+var PROXY_URL = "https://blog.adaydream.cn/music.json";
 
 (function loadSirenUrls() {
   var CACHE_KEY = "siren_urls";
