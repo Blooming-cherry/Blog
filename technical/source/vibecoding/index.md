@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-08-15
+
+- **[DeepSeek × Claude Code 配置优化日志（第二版）](2026-08-15-deepseek-claude-config-log-v2.html)** — dsh-anchored-standard 迭代优化：8 条已验证规则迁移 / disableBundledSkills / flash 独立配置档 / modelOverrides 调试结论
+
 ### 2026-08-14
 
 - **[主站背景乐修复日志](2026-08-14-adaydream-music-proxy-fix-log.html)** — wav 直链令牌轮换失效 → Vercel 代理动态拉取；Git Account Linking 拦截的绕过（非 Git 目录部署）
