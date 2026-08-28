@@ -653,15 +653,9 @@
       });
     }
 
-    // 从本站 music.json 拉取定时刷新的音频直链，规避 HyCDN 防盗链 token 轮换失效
+    // 背景乐走本站 /audio/<cid> 接口，服务端现取新鲜直链 302 跳转，规避 HyCDN 签名 3 小时过期
     if (m) {
-      fetch('https://adaydream.cn/music.json')
-        .then(r => r.json())
-        .then(d => {
-          const song = (d.data || []).find(s => s.cid === '880337');
-          if (song && song.url) m.src = song.url;
-        })
-        .catch(() => {});
+      m.src = '/audio/880337';
     }
 
     // Blocks staggered reveal

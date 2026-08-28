@@ -39,14 +39,14 @@
 <script>
 (function(){
   var PL = [
-    {cid:"125042",name:"Sanctuary Inside",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/8aad7b966f7a8069f07c094251c5a2eb/6A12C018/siren/audio/20250430/61d007fbdd059d6c77d24359aa85c1f4.wav",cover:"https://web.hycdn.cn/siren/pic/20250430/384e007ed1908ce919a3bf704a5b36ff.png",album:"Sanctuary Inside"},
-    {cid:"306814",name:"Best Moments of...",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/d0f258fb5ec485c658e88aaebf68b821/6A12C018/siren/audio/20231019/d730dee09f6a74272784b2d5de200123.wav",cover:"https://web.hycdn.cn/siren/pic/20231019/ae52bd635f6a7e89be3c3d481788ce82.png",album:"Best Moments of..."},
-    {cid:"953953",name:"Little Wish",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/e0b903a9b2601ce6cf544c7580d6f1bf/6A12C019/siren/audio/20250801/10c5003150590f14844e554df545e8b4.wav",cover:"https://web.hycdn.cn/siren/pic/20250801/7d4b586dddf00b4e2a43c809f3fe4b45.jpg",album:"Little Wish"},
-    {cid:"306846",name:"Your Star",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/d3d870c65bbc0197bee6e97c306eaebb/6A12C019/siren/audio/20220608/8f704dc83ffaebe4a9786627564f1b22.mp3",cover:"https://web.hycdn.cn/siren/pic/20220608/7ceda0fb37acc8cdfc7f25e8352dbbc8.jpg",album:"Your Star"},
-    {cid:"697699",name:"Grow on My Time",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/db459452c39abc245786c4c16d7f491c/6A12C019/siren/audio/20250606/f9746a00e5f44840bacfb51cbe228f3e.wav",cover:"https://web.hycdn.cn/siren/pic/20250606/02da85b2cc73f426ef6cfec4910d31d9.jpg",album:"Grow on My Time"},
-    {cid:"953984",name:"Before Summer",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/bf58f2860d163be53ff969ecb64247d3/6A12C019/siren/audio/20230601/7725b49fdb287aa281103add3fd99c4e.wav",cover:"https://web.hycdn.cn/siren/pic/20230601/d052f9558a4ef28409556ba761cdd861.jpg",album:"Before Summer"},
-    {cid:"232224",name:"Innocence",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/59cb1b3aa2d6442ea9a31a55ba7c7b7d/6A12C019/siren/audio/20260430/ad9bf0b9ea6ca69a4d97cf479101b65f.wav",cover:"https://web.hycdn.cn/siren/pic/20260430/87e3010a27c3f0f85422fa6f1f33483e.jpg",album:"Innocence"},
-    {cid:"306815",name:"Effervescence",artist:"塞壬唱片-MSR",url:"https://res01.hycdn.cn/57deef730043c92d12fd94e18844f899/6A12C0C9/siren/audio/20230809/68b2cd453671e11d132fd2d3cd911879.wav",cover:"https://web.hycdn.cn/siren/pic/20230809/ecc4c113772a8e8a8cdde6aa303a3ad6.jpg",album:"火山旅梦OST"}
+    {cid:"125042",name:"Sanctuary Inside",artist:"塞壬唱片-MSR",url:"/audio/125042",cover:"https://web.hycdn.cn/siren/pic/20250430/384e007ed1908ce919a3bf704a5b36ff.png",album:"Sanctuary Inside"},
+    {cid:"306814",name:"Best Moments of...",artist:"塞壬唱片-MSR",url:"/audio/306814",cover:"https://web.hycdn.cn/siren/pic/20231019/ae52bd635f6a7e89be3c3d481788ce82.png",album:"Best Moments of..."},
+    {cid:"953953",name:"Little Wish",artist:"塞壬唱片-MSR",url:"/audio/953953",cover:"https://web.hycdn.cn/siren/pic/20250801/7d4b586dddf00b4e2a43c809f3fe4b45.jpg",album:"Little Wish"},
+    {cid:"306846",name:"Your Star",artist:"塞壬唱片-MSR",url:"/audio/306846",cover:"https://web.hycdn.cn/siren/pic/20220608/7ceda0fb37acc8cdfc7f25e8352dbbc8.jpg",album:"Your Star"},
+    {cid:"697699",name:"Grow on My Time",artist:"塞壬唱片-MSR",url:"/audio/697699",cover:"https://web.hycdn.cn/siren/pic/20250606/02da85b2cc73f426ef6cfec4910d31d9.jpg",album:"Grow on My Time"},
+    {cid:"953984",name:"Before Summer",artist:"塞壬唱片-MSR",url:"/audio/953984",cover:"https://web.hycdn.cn/siren/pic/20230601/d052f9558a4ef28409556ba761cdd861.jpg",album:"Before Summer"},
+    {cid:"232224",name:"Innocence",artist:"塞壬唱片-MSR",url:"/audio/232224",cover:"https://web.hycdn.cn/siren/pic/20260430/87e3010a27c3f0f85422fa6f1f33483e.jpg",album:"Innocence"},
+    {cid:"306815",name:"Effervescence",artist:"塞壬唱片-MSR",url:"/audio/306815",cover:"https://web.hycdn.cn/siren/pic/20230809/ecc4c113772a8e8a8cdde6aa303a3ad6.jpg",album:"火山旅梦OST"}
   ];
 
   // Resolve fresh URL from proxy cache, fallback to hardcoded

@@ -6,7 +6,7 @@
 var PROXY_URL = "https://blog.adaydream.cn/music.json";
 
 (function loadSirenUrls() {
-  var CACHE_KEY = "siren_urls";
+  var CACHE_KEY = "siren_urls_v2"; // v2: 值改为 /audio/<cid>，旧缓存存的是会过期的 HyCDN 直链，作废
   var TTL = 30 * 60 * 1000;
 
   function fetchFresh() {
@@ -20,7 +20,7 @@ var PROXY_URL = "https://blog.adaydream.cn/music.json";
           if (json.code === 0 && json.data) {
             var map = {};
             json.data.forEach(function (s) {
-              map[s.cid] = s.url;
+              map[s.cid] = '/audio/' + s.cid;
             });
             var cache = { ts: Date.now(), urls: map };
             try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
