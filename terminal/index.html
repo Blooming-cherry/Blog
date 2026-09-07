@@ -6,6 +6,8 @@
 <title>Adaydream Terminal — 导航</title>
 <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
 <meta name="description" content="adaydream.cn 主站导航：Blog、Sonnect 与 GitHub 个人仓库入口。">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#0d0d0d">
 <style>
   ::selection { background: #e3ea9d; }
 
@@ -14,6 +16,17 @@
   @media (max-height:768px),(max-width:768px) { html { font-size: 11px; } }
 
   img, svg { max-width: 100%; height: auto; }
+
+  :root { color-scheme: light; }
+  .PhoneIntro { display: none; }
+  @keyframes phoneCrestIn {
+    from { opacity: 0; transform: translateY(12px) scale(.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes phoneTextIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
   .Home {
     width: 100vw; height: 100vh;
@@ -444,6 +457,218 @@
     .Cover { padding: .5rem 0; }
     .Cover .Content .Middle { width: min(82vw, 320px); }
   }
+  /* ── 手机端重做 (竖屏 ≤600px): crest 核心 + 链接式介绍 ─────────── */
+  @media (max-width: 600px) {
+    html { font-size: 13px; }
+
+    /* 页眉：只留 RHINE LAB 品牌, 左对齐; 站内链接全部移入正文 */
+    .TopBar { position: relative; height: 44px; animation: none; }
+    .TopBar .Placeholder,
+    .TopBar .PlaceholderMiddle,
+    .TopBar .Right { display: none; }
+    .TopBar .Left { padding: 0 1rem; overflow: visible; align-items: center; }
+    .TopBar .Left .Logo { margin-right: 0; padding: 0; }
+    .TopBar .Left .Logo .Image { height: 1.55rem; transform: none; }
+    .TopBar .Left .Logo .Text { font-size: .98rem; letter-spacing: .14em; }
+    .TopBar .Left .Button { display: none !important; }
+
+    .Cover {
+      display: block; background: #eef0db;
+      min-height: calc(100svh - 44px); min-height: calc(100dvh - 44px);
+      padding: 0; animation: none;
+    }
+    .Cover .Content {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      width: 100%;
+      min-height: calc(100svh - 44px); min-height: calc(100dvh - 44px);
+      aspect-ratio: auto; box-sizing: border-box;
+      background: #eef0db;
+      transform: none; animation: none;
+      overflow: hidden;
+      padding: 0 1.4rem 2rem;
+    }
+
+    /* 律动方块：退为极淡的左上背景, crest 之后淡入 */
+    .Cover .Content .Middle {
+      position: absolute; top: -1vh; left: -22vw;
+      width: 86vw; height: 86vw;
+      max-width: 400px; max-height: 400px;
+      margin: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
+      opacity: 0; animation: phoneBlocksIn 1.1s ease-out .9s both;
+    }
+    .Cover .Content .Middle .Center { width: 100%; height: 100%; }
+    .Center .Circle, .Center .Line { display: none; }
+    .Cover .Content .Middle .Block { opacity: 1; transition: none; }
+    @keyframes phoneBlocksIn { from { opacity: 0; } to { opacity: .28; } }
+
+    /* crest：核心元素, 纯 CSS 缩放入场 (不走 JS 手绘) */
+    .RhineLogoWrap {
+      display: block; position: relative; top: auto; left: auto;
+      width: min(80vw, 380px); height: auto;
+      margin: clamp(14px, 5vh, 44px) auto 0;
+      z-index: 2; pointer-events: none;
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,.18)) drop-shadow(0 2px 5px rgba(0,200,70,.14));
+      animation: phoneCrestIn .9s cubic-bezier(.22,.61,.36,1) both;
+    }
+    .RhineLogoWrap svg { width: 100%; height: auto; display: block; }
+    .RhineLogoWrap .drawMasked { mask: none !important; -webkit-mask: none !important; }
+    .RhineLogoWrap .logoPlus,
+    .RhineLogoWrap .logoMinus,
+    .RhineLogoWrap .logoText { opacity: 1 !important; }
+
+    /* 文字列：ADAYDREAM → 副标语 → 链接+描述 → 音乐开关 */
+    .Cover .Content .Left {
+      position: relative; z-index: 2;
+      width: 100%; max-width: 430px; flex: none;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      padding: 0;
+      margin-top: clamp(26px, 10vh, 104px);
+    }
+    .Cover .Content .Left .Title,
+    .Cover .Content .Left .Tip,
+    .Cover .Content .Left .Buttons { position: static; top: auto; left: auto; }
+    .Cover .Content .Left .Title {
+      margin: 0;
+      font-size: clamp(22px, 7.4vw, 32px); font-weight: 700;
+      letter-spacing: .18em; color: #000;
+      animation: phoneTextIn .7s ease-out .5s both;
+    }
+    .Cover .Content .Left .Tip {
+      margin: 8px 0 0;
+      font-size: clamp(11px, 3.4vw, 14px); color: #8a8d78;
+      letter-spacing: .05em; line-height: 1.6;
+      animation: phoneTextIn .7s ease-out .62s both;
+    }
+    .PhoneIntro {
+      display: flex; flex-direction: column; align-items: center; gap: 11px;
+      margin-top: clamp(16px, 4.4vh, 32px);
+      animation: phoneTextIn .7s ease-out .74s both;
+    }
+    .PhoneIntro .PIRow {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      align-items: baseline; font-size: clamp(13px, 3.9vw, 16px); line-height: 1.55;
+    }
+    .PhoneIntro .PIName {
+      color: #000; font-weight: 700; text-decoration: none;
+      border-bottom: 1px solid #000; padding-bottom: 1px;
+    }
+    .PhoneIntro .PIName:active { background: rgba(0,200,70,.13); }
+    .PhoneIntro .PIDash { color: #b1b498; margin: 0 .38em; }
+    .PhoneIntro .PIDesc { color: #555; }
+
+    .Cover .Content .Left .Buttons {
+      margin: clamp(16px, 4.6vh, 34px) 0 0; gap: .7rem;
+      animation: phoneTextIn .7s ease-out .86s both;
+    }
+    .Cover .Content .Left .Buttons .QuickStart { display: none; }
+    .Cover .Content .Left .Buttons .Button {
+      font-size: clamp(13px, 3.6vw, 15px);
+      padding: .55em 1.8em; border-radius: .3em;
+      border: 1px solid #000; color: #000; background: transparent;
+    }
+    .Cover .Content .Right { display: none; }
+  }
+
+  /* ── 矮横屏 (手机横屏): crest 左 + 文字右, 单行紧凑 ─────────── */
+  @media (orientation: landscape) and (max-height: 560px) and (max-width: 1024px) {
+    html { font-size: 13px; }
+    .TopBar { position: relative; height: 40px; animation: none; }
+    .TopBar .Placeholder,
+    .TopBar .PlaceholderMiddle,
+    .TopBar .Right { display: none; }
+    .TopBar .Left { padding: 0 .9rem; overflow: visible; align-items: center; }
+    .TopBar .Left .Logo .Image { height: 1.4rem; transform: none; }
+    .TopBar .Left .Logo .Text { font-size: .92rem; letter-spacing: .13em; }
+    .TopBar .Left .Button { display: none !important; }
+
+    .Cover { display: block; background: #eef0db; min-height: calc(100svh - 40px); padding: 0; animation: none; }
+    .Cover .Content {
+      position: relative;
+      display: flex; flex-direction: row; align-items: center; justify-content: center;
+      width: 100%; min-height: calc(100svh - 40px);
+      aspect-ratio: auto; box-sizing: border-box;
+      background: #eef0db; transform: none; animation: none;
+      overflow: hidden; padding: 0 5vw;
+    }
+    .Cover .Content .Middle,
+    .Cover .Content .Right { display: none; }
+
+    .RhineLogoWrap {
+      display: block; position: relative; top: auto; left: auto;
+      width: min(30vh, 280px); height: auto; margin: 0;
+      z-index: 2; pointer-events: none;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.16)) drop-shadow(0 2px 5px rgba(0,200,70,.12));
+      animation: phoneCrestIn .9s cubic-bezier(.22,.61,.36,1) both;
+    }
+    .RhineLogoWrap svg { width: 100%; height: auto; display: block; }
+    .RhineLogoWrap .drawMasked { mask: none !important; -webkit-mask: none !important; }
+    .RhineLogoWrap .logoPlus,
+    .RhineLogoWrap .logoMinus,
+    .RhineLogoWrap .logoText { opacity: 1 !important; }
+
+    .Cover .Content .Left {
+      position: relative; z-index: 2;
+      flex: 0 1 auto; width: auto; max-width: 56vw; min-width: 0;
+      padding: 0; margin-left: clamp(14px, 4vw, 44px);
+      display: flex; flex-direction: column;
+      align-items: flex-start; text-align: left;
+    }
+    .Cover .Content .Left .Title,
+    .Cover .Content .Left .Tip,
+    .Cover .Content .Left .Buttons { position: static; top: auto; left: auto; }
+    .Cover .Content .Left .Title {
+      margin: 0 0 4px; font-size: clamp(20px, 5vh, 30px); font-weight: 700;
+      letter-spacing: .15em; color: #000;
+      animation: phoneTextIn .7s ease-out .5s both;
+    }
+    .Cover .Content .Left .Tip {
+      margin: 0; font-size: clamp(10px, 2.2vh, 13px); color: #8a8d78; letter-spacing: .04em;
+      animation: phoneTextIn .7s ease-out .62s both;
+    }
+    .PhoneIntro {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+      margin-top: clamp(10px, 3vh, 20px);
+      animation: phoneTextIn .7s ease-out .74s both;
+    }
+    .PhoneIntro .PIRow {
+      display: flex; flex-wrap: wrap; justify-content: flex-start;
+      align-items: baseline; font-size: clamp(12px, 3vh, 16px); line-height: 1.5;
+    }
+    .PhoneIntro .PIName { color: #000; font-weight: 700; text-decoration: none; border-bottom: 1px solid #000; padding-bottom: 1px; }
+    .PhoneIntro .PIName:active { background: rgba(0,200,70,.13); }
+    .PhoneIntro .PIDash { color: #b1b498; margin: 0 .38em; }
+    .PhoneIntro .PIDesc { color: #555; }
+
+    .Cover .Content .Left .Buttons { margin: clamp(12px, 3.2vh, 22px) 0 0; }
+    .Cover .Content .Left .Buttons .QuickStart { display: none; }
+    .Cover .Content .Left .Buttons .Button {
+      font-size: clamp(12px, 3vh, 15px); padding: .5em 1.7em; border-radius: .3em;
+      border: 1px solid #000; color: #000; background: transparent;
+    }
+  }
+
+  /* 尊重系统减弱动效：默认收敛全部动画 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
+  }
+  /* 手机端主视觉入场为短促淡入缩放（非大幅/循环），减弱动效下仍保留可见动效 */
+  @media (prefers-reduced-motion: reduce) and (max-width: 600px) {
+    .RhineLogoWrap { animation: phoneCrestIn .7s cubic-bezier(.22,.61,.36,1) both !important; }
+    .Cover .Content .Left .Title   { animation: phoneTextIn .7s ease-out .1s both !important; }
+    .Cover .Content .Left .Tip     { animation: phoneTextIn .7s ease-out .2s both !important; }
+    .PhoneIntro                    { animation: phoneTextIn .7s ease-out .3s both !important; }
+    .Cover .Content .Left .Buttons { animation: phoneTextIn .7s ease-out .4s both !important; }
+  }
+  @media (prefers-reduced-motion: reduce) and (orientation: landscape) and (max-height: 560px) and (max-width: 1024px) {
+    .RhineLogoWrap { animation: phoneCrestIn .7s cubic-bezier(.22,.61,.36,1) both !important; }
+    .Cover .Content .Left .Title   { animation: phoneTextIn .7s ease-out .1s both !important; }
+    .Cover .Content .Left .Tip     { animation: phoneTextIn .7s ease-out .2s both !important; }
+    .PhoneIntro                    { animation: phoneTextIn .7s ease-out .3s both !important; }
+    .Cover .Content .Left .Buttons { animation: phoneTextIn .7s ease-out .4s both !important; }
+  }
 </style>
 </head>
 <body>
@@ -489,10 +714,6 @@
               <stop offset="83%"   stop-color="#00C846" stop-opacity="0.42"/>
               <stop offset="100%"   stop-color="#00C846" stop-opacity="0.30"/>
             </linearGradient>
-            <mask id="rhineHollow">
-              <rect x="0" y="0" width="1920" height="1080" fill="white"/>
-              <path fill="black" d="M 695.5,394.5 C 737.883,391.793 774.883,404.293 806.5,432C 842.347,467.68 878.014,503.514 913.5,539.5C 875.986,577.847 837.986,615.681 799.5,653C 750.033,689.261 697.366,694.261 641.5,668C 592.166,639.526 566.166,596.692 563.5,539.5C 566.204,482.215 592.204,439.382 641.5,411C 658.716,402.536 676.716,397.036 695.5,394.5 Z"/>
-            </mask>
             <mask id="rhineDraw" maskUnits="userSpaceOnUse" x="480" y="280" width="960" height="660">
               <rect x="0" y="0" width="1920" height="1080" fill="black"/>
               <path class="drawPath" d="M 959.5,539.5 C 955.67,543.33 959.08,540 936.5,562.5 C 913.92,585 871.67,650.67 824,674.5 C 776.33,698.33 698.96,725 650.5,705.5 C 602.04,686 540.83,608.83 533.25,557.5 C 525.67,506.17 578.54,430 605,397.5 C 631.46,365 654.92,360.83 692,362.5 C 729.08,364.17 786.75,381.83 827.5,407.5 C 868.25,433.17 914.5,494.5 936.5,516.5 C 958.5,538.5 951.79,531.75 959.5,539.5 C 967.21,547.25 960.75,541 982.75,563 C 1004.75,585 1045.04,647.17 1091.5,671.5 C 1137.96,695.83 1213.33,723 1261.5,709 C 1309.67,695 1368.46,636.79 1380.5,587.5 C 1392.54,538.21 1369.67,449.25 1333.75,413.25 C 1297.83,377.25 1199.71,380.08 1165,371.5 C 1130.29,362.92 1146.33,348.67 1125.5,361.75 C 1104.67,374.83 1067.67,420.38 1040,450 C 1012.33,479.62 972.92,524.58 959.5,539.5" stroke-dasharray="9999" stroke-dashoffset="9999"/>
@@ -500,9 +721,7 @@
             </mask>
           </defs>
           <g class="drawMasked" mask="url(#rhineDraw)">
-            <g mask="url(#rhineHollow)">
-              <path fill="url(#rhineSat)" d="M 688.5,330.5 C 749.402,325.969 802.735,343.469 848.5,383C 885.347,420.014 922.347,456.847 959.5,493.5C 974.153,479.347 988.653,465.014 1003,450.5C 1018.5,465.333 1034,480.167 1049.5,495C 1035,509.5 1020.5,524 1006,538.5C 1005.33,539.167 1005.33,539.833 1006,540.5C 1041.5,576 1077,611.5 1112.5,647C 1154.94,682.937 1202.94,692.937 1256.5,677C 1304.19,659.315 1335.35,626.149 1350,577.5C 1363.28,517.677 1347.11,467.511 1301.5,427C 1251.07,389.326 1197.4,384.326 1140.5,412C 1128.18,419.153 1116.84,427.653 1106.5,437.5C 1091.17,422.833 1076.17,407.833 1061.5,392.5C 1096.89,356.975 1139.56,336.475 1189.5,331C 1259.25,326.132 1318.09,348.966 1366,399.5C 1414.67,457.541 1429.67,523.541 1411,597.5C 1387.76,670.411 1339.59,718.245 1266.5,741C 1193.15,759.13 1127.81,744.13 1070.5,696C 1033.65,658.986 996.653,622.153 959.5,585.5C 922.347,622.153 885.347,658.986 848.5,696C 793.358,742.202 730.358,757.869 659.5,743C 573.904,718.404 521.738,662.571 503,575.5C 492.403,500.285 514.236,436.452 568.5,384C 603.028,353.903 643.028,336.07 688.5,330.5 Z"/>
-            </g>
+            <path fill-rule="evenodd" fill="url(#rhineSat)" d="M 688.5,330.5 C 749.402,325.969 802.735,343.469 848.5,383C 885.347,420.014 922.347,456.847 959.5,493.5C 974.153,479.347 988.653,465.014 1003,450.5C 1018.5,465.333 1034,480.167 1049.5,495C 1035,509.5 1020.5,524 1006,538.5C 1005.33,539.167 1005.33,539.833 1006,540.5C 1041.5,576 1077,611.5 1112.5,647C 1154.94,682.937 1202.94,692.937 1256.5,677C 1304.19,659.315 1335.35,626.149 1350,577.5C 1363.28,517.677 1347.11,467.511 1301.5,427C 1251.07,389.326 1197.4,384.326 1140.5,412C 1128.18,419.153 1116.84,427.653 1106.5,437.5C 1091.17,422.833 1076.17,407.833 1061.5,392.5C 1096.89,356.975 1139.56,336.475 1189.5,331C 1259.25,326.132 1318.09,348.966 1366,399.5C 1414.67,457.541 1429.67,523.541 1411,597.5C 1387.76,670.411 1339.59,718.245 1266.5,741C 1193.15,759.13 1127.81,744.13 1070.5,696C 1033.65,658.986 996.653,622.153 959.5,585.5C 922.347,622.153 885.347,658.986 848.5,696C 793.358,742.202 730.358,757.869 659.5,743C 573.904,718.404 521.738,662.571 503,575.5C 492.403,500.285 514.236,436.452 568.5,384C 603.028,353.903 643.028,336.07 688.5,330.5 Z M 695.5,394.5 C 737.883,391.793 774.883,404.293 806.5,432C 842.347,467.68 878.014,503.514 913.5,539.5C 875.986,577.847 837.986,615.681 799.5,653C 750.033,689.261 697.366,694.261 641.5,668C 592.166,639.526 566.166,596.692 563.5,539.5C 566.204,482.215 592.204,439.382 641.5,411C 658.716,402.536 676.716,397.036 695.5,394.5 Z"/>
           </g>
           <g class="logoPlus"><path fill="url(#rhineSat)" d="M 688.5,454.5 C 702.745,454.176 716.912,454.51 731,455.5C 731.5,476.164 731.667,496.831 731.5,517.5C 752.167,517.5 772.833,517.5 793.5,517.5C 793.5,531.833 793.5,546.167 793.5,560.5C 772.833,560.5 752.167,560.5 731.5,560.5C 731.5,581.167 731.5,601.833 731.5,622.5C 716.833,622.5 702.167,622.5 687.5,622.5C 687.5,601.833 687.5,581.167 687.5,560.5C 666.833,560.5 646.167,560.5 625.5,560.5C 625.5,546.167 625.5,531.833 625.5,517.5C 646.167,517.5 666.833,517.5 687.5,517.5C 687.179,496.424 687.512,475.424 688.5,454.5 Z"/></g>
           <g class="logoMinus"><path fill="url(#rhineSat)" d="M 1126.5,517.5 C 1182.5,517.5 1238.5,517.5 1294.5,517.5C 1294.5,532.167 1294.5,546.833 1294.5,561.5C 1238.5,561.667 1182.5,561.5 1126.5,561C 1125.17,546.5 1125.17,532 1126.5,517.5 Z"/></g>
@@ -512,6 +731,11 @@
       <div class="Left">
         <div class="Title">ADAYDREAM</div>
         <div class="Tip">个人主站导航 · Rhine Lab 主题</div>
+        <div class="PhoneIntro">
+          <div class="PIRow"><a class="PIName" href="https://blog.adaydream.cn/">Blog</a><span class="PIDash"> — </span><span class="PIDesc">文字、记录与长期沉淀</span></div>
+          <div class="PIRow"><a class="PIName" href="https://sonnect.adaydream.cn/">Sonnect</a><span class="PIDash"> — </span><span class="PIDesc">规划中的新站点，敬请期待</span></div>
+          <div class="PIRow"><a class="PIName" href="https://github.com/Blooming-cherry" target="_blank" rel="noopener">Lumuen</a><span class="PIDash"> — </span><span class="PIDesc">个人仓库 · 代码与开源足迹</span></div>
+        </div>
         <div class="Buttons">
           <a class="Button QuickStart" href="https://blog.adaydream.cn/">Blog</a>
           <div class="Button BrowserExample" id="bgm-toggle">start</div>
@@ -659,9 +883,14 @@
       setTimeout(() => { block.classList.add('Visible'); }, 1800 + i * 60);
     });
 
-    // Rhine logo — hand-drawn ribbon, single pen, montage pacing
+    // 手机布局（竖屏 ≤600 或矮横屏）: crest 走 CSS 静态缩放入场, 不走 JS 手绘
+    const isPhoneLayout =
+      window.matchMedia('(max-width: 600px)').matches ||
+      window.matchMedia('(orientation: landscape) and (max-height: 560px) and (max-width: 1024px)').matches;
+
+    // Rhine logo — hand-drawn ribbon, single pen, montage pacing (仅桌面/平板)
     const logoSvg = document.querySelector('.RhineLogoWrap svg');
-    if (logoSvg) {
+    if (!isPhoneLayout && logoSvg) {
       const drawPath  = logoSvg.querySelector('.drawPath');
       const penDot    = logoSvg.querySelector('.penDot');
       const maskedG   = logoSvg.querySelector('.drawMasked');
