@@ -378,9 +378,10 @@
   if (window.__lv2AudioHooked) return;
   window.__lv2AudioHooked = true;
   var VOL = 0.5;
-  var COOLDOWN = 7000;
-  var lastPlay = {};
-  var liveAudios = {};
+  var DEBOUNCE = 600;      // 防抖窗口(ms)：连续触发只放行最后一次，可调
+  var pendingPlay = {};    // model -> 待播放的最后一个 Audio
+  var debounceTimer = {};  // model -> setTimeout id
+  var liveAudios = {};     // model -> [正在播放的 Audio]
 
   function modelOf(url) {
     if (!url) return null;
@@ -401,6 +402,13 @@
     });
   }
 
+  function cleanup(model, a) {
+    var arr = liveAudios[model];
+    if (!arr) return;
+    var idx = arr.indexOf(a);
+    if (idx !== -1) arr.splice(idx, 1);
+  }
+
   var OrigAudio = window.Audio;
   window.Audio = function(url) {
     var a = new OrigAudio(url);
@@ -411,31 +419,35 @@
       a.__lv2Monitored = true;
       a.__lv2Model = model;
 
+      // 关键：Audio 默认 preload="auto"，new Audio(url) 会立刻发起 .wav 请求，
+      // 即使被节流丢弃，请求也已经发出 → 网络面板堆积。改 none 延到真正播放才取。
+      a.preload = 'none';
+
       var _play = a.play;
       a.play = function() {
-        var now = Date.now();
-        if (lastPlay[model] && (now - lastPlay[model] < COOLDOWN)) {
-          return Promise.resolve();
-        }
-        stopOthers(model);
-        lastPlay[model] = now;
-        if (!liveAudios[model]) liveAudios[model] = [];
-        liveAudios[model].push(a);
-        return _play.call(a).catch(function(){});
+        // 防抖（尾沿）：每次触发覆盖“最后一次”并重置计时器，安静满 DEBOUNCE 后
+        // 只播放最后一次 → 一波连续触发从 N 个请求压成 1 个
+        pendingPlay[model] = a;
+        if (debounceTimer[model]) clearTimeout(debounceTimer[model]);
+        debounceTimer[model] = setTimeout(function() {
+          debounceTimer[model] = null;
+          var target = pendingPlay[model];
+          if (!target) return;
+          pendingPlay[model] = null;
+
+          stopOthers(model);
+          if (!liveAudios[model]) liveAudios[model] = [];
+          liveAudios[model].push(target);
+          target.preload = 'auto';
+          _play.call(target).catch(function(){});
+        }, DEBOUNCE);
+
+        // 返回 resolved Promise，兼容 waifu-tips 的 play().then() 调用链
+        return Promise.resolve();
       };
 
-      a.addEventListener('ended', function() {
-        var arr = liveAudios[model];
-        if (!arr) return;
-        var idx = arr.indexOf(a);
-        if (idx !== -1) arr.splice(idx, 1);
-      });
-      a.addEventListener('pause', function() {
-        var arr = liveAudios[model];
-        if (!arr) return;
-        var idx = arr.indexOf(a);
-        if (idx !== -1) arr.splice(idx, 1);
-      });
+      a.addEventListener('ended', function() { cleanup(model, a); });
+      a.addEventListener('pause', function() { cleanup(model, a); });
     }
 
     return a;
