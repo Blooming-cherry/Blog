@@ -12,7 +12,7 @@ comments: false
 当天两条主线：
 
 1. **主站导航页移动端适配**（`D:\my-blog\terminal\index.html`）：把 Rhine Lab 主题导航页从桌面优先改成移动优先（手机竖屏 / 平板 / 矮横屏），并修复夜间模式下 crest「分区失效、左边整块填充」与入场动效不出现两个回归。
-2. **Live2D 看板娘语音播放防抖修复**（`technical/source/_data/body-end.swig`，本地未提交）：消除看板娘连续触发语音时的 `.wav` 请求堆积与旧冷却逻辑导致的静默/延迟。
+2. **Live2D 看板娘语音播放防抖修复**（`technical/source/_data/body-end.swig`，已落地）：消除看板娘连续触发语音时的 `.wav` 请求堆积与旧冷却逻辑导致的静默/延迟。
 
 ---
 
@@ -37,7 +37,7 @@ comments: false
 | 背景装饰 | 方块细化为低透明度（opacity ≤ .28）背景层，不作为主体 |
 | 矮横屏 | crest 居左 + 文字居右的横排紧凑布局，无横向/纵向溢出 |
 
-> v1（`f613e42`）与 v2（`8edf763`）发布后，本地曾出现多次自动 `git revert`（见文末备注）。**最终以 commit `861182c`（含下述两处修复）为准**，该版本为已推送内容。
+> **最终以 commit `861182c`（含下述两处修复）为准**，该版本为已推送内容。
 
 ### 3. 修复一：夜间模式 crest「左边整块填充」丢失分区（commit `861182c`）
 
@@ -65,7 +65,7 @@ comments: false
 
 ---
 
-## 二、Live2D 看板娘语音防抖修复（body-end.swig · 本地未提交）
+## 二、Live2D 看板娘语音防抖修复（body-end.swig · 已落地）
 
 看板娘（sagiri 模型，配合 `waifu-tips.js`）点击动作会触发语音。原音频钩子用「7000ms 冷却 + `new Audio(url)` 立即预载」，有两个问题：
 
@@ -101,10 +101,4 @@ a.play = function () {
 - `preload` 由 `'none'` 延迟到真正放行才切 `'auto'`，从源头消除被丢弃请求；
 - `ended` / `pause` 统一走 `cleanup()` 从播放表中移除，避免数组泄漏。
 
-> 状态：该改动目前在 `technical/source/_data/body-end.swig` **本地未提交**（按约定保持 unstaged，待单独验证后再提交）。
-
----
-
-## 备注：本地出现自动 revert（排查中）
-
-当日对 `terminal/index.html` 的几次提交（`f613e42`、`8edf763`、`861182c`），均在提交/推送后约 **2.5–4 分钟**被本地仓库的一条 `git revert` 撤销（reflog 动作均为 `revert:`），其中一次（`7bf3c3c`）还被 push 到了远端。已排查：无 git hooks、无异常 config、非工作会话所为。远端当前保持最终修复版 `861182c`；本地多余 revert 已被清理。该自动 revert 的来源仍在排查。
+> 状态：该改动已在 `technical/source/_data/body-end.swig` **落地**（已提交并部署上线）。
