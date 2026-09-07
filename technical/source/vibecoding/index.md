@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-09-07
+
+- **[主站移动端适配 + Live2D 看板娘语音防抖修复日志](2026-09-07-adaydream-mobile-live2d-fix-log.html)** — 导航页手机竖屏/矮横屏重做；夜间 crest 分区改 evenodd 真实挖洞（抗自动深色反色）；入场动效在减弱动效下仍播放；看板娘语音 7000ms 冷却改 600ms 尾部防抖
+
 ### 2026-08-15
 
 - **[DeepSeek × Claude Code 配置优化日志（第二版）](2026-08-15-deepseek-claude-config-log-v2.html)** — dsh-anchored-standard 迭代优化：8 条已验证规则迁移 / disableBundledSkills / flash 独立配置档 / modelOverrides 调试结论
