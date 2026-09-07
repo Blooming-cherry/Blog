@@ -15,6 +15,9 @@
 
   img, svg { max-width: 100%; height: auto; }
 
+  /* 手机端把三个站内链接并入介绍语; 非手机端默认隐藏 */
+  .PhoneLinks { display: none; }
+
   .Home {
     width: 100vw; height: 100vh;
     position: absolute; top: 0; left: 0;
@@ -444,6 +447,123 @@
     .Cover { padding: .5rem 0; }
     .Cover .Content .Middle { width: min(82vw, 320px); }
   }
+
+  /* ── 手机端重构 (≤600px): 莱茵 logo 为核心, 律动方块为背景副元素 ── */
+  @media (max-width: 600px) {
+    html { font-size: 13px; }
+    .Home { overflow-x: hidden; }
+
+    /* 页眉放空: 保留黑条, 内容全部清空, 改为静态不遮挡首屏 */
+    .TopBar {
+      position: relative;
+      height: 44px;
+      animation: none;
+    }
+    .TopBar .Placeholder,
+    .TopBar .PlaceholderMiddle,
+    .TopBar .Left,
+    .TopBar .Right { display: none; }
+
+    .Cover {
+      display: block;
+      background: #eef0db;
+      min-height: calc(100svh - 44px);
+      padding: 0;
+      animation: none;
+    }
+    .Cover .Content {
+      position: relative;
+      display: block;
+      width: 100%;
+      min-height: calc(100svh - 44px);
+      aspect-ratio: auto;
+      background: #eef0db;
+      transform: none;
+      animation: none;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 0 1.25rem 2.5rem;
+    }
+
+    /* 核心: 莱茵生命 logo (页眉之下, 占上屏约 2/5 视觉空间, 阴影突出) */
+    .RhineLogoWrap {
+      display: block;
+      position: relative;
+      top: auto; left: auto;
+      width: min(80vw, 360px);
+      height: auto;
+      margin: max(4vh, 26px) auto 0;
+      z-index: 3;
+      filter: drop-shadow(0 12px 26px rgba(0,0,0,.22)) drop-shadow(0 2px 6px rgba(0,200,70,.16));
+      animation: phoneLogoIn 1.2s ease-out;
+    }
+    .RhineLogoWrap svg { width: 100%; height: auto; display: block; }
+    @keyframes phoneLogoIn {
+      0% { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 副元素: 律动方块作背景, 位于 logo 左上/下侧, 弱化呈现 */
+    .Cover .Content .Middle {
+      position: absolute;
+      top: 3vh; left: -11vw;
+      width: 78vw; height: 78vw;
+      max-width: 360px; max-height: 360px;
+      margin: 0;
+      z-index: 1;
+      opacity: .5;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .Middle .Center { width: 100%; height: 100%; }
+    .Center .Circle,
+    .Center .Line  { display: none; }
+    .Center .Blocks { width: 100%; height: 100%; }
+
+    /* 文字区: ADAYDREAM → 介绍语(开头嵌链接) → 按钮 */
+    .Cover .Content .Left {
+      position: relative;
+      z-index: 3;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      width: 100%;
+      padding: 0;
+      margin-top: 3vh;
+    }
+    .Cover .Content .Left .Title,
+    .Cover .Content .Left .Tip,
+    .Cover .Content .Left .Buttons { position: static; top: auto; left: auto; }
+    .Cover .Content .Left .Title {
+      font-size: clamp(20px, 7.6vw, 30px);
+      font-weight: 700; letter-spacing: .12em; color: #000;
+      margin: 0 0 .5rem;
+      animation: none;
+    }
+    .Cover .Content .Left .Tip {
+      font-size: clamp(12px, 3.8vw, 15px);
+      color: #555; line-height: 1.7; margin: 0;
+      animation: none;
+    }
+    .PhoneLinks { display: inline; }
+    .PhoneLink {
+      color: #000; font-weight: 700; text-decoration: none;
+      border-bottom: 1px solid #000; padding-bottom: 1px;
+      margin: 0 .25em; white-space: nowrap;
+    }
+    .Tip .Sep { font-style: normal; color: #999; }
+    .Cover .Content .Left .Buttons {
+      margin-top: 1.4rem; gap: .7rem; animation: none;
+    }
+    .Cover .Content .Left .Buttons .Button {
+      font-size: clamp(13px, 3.6vw, 16px);
+      padding: .55em 1.6em; border-radius: .25em;
+    }
+    .Cover .Content .Left .Buttons .QuickStart { background: #000; color: #fff; }
+    .Cover .Content .Left .Buttons .BrowserExample { border: 1px solid #000; color: #000; }
+
+    /* GitHub 文字区手机端不再单独展示 (链接已并入介绍语开头) */
+    .Cover .Content .Right { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -511,7 +631,14 @@
       </div>
       <div class="Left">
         <div class="Title">ADAYDREAM</div>
-        <div class="Tip">个人主站导航 · Rhine Lab 主题</div>
+        <div class="Tip">
+          <span class="PhoneLinks">
+            <a class="PhoneLink" href="https://blog.adaydream.cn/">Blog</a><i class="Sep"> · </i>
+            <a class="PhoneLink" href="https://sonnect.adaydream.cn/">Sonnect</a><i class="Sep"> · </i>
+            <a class="PhoneLink" href="https://github.com/Blooming-cherry" target="_blank" rel="noopener">GitHub</a>
+            <i class="Sep"> — </i>
+          </span>个人主站导航 · Rhine Lab 主题
+        </div>
         <div class="Buttons">
           <a class="Button QuickStart" href="https://blog.adaydream.cn/">Blog</a>
           <div class="Button BrowserExample" id="bgm-toggle">start</div>
@@ -653,10 +780,11 @@
       m.src = '/audio/880337';
     }
 
-    // Blocks staggered reveal
+    // 手机端: 先播 logo, 再浮现背景方块; 桌面维持原序
+    const phoneUI = window.matchMedia('(max-width: 600px)').matches;
     const blocks = document.querySelectorAll('.Blocks .Block');
     blocks.forEach((block, i) => {
-      setTimeout(() => { block.classList.add('Visible'); }, 1800 + i * 60);
+      setTimeout(() => { block.classList.add('Visible'); }, (phoneUI ? 3200 : 1800) + i * (phoneUI ? 70 : 60));
     });
 
     // Rhine logo — hand-drawn ribbon, single pen, montage pacing
@@ -672,7 +800,7 @@
         const L = drawPath.getTotalLength();
         drawPath.style.strokeDasharray  = L;
         drawPath.style.strokeDashoffset = L;
-        const START_DELAY = 3800;  // center blueprint animation finishes first
+        const START_DELAY = phoneUI ? 500 : 3800;  // phone: logo first; desktop: center animation first
         const DURATION    = 2400;
         const easeIn = t => Math.pow(t, 2.4);  // slow start -> fast finish
         setTimeout(() => {
