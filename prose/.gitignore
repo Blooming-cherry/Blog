@@ -1,0 +1,29 @@
+# 依赖与构建产物
+node_modules/
+dist/
+release/
+.tools/
+.worktrees/
+.main-integration/
+.vercel/
+
+# 由 _posts 生成的产物：源永远在 technical/source/_posts，这里不存副本。
+# 提交它们只会在文章增删后留下一份骗人的旧数据。
+content/archives.json
+public/archives/
+
+# 单独授权的 MyFonts 字体包：只许本地安装，绝不入 Git。
+public/fonts/novecento/
+
+# 上游工程留下的零碎
+backups/
+*.mp4
+*.blend1
+optix7cache.db
+art/.cache/
+video/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example

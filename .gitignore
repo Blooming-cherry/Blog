@@ -7,7 +7,9 @@ rhinelablogo/
 node_modules/
 
 # Hexo generated
-public/
+# 必须写全路径：裸的 `public/` 会匹配任意层级，把 prose/public/ 一起吞掉
+# ——文苑的字体、三维模型、图标都在那里，是要入库的源文件。
+/technical/public/
 .deploy*/
 
 # Obsidian vault config

@@ -1,0 +1,32 @@
+{
+  "name": "blog-prose",
+  "version": "1.0.0",
+  "description": "文苑 —— 博客的散文栏目，前端基于 RhineLabUI（MIT，© LBEILC）",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/patch-rolling-number.mjs",
+    "predev": "node scripts/patch-rolling-number.mjs && node scripts/prose-content.mjs && node scripts/export-records.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "prebuild": "node scripts/patch-rolling-number.mjs && node scripts/prose-content.mjs && node scripts/export-records.mjs && node scripts/prepare-webfonts.mjs",
+    "check:content": "node --experimental-strip-types --test scripts/check-content.mjs",
+    "check:viewport": "node --experimental-strip-types scripts/check-viewport.mjs",
+    "export:archives": "node scripts/export-records.mjs",
+    "build": "tsc && vite build && node scripts/prose-pages.mjs && node scripts/build-pwa.mjs",
+    "format": "prettier --write src scripts index.html package.json tsconfig.json",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@kitlangton/rolling-number": "0.4.1",
+    "three": "^0.183.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.183.0",
+    "highlight.js": "^11.12.0",
+    "marked": "^18.0.12",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

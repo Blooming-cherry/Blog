@@ -1,0 +1,46 @@
+name: Deploy Prose Column
+
+# 文苑。产物是 prose/dist/，落到 /var/www/blog/prose/ —— 与博客同一个站点根，
+# 所以这里【不能】带 --exclude，但反过来 deploy.yml 必须排除 prose/，
+# 否则博客那边带 --delete 的 rsync 会把这一整个目录删掉。
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'prose/**'
+      # 散文正文就在博客的 _posts 里，改一篇文章要连带重建文苑。
+      - 'technical/source/_posts/**'
+      - 'technical/source/attachments/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prose
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: prose/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build prose column
+        # 内容源靠相对路径推导到 ../technical/source/_posts，无需额外配置。
+        run: npm run build
+
+      - name: Deploy prose column to cloud server
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/blog/prose/

@@ -35,4 +35,6 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          rsync -avz --delete --exclude='.well-known/' --exclude='music.json' -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" public/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/blog/
+          # prose/ 不归 Hexo 管：它是文苑栏目，由 deploy-prose.yml 单独同步。
+          # 这条 rsync 带 --delete，不排除的话每次博客构建都会把整个文苑抹掉。
+          rsync -avz --delete --exclude='.well-known/' --exclude='music.json' --exclude='prose/' -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key" public/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/blog/
