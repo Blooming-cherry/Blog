@@ -1,4 +1,4 @@
-// 文苑的内容源：读博客的 _posts，拆 front-matter。
+// 文苑的内容源：读博客的 _posts（以及只进文苑的 _prose），拆 front-matter。
 // prose-content.mjs（出卡片用的 archives.json）和 prose-pages.mjs（出正文页）
 // 共用这一份，避免 CRLF 那个坑被各写一遍、然后只修好其中一处。
 import fs from "node:fs/promises";
@@ -15,6 +15,17 @@ import { fileURLToPath } from "node:url";
 export const POSTS_DIR = process.env.PROSE_POSTS_DIR
   ? path.resolve(process.env.PROSE_POSTS_DIR)
   : fileURLToPath(new URL("../../technical/source/_posts", import.meta.url));
+
+/**
+ * 只进文苑、不进博客的散文目录。
+ *
+ * 博客那边不用配 exclude：Hexo 只 glob `_posts/`，而且把任何 `_` 开头的路径
+ * 当隐藏文件跳过，`source/_prose/` 因此天然不会被收成博文。
+ * 它与 POSTS_DIR 同级，正文页那边的附件目录（POSTS_DIR/../attachments）不受影响。
+ */
+export const PROSE_ONLY_DIR = process.env.PROSE_ONLY_POSTS_DIR
+  ? path.resolve(process.env.PROSE_ONLY_POSTS_DIR)
+  : fileURLToPath(new URL("../../technical/source/_prose", import.meta.url));
 
 /** 拆出 front-matter；支持直引号/弯引号包裹，以及多行引号字符串。 */
 export function parseFrontMatter(raw) {
@@ -86,10 +97,27 @@ export function postBody(raw) {
   return end < 0 ? text.trim() : text.slice(end + 4).trim();
 }
 
-/** 读一篇：slug 即博客里的文件名（无 .md）。 */
+/** 列出目录里的 .md；目录不存在时当空 —— _prose/ 允许整天不在。 */
+async function listMarkdown(dir) {
+  try {
+    return (await fs.readdir(dir)).filter((f) => f.endsWith(".md"));
+  } catch (err) {
+    if (err.code === "ENOENT") return [];
+    throw err;
+  }
+}
+
+/** 读一篇：slug 即文件名（无 .md）。两个源目录都查，_posts 优先。 */
 export async function readPost(slug) {
-  const raw = await fs.readFile(path.join(POSTS_DIR, `${slug}.md`), "utf8");
-  return { frontMatter: parseFrontMatter(raw), body: postBody(raw) };
+  for (const dir of [POSTS_DIR, PROSE_ONLY_DIR]) {
+    try {
+      const raw = await fs.readFile(path.join(dir, `${slug}.md`), "utf8");
+      return { frontMatter: parseFrontMatter(raw), body: postBody(raw) };
+    } catch (err) {
+      if (err.code !== "ENOENT") throw err;
+    }
+  }
+  throw new Error(`散文 ${slug}.md 在 _posts 和 _prose 里都找不到`);
 }
 
 export const CATEGORY = "文苑";
@@ -99,13 +127,25 @@ export const CATEGORY = "文苑";
  * 编号只在这里分配一次：卡片（archives.json）和正文页（w-NNN/index.html）
  * 都从这里取 id，两边的 W-001 永远是同一篇。
  * 按日期升序 —— 阵列里由旧到新自顶向下。
+ * 两个源目录合起来排：编号与目录无关，只跟日期走。
  */
 export async function loadRecords() {
-  const files = (await fs.readdir(POSTS_DIR)).filter((f) => f.endsWith(".md"));
+  // _posts 先读：同一个 slug 出现在两处说明放错了目录，以博客那份为准并吱一声。
+  const entries = [];
+  for (const dir of [POSTS_DIR, PROSE_ONLY_DIR]) {
+    for (const file of await listMarkdown(dir)) {
+      const slug = path.basename(file, ".md");
+      if (entries.some((e) => e.slug === slug)) {
+        console.warn(`同名散文同时存在于两个源目录，以 _posts 为准：${slug}`);
+        continue;
+      }
+      entries.push({ slug, dir });
+    }
+  }
+
   const rows = [];
-  for (const file of files) {
-    const slug = path.basename(file, ".md");
-    const raw = await fs.readFile(path.join(POSTS_DIR, file), "utf8");
+  for (const { slug, dir } of entries) {
+    const raw = await fs.readFile(path.join(dir, `${slug}.md`), "utf8");
     const fm = parseFrontMatter(raw);
     rows.push({
       slug,

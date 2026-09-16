@@ -11,6 +11,8 @@ on:
       - 'prose/**'
       # 散文正文就在博客的 _posts 里，改一篇文章要连带重建文苑。
       - 'technical/source/_posts/**'
+      # 只进文苑、不进博客的散文放这里（Hexo 只 glob _posts/，且跳过 _ 开头目录）。
+      - 'technical/source/_prose/**'
       - 'technical/source/attachments/**'
   workflow_dispatch:
 
@@ -35,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Build prose column
-        # 内容源靠相对路径推导到 ../technical/source/_posts，无需额外配置。
+        # 内容源靠相对路径推导到 ../technical/source/_posts 与 _prose，无需额外配置。
         run: npm run build
 
       - name: Deploy prose column to cloud server

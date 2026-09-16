@@ -4,16 +4,27 @@
 [RhineLabUI](https://github.com/LBEILC/RhineLabUI)（MIT，© LBEILC），
 视觉气质保留莱茵生命的暖棕/琥珀调，内容则是站主自己的散文。
 
-**文章只写在博客里，这里不存内容。** 唯一的来源是
-`../technical/source/_posts/*.md` —— 与博客正文同一批文件，同一套 front-matter。
-改一篇散文不需要碰这个目录里的任何代码。
+**文章只写在博客仓库里，这里不存内容。** 来源有两处，同一套 front-matter：
+
+| 目录 | 这篇散文出现在 |
+| --- | --- |
+| `technical/source/_posts/*.md` | 博客正文 **和** 文苑 |
+| `technical/source/_prose/*.md` | **只在**文苑 |
+
+`_prose/` 不需要在博客的 `_config.yml` 里配任何排除规则：Hexo 只 glob `_posts/`，
+并且把 `_` 开头的路径一律当隐藏文件跳过。两处合起来按日期统一编号，
+`W-NNN` 与文件放在哪个目录无关。改一篇散文不需要碰这个目录里的任何代码。
 
 ## 加一篇散文
 
-1. 在 `technical/source/_posts/` 新建一个 `.md`，front-matter 写 `title`
-   `date` `tag`，正文照常写 Markdown。`subtitle`（副题）与 `description`（诗引）
-   可留空 —— 卡片上那两处会留白，不会报错。
+1. 新建一个 `.md`，front-matter 写 `title` `date` `tag`，正文照常写 Markdown。
+   `subtitle`（副题）与 `description`（诗引）可留空 —— 卡片上那两处会留白，不会报错。
+   想同时出现在博客上就放 `_posts/`，只想进文苑就放 `_prose/`。
 2. 提交并推送。CI 会重新生成卡片阵列与正文页，一并部署到 `/prose/`。
+
+日期必须写 `YYYY-MM-DD`（`date: 2026-07-03`）。写成 `2026/07/03`、或者用了全角冒号
+`date：`，两边的解析都会失配 —— 博客退回文件时间，文苑则把它当 `1970-01-01`
+排到阵列最前、占掉 `W-001` 并顶掉其后所有编号。
 
 编号 `W-001…` 按**日期升序**自动分配，也就是说：往中间插一篇早期文章，
 它之后所有文章都会改号，`/prose/w-007/` 这类链接和文章不再一一对应。
@@ -23,23 +34,23 @@
 
 ```sh
 npm ci          # 首次
-npm run dev     # 预览，改 _posts 里的散文会即时反映
+npm run dev     # 预览，改 _posts / _prose 里的散文会即时反映
 npm run build   # 产出 dist/，含 w-NNN 正文页与 Service Worker
 npm run check:content   # 校验卡片数据与下载文件是否一致（需先构建过一次）
 ```
 
 Node 需要 22.12+ 或 24（Vite 7 的要求）；CI 用 24。
 
-内容源默认取 `../technical/source/_posts`，靠相对路径推导，
-本地检出和 CI 检出走同一条逻辑。要指向别处的文章时用
-`PROSE_POSTS_DIR=/path/to/_posts` 覆盖。
+内容源默认取 `../technical/source/_posts` 与 `../technical/source/_prose`，靠相对路径推导，
+本地检出和 CI 检出走同一条逻辑。要指向别处的文章时分别用
+`PROSE_POSTS_DIR=/path/to/_posts`、`PROSE_ONLY_POSTS_DIR=/path/to/_prose` 覆盖。
 
 ## 目录
 
 | 路径 | 作用 |
 | --- | --- |
 | `src/` | 三维档案阵列、开场动画、详情面板。上游代码，尽量别动 |
-| `scripts/prose-source.mjs` | 读 `_posts`、拆 front-matter、分配 `W-NNN` 编号 |
+| `scripts/prose-source.mjs` | 读 `_posts` + `_prose`、拆 front-matter、分配 `W-NNN` 编号 |
 | `scripts/prose-content.mjs` | 出卡片数据 `content/archives.json`（构建产物，不入库） |
 | `scripts/prose-pages.mjs` | 出正文页 `dist/w-NNN/index.html` 与附件副本 |
 | `scripts/export-records.mjs` | 出详情面板的 TXT 下载（构建产物，不入库） |
