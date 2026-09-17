@@ -84,6 +84,19 @@ export function pickTag(fm) {
   return "散文";
 }
 
+/**
+ * 这篇是否只进博客、不进文苑 —— front-matter 里写 `prose: false`。
+ *
+ * 默认全部进文苑，只有显式标 false 的才剔出去。开关选这个方向是因为
+ * 两种失败不一样：忘了标 → 文章冒进文苑（页面上看得见，好发现）；
+ * 若反过来做成「列进清单才进」，忘了登记就是散文静默缺席，不会报错。
+ *
+ * 博客侧（Hexo）不认识这个键，写不写都不影响渲染，也不需要配 exclude。
+ */
+export function isBlogOnly(fm) {
+  return String(fm.prose ?? "").trim().toLowerCase() === "false";
+}
+
 export function normalizeDate(raw) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(raw ?? "").trim());
   return m ? `${m[1]}-${m[2]}-${m[3]}` : "1970-01-01";
@@ -147,6 +160,8 @@ export async function loadRecords() {
   for (const { slug, dir } of entries) {
     const raw = await fs.readFile(path.join(dir, `${slug}.md`), "utf8");
     const fm = parseFrontMatter(raw);
+    // 标了 prose: false 的只留在博客，不进文苑阵列。
+    if (isBlogOnly(fm)) continue;
     rows.push({
       slug,
       title: String(fm.title ?? slug).trim(),
