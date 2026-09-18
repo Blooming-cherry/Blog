@@ -15,7 +15,10 @@
   }
   injectCredit();
   // Re-inject after PJAX page swaps (footer may have been replaced)
-  document.addEventListener('pjax:success', injectCredit);
+  if (!window.__blogCreditPjaxBound) {
+    window.__blogCreditPjaxBound = true;
+    document.addEventListener('pjax:success', injectCredit);
+  }
 })();
 </script>
 
@@ -145,9 +148,12 @@
   }
 
   var audio = new Audio();
+  audio.preload = 'none';
   audio.volume = 0.3;
   var idx = 0;
   var playing = false;
+  var resumeTime = 0;
+  var sourceGeneration = 0;
   var mp = document.getElementById('miniPlayer');
   var mpDisc = document.getElementById('mpDisc');
   var mpCover = document.getElementById('mpCover');
@@ -164,23 +170,54 @@
   // Restore from localStorage
   try {
     var s = JSON.parse(localStorage.getItem('vs'));
-    if (s && s.i < PL.length) { idx = s.i; audio.currentTime = s.t || 0; }
+    if (s && s.i < PL.length) {
+      idx = s.i;
+      var restoredTime = Number(s.t);
+      resumeTime = isFinite(restoredTime) && restoredTime > 0 ? restoredTime : 0;
+    }
   } catch(e) {}
 
   function save() {
-    try { localStorage.setItem('vs', JSON.stringify({i:idx, t:audio.currentTime, p:playing})); } catch(e) {}
+    var sourceMatchesTrack = audio.getAttribute('data-idx') === String(idx);
+    var savedTime = resumeTime || (sourceMatchesTrack ? audio.currentTime : 0);
+    try { localStorage.setItem('vs', JSON.stringify({i:idx, t:savedTime, p:playing})); } catch(e) {}
+  }
+
+  function ensureAudioSource() {
+    if (audio.getAttribute('data-idx') === String(idx) && audio.getAttribute('src')) return;
+
+    var sourceIndex = idx;
+    var generation = ++sourceGeneration;
+    var timeToRestore = resumeTime;
+    audio.src = resolveUrl(PL[idx]);
+    audio.setAttribute('data-idx', idx);
+
+    if (timeToRestore > 0) {
+      var restoreSavedTime = function() {
+        audio.removeEventListener('loadedmetadata', restoreSavedTime);
+        if (generation !== sourceGeneration || audio.getAttribute('data-idx') !== String(sourceIndex)) return;
+        try { audio.currentTime = timeToRestore; } catch(e) {}
+        resumeTime = 0;
+        save();
+      };
+      if (audio.readyState >= 1) restoreSavedTime();
+      else audio.addEventListener('loadedmetadata', restoreSavedTime);
+    }
   }
 
   function load(i) {
     var changed = (idx !== i);
     idx = i;
+    if (changed) {
+      resumeTime = 0;
+      sourceGeneration += 1;
+    }
     var t = PL[i];
-    if (changed || !audio.src) { audio.src = resolveUrl(t); audio.setAttribute('data-idx', i); }
     mpCover.style.backgroundImage = 'url(' + t.cover + ')';
     mpTitle.textContent = t.name;
     updatePlaylistHighlight();
     save();
-    if (playing) audio.play();
+    if (playing) { ensureAudioSource(); audio.play(); }
   }
 
   function setPlaying(p) {
@@ -194,7 +231,11 @@
 
   function toggle() {
     if (playing) { audio.pause(); setPlaying(false); }
-    else { audio.play().then(function(){ setPlaying(true); }).catch(function(){}); }
+    else {
+      audio.preload = 'auto';
+      ensureAudioSource();
+      audio.play().then(function(){ setPlaying(true); }).catch(function(){});
+    }
   }
 
   function next() { load((idx + 1) % PL.length); }
@@ -294,15 +335,19 @@
     setPlaying: setPlaying, checkMusicPage: checkMusicPage
   };
 
-  // Initial load + auto-play
+  // Restore the saved track/time without fetching media until a user gesture.
   load(idx);
-  if (s && s.p && window.location.pathname.indexOf('/music') === -1) {
-    audio.play().then(function(){ setPlaying(true); }).catch(function(){});
-  }
 })();
 </script>
 
 <!-- Live2D 看板娘 -->
+<script>
+window.__blogDesktopEffectsEnabled = Boolean(
+  window.matchMedia &&
+  window.matchMedia('(min-width: 769px) and (hover: hover) and (pointer: fine)').matches
+);
+</script>
+
 <style>
 #waifu {
   transform: scale(0.42);
@@ -320,12 +365,12 @@
 }
 </style>
 
-<script src="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/live2d.min.js"></script>
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu.css">
-
 <!-- 拦截 CDN 请求：过滤模型 + sagiri 语音走本地 -->
 <script>
 (function(){
+  if (!window.__blogDesktopEffectsEnabled || window.__blogLive2dHooksInstalled) return;
+  window.__blogLive2dHooksInstalled = true;
+
   // 抑制 widget v1.0.1 Cubism2 hitTest 报错
   var _warn = console.warn, _error = console.error;
   console.warn = function() {
@@ -375,7 +420,7 @@
 <!-- 全局音量控制 -->
 <script>
 (function(){
-  if (window.__lv2AudioHooked) return;
+  if (!window.__blogDesktopEffectsEnabled || window.__lv2AudioHooked) return;
   window.__lv2AudioHooked = true;
   var VOL = 0.5;
   var DEBOUNCE = 600;      // 防抖窗口(ms)：连续触发只放行最后一次，可调
@@ -459,6 +504,9 @@
 
 <script>
 (function(){
+  if (!window.__blogDesktopEffectsEnabled || window.__blogLive2dInitialized) return;
+  window.__blogLive2dInitialized = true;
+
   // 抑制 Cubism2 运行时 hit_areas 引用异常
   window.addEventListener('error', function(e) {
     var m = e.message || '';
@@ -468,6 +516,14 @@
       return false;
     }
   }, true);
+
+  if (!document.getElementById('blog-live2d-style')) {
+    var style = document.createElement('link');
+    style.id = 'blog-live2d-style';
+    style.rel = 'stylesheet';
+    style.href = 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu.css';
+    document.head.appendChild(style);
+  }
 
   var s = document.createElement('script');
   s.type = 'module';
@@ -495,6 +551,13 @@
 <script>
 (function(){
   var canvas = document.getElementById('mouseTrail');
+  if (!window.__blogDesktopEffectsEnabled) {
+    if (canvas) canvas.remove();
+    return;
+  }
+  if (window.__blogMouseTrailInitialized) return;
+  window.__blogMouseTrailInitialized = true;
+
   var ctx = canvas.getContext('2d');
   var particles = [];
   var maxParticles = 40;
