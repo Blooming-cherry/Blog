@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-09-18
+
+- **[主站手机端闪退修复日志](2026-09-18-blog-mobile-crash-remediation.html)** — Live2D/PJAX 资源累积、零交互音频加载与重复监听器的 RED/GREEN 修复闭环
+
 ### 2026-09-07
 
 - **[主站移动端适配 + Live2D 看板娘语音防抖修复日志](2026-09-07-adaydream-mobile-live2d-fix-log.html)** — 导航页手机竖屏/矮横屏重做；夜间 crest 分区改 evenodd 真实挖洞（抗自动深色反色）；入场动效在减弱动效下仍播放；看板娘语音 7000ms 冷却改 600ms 尾部防抖
