@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 536" width="720" height="536" role="img" aria-labelledby="ttl">
+<title id="ttl">建站时间轴：十个月，十二拨</title>
+<style>
+  text{font-family:'Microsoft YaHei','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Source Han Sans SC',sans-serif;fill:#555555}
+  .mono{font-family:'Cascadia Mono',Consolas,'SF Mono',Menlo,'DejaVu Sans Mono',monospace}
+  .paper{fill:#ffffff}
+  .ink2{fill:#999999}
+  .rule{stroke:#dddddd;fill:none}
+  .warm{fill:#A94F2F}
+  @media (prefers-color-scheme: dark){
+    text{fill:#bbbbbb}
+    .paper{fill:#282828}
+    .ink2{fill:#8a8a8a}
+    .rule{stroke:#444444}
+    .warm{fill:#E08A5F}
+  }
+</style>
+
+<rect class="paper" x="0" y="0" width="720" height="536"/>
+
+<text x="40" y="42" font-size="21" font-weight="600">十个月，十二拨</text>
+<text x="40" y="68" font-size="13.5" class="ink2">建站时间轴，2025-10-19 至 2026-05-13</text>
+
+<line class="rule" x1="40" y1="90" x2="680" y2="90" stroke-width="1"/>
+
+<line class="rule" x1="34" y1="110" x2="34" y2="486" stroke-width="1"/>
+
+<circle class="ink2" cx="34" cy="116" r="3"/>
+<text class="mono ink2" x="138" y="120" font-size="12" text-anchor="end">2025-10-19</text>
+<text x="154" y="120" font-size="13.5">WordPress 全量落地，wp-admin 与 wp-includes 都在</text>
+
+<circle class="ink2" cx="34" cy="149" r="3"/>
+<text class="mono ink2" x="138" y="153" font-size="12" text-anchor="end">2025-10-29</text>
+<text x="154" y="153" font-size="13.5">十天后还在改 wp-config.php</text>
+
+<circle class="warm" cx="34" cy="182" r="4.6"/>
+<text class="mono ink2" x="138" y="186" font-size="12" text-anchor="end">2025-11-09</text>
+<text class="warm" x="154" y="186" font-size="13.5">第一套自建认证：登录页与注册页（HTML + PHP）</text>
+
+<circle class="ink2" cx="34" cy="215" r="3"/>
+<text class="mono ink2" x="138" y="219" font-size="12" text-anchor="end">2025-11-15</text>
+<text x="154" y="219" font-size="13.5">书架与影视库两个模块，外加一个 node_modules/</text>
+
+<circle class="ink2" cx="34" cy="248" r="3"/>
+<text class="mono ink2" x="138" y="252" font-size="12" text-anchor="end">2025-12-05</text>
+<text x="154" y="252" font-size="13.5">情绪存取：两个 PHP 接口</text>
+
+<circle class="ink2" cx="34" cy="281" r="3"/>
+<text class="mono ink2" x="138" y="285" font-size="12" text-anchor="end">2026-01-30</text>
+<text x="154" y="285" font-size="13.5">报名提交接口（PHP）</text>
+
+<circle class="ink2" cx="34" cy="314" r="3"/>
+<text class="mono ink2" x="138" y="318" font-size="12" text-anchor="end">2026-02-22</text>
+<text x="154" y="318" font-size="13.5">团辅一整拨：三个接口，含报名与活动列表</text>
+
+<circle class="ink2" cx="34" cy="347" r="3"/>
+<text class="mono ink2" x="138" y="351" font-size="12" text-anchor="end">2026-03-27</text>
+<text x="154" y="351" font-size="13.5">api/ 目录，三个 php</text>
+
+<circle class="ink2" cx="34" cy="380" r="3"/>
+<text class="mono ink2" x="138" y="384" font-size="12" text-anchor="end">2026-04-12</text>
+<text x="154" y="384" font-size="13.5">树洞一整拨：列表、详情、发帖三个页面</text>
+
+<circle class="warm" cx="34" cy="413" r="4.6"/>
+<text class="mono ink2" x="138" y="417" font-size="12" text-anchor="end">2026-04-19</text>
+<text class="warm" x="154" y="417" font-size="13.5">五份 AI 聊天脚本，两份相隔 2 分 43 秒</text>
+
+<circle class="warm" cx="34" cy="446" r="4.6"/>
+<text class="mono ink2" x="138" y="450" font-size="12" text-anchor="end">2026-05-09</text>
+<text class="warm" x="154" y="450" font-size="13.5">Node 服务入口诞生，明文比对</text>
+
+<circle class="ink2" cx="34" cy="479" r="3"/>
+<text class="mono ink2" x="138" y="483" font-size="12" text-anchor="end">2026-05-13</text>
+<text x="154" y="483" font-size="13.5">首页与情绪页</text>
+
+<line class="rule" x1="40" y1="500" x2="680" y2="500" stroke-width="1"/>
+
+<circle class="warm" cx="34" cy="520" r="4.6"/>
+<text class="ink2" x="48" y="524" font-size="12.5">今天仍在线上，且今天的缺陷可以回溯到这一天</text>
+</svg>

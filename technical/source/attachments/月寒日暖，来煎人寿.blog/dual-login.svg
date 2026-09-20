@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 416" width="720" height="416" role="img" aria-labelledby="ttl">
+<title id="ttl">两条登录通道：并行至今，共用一张 users 表，密码格式互斥</title>
+<style>
+  text{font-family:'Microsoft YaHei','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Source Han Sans SC',sans-serif;fill:#555555}
+  .mono{font-family:'Cascadia Mono',Consolas,'SF Mono',Menlo,'DejaVu Sans Mono',monospace}
+  .paper{fill:#ffffff}
+  .ink2{fill:#999999}
+  .rule{stroke:#dddddd;fill:none}
+  .rulef{fill:#cccccc}
+  .warm{fill:#A94F2F}
+  @media (prefers-color-scheme: dark){
+    text{fill:#bbbbbb}
+    .paper{fill:#282828}
+    .ink2{fill:#8a8a8a}
+    .rule{stroke:#444444}
+    .rulef{fill:#555555}
+    .warm{fill:#E08A5F}
+  }
+</style>
+
+<rect class="paper" x="0" y="0" width="720" height="416"/>
+
+<text x="40" y="42" font-size="21" font-weight="600">两条登录通道，一张 users 表</text>
+<text x="40" y="68" font-size="13.5" class="ink2">两条通道并存至今，共用一张 users 表</text>
+
+<rect class="rule" x="40" y="96" width="308" height="170" rx="3" stroke-width="1"/>
+<text x="56" y="124" font-size="14" font-weight="600">通道 B</text>
+<text x="118" y="124" font-size="12.5" class="ink2">现役，唯一有登录框的一条</text>
+
+<text x="56" y="156" font-size="12.5" class="ink2">入口</text>
+<text x="112" y="156" font-size="13">首页的登录弹窗</text>
+<text x="56" y="184" font-size="12.5" class="ink2">端点</text>
+<text class="mono" x="112" y="184" font-size="12.5">POST /api/v1/login</text>
+<text x="56" y="212" font-size="12.5" class="ink2">校验</text>
+<text x="112" y="212" font-size="13">明文直接比对</text>
+<text x="56" y="240" font-size="12.5" class="ink2">回错</text>
+<text x="112" y="240" font-size="13">服务器错误</text>
+
+<rect class="rule" x="372" y="96" width="308" height="170" rx="3" stroke-width="1"/>
+<text x="388" y="124" font-size="14" font-weight="600">通道 A</text>
+<text x="450" y="124" font-size="12.5" class="ink2">孤儿，唯一入口是树洞页</text>
+
+<text x="388" y="156" font-size="12.5" class="ink2">入口</text>
+<text x="444" y="156" font-size="13">孤儿登录页</text>
+<text x="388" y="184" font-size="12.5" class="ink2">端点</text>
+<text x="444" y="184" font-size="13">PHP 登录端点</text>
+<text x="388" y="212" font-size="12.5" class="ink2">校验</text>
+<text x="444" y="212" font-size="13">bcrypt 哈希比对</text>
+<text x="388" y="240" font-size="12.5" class="ink2">回错</text>
+<text x="444" y="240" font-size="13">用户名不存在</text>
+
+<line class="rule" x1="194" y1="266" x2="194" y2="300" stroke-width="1"/>
+<polygon class="rulef" points="189,296 199,296 194,304"/>
+<line class="rule" x1="526" y1="266" x2="526" y2="300" stroke-width="1"/>
+<polygon class="rulef" points="521,296 531,296 526,304"/>
+
+<rect class="rule" x="40" y="304" width="640" height="58" rx="3" stroke-width="1"/>
+<text x="360" y="328" font-size="14" font-weight="600" text-anchor="middle">users 表</text>
+<text x="360" y="348" font-size="12.5" class="ink2" text-anchor="middle">两条通道共用同一张表，密码存储格式互斥</text>
+
+<text x="40" y="390" font-size="13">经 A 注册的账号在 B 上永远登不进去，反之亦然。<tspan class="warm">09-09 审计判过「删其一」，未执行。</tspan></text>
+</svg>

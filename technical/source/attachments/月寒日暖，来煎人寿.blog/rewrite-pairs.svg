@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 462" width="720" height="462" role="img" aria-labelledby="ttl">
+<title id="ttl">同一功能两套实现：报名表单相隔 23 天、活动列表相隔 1 天、AI 聊天相隔 2 分 43 秒</title>
+<style>
+  text{font-family:'Microsoft YaHei','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Source Han Sans SC',sans-serif;fill:#555555}
+  .mono{font-family:'Cascadia Mono',Consolas,'SF Mono',Menlo,'DejaVu Sans Mono',monospace}
+  .paper{fill:#ffffff}
+  .ink2{fill:#999999}
+  .rule{stroke:#dddddd;fill:none}
+  .warm{fill:#A94F2F}
+  @media (prefers-color-scheme: dark){
+    text{fill:#bbbbbb}
+    .paper{fill:#282828}
+    .ink2{fill:#8a8a8a}
+    .rule{stroke:#444444}
+    .warm{fill:#E08A5F}
+  }
+</style>
+
+<rect class="paper" x="0" y="0" width="720" height="462"/>
+
+<text x="40" y="38" font-size="21" font-weight="600">同一功能，两套实现</text>
+<text x="40" y="62" font-size="13.5" class="ink2">三组重复落盘，旧的那份从来没人删</text>
+
+<text x="40" y="104" font-size="14" font-weight="600">报名表单</text>
+<line class="rule" x1="108" y1="100" x2="680" y2="100" stroke-width="1"/>
+<text x="64" y="132" font-size="12.5">报名接口 A（PHP）</text>
+<text class="mono ink2" x="250" y="132" font-size="12.5">2026-01-30</text>
+<text class="ink2" x="420" y="132" font-size="12">mysqli</text>
+<text x="64" y="158" font-size="12.5">团辅报名接口（PHP）</text>
+<text class="mono ink2" x="250" y="158" font-size="12.5">2026-02-22</text>
+<text class="ink2" x="420" y="158" font-size="12">PDO</text>
+<text x="64" y="186" font-size="13">相隔 23 天</text>
+
+<text x="40" y="228" font-size="14" font-weight="600">活动列表</text>
+<line class="rule" x1="108" y1="224" x2="680" y2="224" stroke-width="1"/>
+<text x="64" y="256" font-size="12.5">活动列表接口 A（PHP）</text>
+<text class="mono ink2" x="250" y="256" font-size="12.5">2026-02-21</text>
+<text x="64" y="282" font-size="12.5">活动列表接口 B（PHP）</text>
+<text class="mono ink2" x="250" y="282" font-size="12.5">2026-02-22</text>
+<text x="64" y="310" font-size="13">相隔 1 天</text>
+
+<text x="40" y="352" font-size="14" font-weight="600">AI 聊天</text>
+<line class="rule" x1="108" y1="348" x2="680" y2="348" stroke-width="1"/>
+<text x="64" y="380" font-size="12.5">AI 聊天脚本 A（Python）</text>
+<text class="mono ink2" x="250" y="380" font-size="12.5">2026-04-19 22:20:08</text>
+<text x="64" y="406" font-size="12.5">AI 聊天脚本 B（Python）</text>
+<text class="mono ink2" x="250" y="406" font-size="12.5">2026-04-19 22:22:51</text>
+<text class="warm" x="64" y="434" font-size="14.5" font-weight="600">相隔 2 分 43 秒</text>
+</svg>

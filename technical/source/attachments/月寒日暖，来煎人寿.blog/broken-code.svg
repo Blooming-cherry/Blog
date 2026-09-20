@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 248" width="720" height="248" role="img" aria-labelledby="ttl">
+<title id="ttl">三条没人再打开过的代码：分别坏了 315 天、161 天、315 天</title>
+<style>
+  text{font-family:'Microsoft YaHei','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Source Han Sans SC',sans-serif;fill:#555555}
+  .mono{font-family:'Cascadia Mono',Consolas,'SF Mono',Menlo,'DejaVu Sans Mono',monospace}
+  .paper{fill:#ffffff}
+  .ink2{fill:#999999}
+  .rule{stroke:#dddddd;fill:none}
+  .warm{fill:#A94F2F}
+  @media (prefers-color-scheme: dark){
+    text{fill:#bbbbbb}
+    .paper{fill:#282828}
+    .ink2{fill:#8a8a8a}
+    .rule{stroke:#444444}
+    .warm{fill:#E08A5F}
+  }
+</style>
+
+<rect class="paper" x="0" y="0" width="720" height="248"/>
+
+<text x="40" y="38" font-size="21" font-weight="600">三条没人再打开过的代码</text>
+<text x="40" y="62" font-size="13.5" class="ink2">从写下那天起就是坏的，一直坏到今天</text>
+<line class="rule" x1="40" y1="88" x2="680" y2="88" stroke-width="1"/>
+
+<text x="40" y="130" font-size="13">孤儿登录页</text>
+<text x="170" y="130" font-size="13">坏了</text>
+<text class="mono warm" x="200" y="130" font-size="13.5">315</text>
+<text x="228" y="130" font-size="13">天</text>
+<rect class="warm" x="270" y="117" width="402" height="18"/>
+
+<text x="40" y="172" font-size="13">树洞页</text>
+<text x="170" y="172" font-size="13">坏了</text>
+<text class="mono warm" x="200" y="172" font-size="13.5">161</text>
+<text x="228" y="172" font-size="13">天</text>
+<rect class="warm" x="270" y="159" width="205" height="18"/>
+
+<text x="40" y="214" font-size="13">注册页</text>
+<text x="170" y="214" font-size="13">坏了</text>
+<text class="mono warm" x="200" y="214" font-size="13.5">315</text>
+<text x="228" y="214" font-size="13">天</text>
+<rect class="warm" x="270" y="201" width="402" height="18"/>
+</svg>
