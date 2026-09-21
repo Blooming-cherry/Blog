@@ -210,3 +210,17 @@
     max-height: 260px;
   }
 }
+
+/* ── KaTeX 公式：过宽时在版心内横向滚动（居中与滚动共存）── */
+/* 说明：KaTeX 的 .katex-display 自身是 text-align:center；直接用
+   text-align 居中 + overflow 在超宽时会把左端推到滚动区外，
+   故改用 flex + 子元素 margin:0 auto —— 放得下时居中，
+   放不下时 auto 归零、从左边开始，两端都滚得到。          */
+.post-body .katex-display {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.post-body .katex-display > .katex {
+  margin: 0 auto;
+}
