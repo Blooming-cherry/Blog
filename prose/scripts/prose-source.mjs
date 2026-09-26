@@ -97,9 +97,18 @@ export function isBlogOnly(fm) {
   return String(fm.prose ?? "").trim().toLowerCase() === "false";
 }
 
+/**
+ * 把 front-matter 的 date 归一成 `YYYY-MM-DD`。
+ *
+ * 分隔符不能只认连字符：Hexo 自己接受 `2026/09/24`（斜杠），历史上也确实
+ * 有人这么写过。只认 `-` 的话，斜杠日期会静默退回 1970-01-01 —— 不报错，
+ * 但那篇会排到文苑阵列最前面，看起来像「新文章变成了最旧的」。
+ * 月份/日期补齐两位，`2026/9/4` 也能正确参与排序。
+ */
 export function normalizeDate(raw) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(raw ?? "").trim());
-  return m ? `${m[1]}-${m[2]}-${m[3]}` : "1970-01-01";
+  const m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(String(raw ?? "").trim());
+  if (!m) return "1970-01-01";
+  return `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}`;
 }
 
 /** 正文（front-matter 之后的部分），已归一化换行。 */
