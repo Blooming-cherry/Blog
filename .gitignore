@@ -16,6 +16,10 @@ node_modules/
 .obsidian/
 .trash/
 
+# Syncthing 的文件夹标记目录（首次添加同步文件夹时自动生成，不属于仓库内容）
+.stfolder/
+.stversions/
+
 # System files
 .DS_Store
 Thumbs.db
