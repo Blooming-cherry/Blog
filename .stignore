@@ -1,0 +1,43 @@
+// Syncthing 忽略规则 —— 放在被同步文件夹根目录，两台机器共用这一份。
+// 语法：一行一个模式；`//` 是注释；`!` 前缀表示「不忽略」；
+//       `(?d)` 允许 Syncthing 删掉阻挡目录删除的系统文件。
+// 说明见 docs/双机协作与发布流程.md
+
+// ================= 绝对不要同步 .git =================
+// Syncthing 会把 .git/objects、.git/index、refs 当普通文件搬运。两台机器只要
+// 同时在跑 git，就会互相覆盖内部文件，最坏导致仓库损坏。排除之后 Windows
+// 侧就是一个没有 git 的纯 Obsidian 目录，git 只留在 Mac 上做发布闸门。
+.git
+.git/**
+
+// ================= 依赖与构建产物 =================
+node_modules
+**/node_modules
+technical/public
+prose/dist
+.cache
+.local
+
+// Hexo 本地数据库，会重新生成，且变动频繁
+db.json
+*.log
+.deploy*/
+_multiconfig.yml
+
+// 注意：prose/public（约 35 MB、782 个文件）是【要】同步的源文件
+// （字体、三维模型、图标都在里面），不要排除。
+
+// ================= Obsidian 的易变状态 =================
+// workspace.json 随窗口布局频繁变动，同步它只会制造噪音和冲突
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+// ================= 系统垃圾文件 =================
+(?d).DS_Store
+(?d)Thumbs.db
+(?d)desktop.ini
+
+// ================= Syncthing / Obsidian 自己的目录 =================
+.stversions
+**/.stversions
+.trash
