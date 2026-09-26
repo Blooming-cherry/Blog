@@ -19,6 +19,7 @@ comments: false
 
 ### 2026-08-15
 
+- **[DeepSeek V4 Pro 0813 调研报告：极简提示词 vs 全量工具环境](DeepSeek_V4_Pro_0813_报告.html)** — 消融复现、RL 后训练的「环境过拟合」根因、思维链敏感性的三个层面、前缀缓存机制
 - **[DeepSeek × Claude Code 配置优化日志（第二版）](2026-08-15-deepseek-claude-config-log-v2.html)** — dsh-anchored-standard 迭代优化：8 条已验证规则迁移 / disableBundledSkills / flash 独立配置档 / modelOverrides 调试结论
 
 ### 2026-08-14

@@ -1,3 +1,10 @@
+---
+title: DeepSeek_V4_Pro_0813_报告
+date: 2026-08-15
+layout: page
+comments: false
+---
+
 # DeepSeek V4 Pro 0813：极简提示词 vs 全量工具环境 性能差异研究报告
 
 > 日期：2026-08-15
