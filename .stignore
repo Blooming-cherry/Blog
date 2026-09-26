@@ -27,6 +27,15 @@ _multiconfig.yml
 // 注意：prose/public（约 35 MB、782 个文件）是【要】同步的源文件
 // （字体、三维模型、图标都在里面），不要排除。
 
+// ================= 只在 Windows 本机存在的目录 =================
+// 这两个目录被根 .gitignore 排除，从未入库，Mac 的 clone 里也没有。
+// 首次同步取并集，不排除就会把它们（约 38 MB）推给 Mac，
+// 在那边变成两个永远不会被提交的目录：
+//   personal/      Bright Terminal 设计草稿+原型（废案但保留，约 34 MB）
+//   rhinelablogo/  Logo 动效工程（约 4 MB）
+personal
+rhinelablogo
+
 // ================= Obsidian 的易变状态 =================
 // workspace.json 随窗口布局频繁变动，同步它只会制造噪音和冲突
 .obsidian/workspace.json
