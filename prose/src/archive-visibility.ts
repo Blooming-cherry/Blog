@@ -42,8 +42,10 @@ export class ArchiveVisibility {
     //
     // 镜厅与否只取决于「屏幕上看得到几列」，跟「画了多少列」无关 ——
     // 多画的那几列在视锥外，不产生像素，只换来边缘平滑。
-    const minLane=Math.floor((slab.min.x-2.8)/COLUMN_SPACING+2)-1;
-    const maxLane=Math.ceil((slab.max.x+2.8)/COLUMN_SPACING+2)+1;
+    // 求逆必须带上 trackX：卡片画在 (lane-2)*COLUMN_SPACING-trackX。漏掉它，
+    // 候选列就留在原地不动，阵列横移后进视锥的格子越来越少，直至整屏为空。
+    const minLane=Math.floor((slab.min.x-2.8+trackX)/COLUMN_SPACING+2)-1;
+    const maxLane=Math.ceil((slab.max.x+2.8+trackX)/COLUMN_SPACING+2)+1;
     const minRow=Math.floor((slab.min.z-.6-trackZ)/ROW_SPACING+15.5)-2;
     const maxRow=Math.ceil((slab.max.z+.6-trackZ)/ROW_SPACING+15.5)+2;
     const cells: ArchiveCell[]=[];

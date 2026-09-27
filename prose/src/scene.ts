@@ -24,6 +24,9 @@ import {
   selectionCell,
   fileAtCell,
   poolCell,
+  coordinateShift,
+  rebaseTracks,
+  shiftCell,
   LOOP_COLUMNS,
   LOOP_ROWS,
   COLUMN_SPACING,
@@ -624,39 +627,31 @@ export class ArchiveScene {
   private rebaseCoordinates() {
     // Periodically reduce the logical coordinates while preserving every
     // relative position, spring velocity, ripple and idle phase.
-    const shift = {
-      lane:
-        Math.abs(this.selectedCell.lane) > 2048
-          ? Math.round((this.selectedCell.lane - 2) / 5) * 5
-          : 0,
-      row:
-        Math.abs(this.selectedCell.row) > 2048
-          ? Math.floor((this.selectedCell.row - 12) / 8) * 8
-          : 0,
-    };
+    //
+    // The shift is a whole content cycle of the live archive, not the old
+    // fixed five columns / eight files: with 19 files in one column the old
+    // multiples moved W-005 to W-017 while the card stayed put. Periods come
+    // from archive-loop, so a column added later is followed automatically.
+    const shift = coordinateShift(this.selectedCell);
     if (!shift.lane && !shift.row) return;
     this.setHover(null);
     this.hoverLifts.clear();
-    this.selectedCell.lane -= shift.lane;
-    this.selectedCell.row -= shift.row;
-    this.coordinateOrigin.lane += shift.lane;
-    this.coordinateOrigin.row += shift.row;
-    this.laneFocus.value -= shift.lane;
-    this.shoulder.value -= shift.row;
-    this.columnCamera.value -= shift.lane * COLUMN_SPACING;
-    this.rail.value += shift.row * ROW_SPACING;
-    for (const old of this.outgoing) {
-      old.cell.lane -= shift.lane;
-      old.cell.row -= shift.row;
-    }
-    for (const pulse of this.pulses) {
-      pulse.lane -= shift.lane;
-      pulse.row -= shift.row;
-    }
-    if (this.pendingPulse) {
-      this.pendingPulse.lane -= shift.lane;
-      this.pendingPulse.row -= shift.row;
-    }
+    this.selectedCell = shiftCell(this.selectedCell, shift);
+    const tracks = rebaseTracks(shift, {
+      origin: this.coordinateOrigin,
+      laneFocus: this.laneFocus.value,
+      shoulder: this.shoulder.value,
+      columnCamera: this.columnCamera.value,
+      rail: this.rail.value,
+    });
+    this.coordinateOrigin = tracks.origin;
+    this.laneFocus.value = tracks.laneFocus;
+    this.shoulder.value = tracks.shoulder;
+    this.columnCamera.value = tracks.columnCamera;
+    this.rail.value = tracks.rail;
+    for (const old of this.outgoing) old.cell = shiftCell(old.cell, shift);
+    for (const pulse of this.pulses) Object.assign(pulse, shiftCell(pulse, shift));
+    if (this.pendingPulse) this.pendingPulse = shiftCell(this.pendingPulse, shift);
   }
   select(index: number, navigation?: ArchiveNavigation) {
     if (!this.navigatingDrag) this.cancelPointer();
