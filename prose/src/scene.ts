@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { ArchiveVisibility } from "./archive-visibility";
 import { disposeThreeTree } from "./three-resources";
 import { ThemeWave } from "./theme-motion";
-import { themeMaterial, themeEnvironment } from "./theme-material";
+import { themeMaterial, themeEnvironment, skyPalette } from "./theme-material";
 import { RhythmMotion, rhythmDisplacement, quietBands, type MusicBands, type RhythmStyle } from "./archive-play-motion";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { createArchiveLighting, type LightingLook } from "./archive-lighting";
@@ -265,8 +265,8 @@ export class ArchiveScene {
       "三维研究档案阵列，点击选择，左右拖动切列，上下拖动或滚轮切换列内档案",
     );
     container.appendChild(this.renderer.domElement);
-    this.scene.background = new THREE.Color("#eae5e1");
-    this.scene.fog = new THREE.Fog("#eae5e1", 22, 47);
+    this.scene.background = new THREE.Color(skyPalette.dawn.light.horizon);
+    this.scene.fog = new THREE.Fog(skyPalette.dawn.light.horizon, 22, 47);
     this.light = createArchiveLighting(this.renderer, this.scene, lightingLook);
     this.light.castShadow = true;
     Object.assign(this.light.shadow.camera, {
