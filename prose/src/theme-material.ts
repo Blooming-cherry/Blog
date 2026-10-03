@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import design from "../design/sky-palettes.json";
+import { currentPalette, designParameters, designState, designStrength } from "./sky-design";
 
 const surfaces: Record<string, string> = {
   Frosted_Polymer: "#626b70", Ivory_Edges: "#687277", Optical_Diffuser: "#192226",
@@ -40,13 +41,11 @@ export function themeMaterial(material: THREE.Material, name: string, instanced 
 
 /** New color literals belong to this palette, ready for author presets. */
 export const skyPalette = design.palettes;
-const skyHeight = 256, middleStop = .3, horizonStop = .55;
-const skyLight = ["top", "middle", "horizon"].map(key => new THREE.Color(skyPalette.dawn.light[key as "top"]));
-const skyDark = ["top", "middle", "horizon"].map(key => new THREE.Color(skyPalette.dawn.dark[key as "top"]));
+const skyWidth = 96, skyHeight = 256, middleStop = .3, horizonStop = .55;
 const sample = new THREE.Color();
-type Baseline = { sky: THREE.DataTexture; pixels: Uint16Array; viewport: { value: THREE.Vector4 }; materials: WeakSet<THREE.Material>; amount: number; intensity: number; exposure: number; lights: { light: THREE.Light; intensity: number }[]; floor?: { material: THREE.MeshStandardMaterial; color: THREE.Color } };
+type Baseline = { sky: THREE.DataTexture; pixels: Uint16Array; haze: { value: number }; materials: WeakSet<THREE.Material>; amount: number; revision: number; intensity: number; exposure: number; lights: { light: THREE.Light; intensity: number }[]; floor?: { material: THREE.MeshStandardMaterial; color: THREE.Color } };
 const scenes = new WeakMap<THREE.Scene, Baseline>();
-const floorColor = new THREE.Color(skyPalette.dawn.dark.floor);
+const floorColor = new THREE.Color();
 /** Fog resolves to the same screen-height sample as the opaque WebGL sky.
  * The existing distance factor preserves nearby models, shadows and optics.
  * This also works for the archive floor covering the camera's entire view. */
@@ -58,8 +57,10 @@ function skyFog(material: THREE.Material, baseline: Baseline) {
   material.onBeforeCompile = (shader, renderer) => {
     before.call(material, shader, renderer);
     shader.uniforms.archiveSky = { value: baseline.sky };
-    shader.uniforms.archiveSkyViewport = baseline.viewport;
-    shader.uniforms.archiveSkyHaze = { value: baseline.floor ? .92 : 0 };
+    shader.uniforms.archiveSkyHaze = baseline.haze;
+    // A fast-performance clone retains its original compile hook. Rebind its
+    // uniforms without appending the same declarations twice.
+    if (shader.fragmentShader.includes("uniform sampler2D archiveSky;")) return;
     shader.vertexShader = "varying vec4 vArchiveSkyClip;\n" + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\nvArchiveSkyClip = gl_Position;");
     shader.fragmentShader = "uniform sampler2D archiveSky; uniform float archiveSkyHaze; varying vec4 vArchiveSkyClip;\n" + shader.fragmentShader;
@@ -101,13 +102,13 @@ export function themeEnvironment(scene: THREE.Scene, renderer: THREE.WebGLRender
     scene.traverse(object => { if (object instanceof THREE.Light) lights.push({ light: object, intensity: object.intensity }); });
     const floor = scene.getObjectByName("archive-floor") as THREE.Mesh | undefined;
     const material = floor?.material as THREE.MeshStandardMaterial | undefined;
-    const pixels = new Uint16Array(skyHeight * 4);
-    const sky = new THREE.DataTexture(pixels, 1, skyHeight, THREE.RGBAFormat, THREE.HalfFloatType);
+    const pixels = new Uint16Array(skyWidth * skyHeight * 4);
+    const sky = new THREE.DataTexture(pixels, skyWidth, skyHeight, THREE.RGBAFormat, THREE.HalfFloatType);
     // Tone map the sky just like fogged geometry; sRGB backgrounds bypass tone mapping.
     sky.colorSpace = THREE.LinearSRGBColorSpace;
     sky.magFilter = sky.minFilter = THREE.LinearFilter;
     sky.generateMipmaps = false;
-    baseline = { sky, pixels, viewport: { value: new THREE.Vector4() }, materials: new WeakSet(), amount: NaN, intensity: scene.environmentIntensity,
+    baseline = { sky, pixels, haze: { value: 0 }, materials: new WeakSet(), amount: NaN, revision: -1, intensity: scene.environmentIntensity,
       exposure: renderer.toneMappingExposure, lights, floor: material ? { material, color: material.color.clone() } : undefined };
     scenes.set(scene, baseline);
   }
@@ -119,27 +120,44 @@ export function themeEnvironment(scene: THREE.Scene, renderer: THREE.WebGLRender
     }
   });
   scene.background = baseline.sky;
-  if (amount !== baseline.amount) {
-    const nodes = skyLight.map((color, i) => color.clone().lerp(skyDark[i], amount));
+  if (amount !== baseline.amount || baseline.revision !== designState.revision) {
+    const palette = currentPalette(), strength = designStrength();
+    const paper = new THREE.Color(palette.light.paper).lerp(new THREE.Color(palette.dark.paper), amount);
+    const nodes = (["top", "middle", "horizon"] as const).map(key => paper.clone().lerp(
+      new THREE.Color(palette.light[key]).lerp(new THREE.Color(palette.dark[key]), amount), strength));
+    const glow = new THREE.Color(palette.light.horizon).lerp(new THREE.Color(palette.dark.horizon), amount)
+      .lerp(new THREE.Color(palette.light.accent).lerp(new THREE.Color(palette.dark.accent), amount), .08);
     for (let row = 0; row < skyHeight; row++) {
       // DataTexture starts at the bottom: convert to height measured from the top.
       const height = 1 - row / (skyHeight - 1);
       const segment = height < middleStop ? 0 : 1;
       const fraction = segment === 0 ? height / middleStop : (height - middleStop) / (horizonStop - middleStop);
-      sample.copy(nodes[segment]).lerp(nodes[segment + 1], THREE.MathUtils.clamp(fraction, 0, 1));
-      const offset = row * 4;
-      baseline.pixels[offset] = THREE.DataUtils.toHalfFloat(sample.r);
-      baseline.pixels[offset + 1] = THREE.DataUtils.toHalfFloat(sample.g);
-      baseline.pixels[offset + 2] = THREE.DataUtils.toHalfFloat(sample.b);
-      baseline.pixels[offset + 3] = THREE.DataUtils.toHalfFloat(1);
+      const rowColor = nodes[segment].clone().lerp(nodes[segment + 1], THREE.MathUtils.clamp(fraction, 0, 1));
+      for (let column = 0; column < skyWidth; column++) {
+        const x = column / (skyWidth - 1);
+        // One broad, stationary beam; reduced/read modes add no ongoing motion.
+        const beam = Math.exp(-((x - .23) ** 2 / .12 + (height - .22) ** 2 / .22)) * .16 * strength;
+        sample.copy(rowColor).lerp(glow, beam);
+        const offset = (row * skyWidth + column) * 4;
+        baseline.pixels[offset] = THREE.DataUtils.toHalfFloat(sample.r);
+        baseline.pixels[offset + 1] = THREE.DataUtils.toHalfFloat(sample.g);
+        baseline.pixels[offset + 2] = THREE.DataUtils.toHalfFloat(sample.b);
+        baseline.pixels[offset + 3] = THREE.DataUtils.toHalfFloat(1);
+      }
     }
     baseline.sky.needsUpdate = true;
     baseline.amount = amount;
+    baseline.revision = designState.revision;
+    baseline.haze.value = baseline.floor ? .92 * Math.min(1, strength / design.defaults.presence) : 0;
     // Keep the semantic fog color for diagnostics; rendered fog samples each
     // pixel's sky height so upper cards cannot flatten the gradient to one color.
     if (scene.fog) scene.fog.color.copy(nodes[2]);
   }
-  if (baseline.floor) baseline.floor.material.color.copy(baseline.floor.color).lerp(floorColor, amount);
+  if (baseline.floor) {
+    const palette = currentPalette();
+    floorColor.set(palette.light.floor).lerp(new THREE.Color(palette.dark.floor), amount);
+    baseline.floor.material.color.copy(floorColor);
+  }
   scene.environmentIntensity = THREE.MathUtils.lerp(baseline.intensity, .32, amount);
   renderer.toneMappingExposure = THREE.MathUtils.lerp(baseline.exposure, .98, amount);
   for (const { light, intensity } of baseline.lights) light.intensity = intensity * (1 - .35 * amount);

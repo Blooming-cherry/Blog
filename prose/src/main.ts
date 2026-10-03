@@ -39,6 +39,8 @@ let workbench: Workbench | undefined;
 import { ArchivePlayground } from "./archive-playground";
 import { ARRAY_OPENING_END, openingShowsDetail } from "./wallpaper-opening";
 import { paintTheme, themeSettingsMarkup } from "./theme-ui";
+import { designParameters, designState, setDesignParameters, setDesignStage } from "./sky-design";
+import "./sky-design.css";
 let playground: ArchivePlayground | undefined;
 import { WallpaperEffects } from "./wallpaper-effects";
 import { WallpaperBackground } from "./wallpaper-background";
@@ -186,6 +188,21 @@ const selectionTitle = createRollingText($("#selected-title"), {
   ...textOptions,
   text: $("#selected-title").textContent ?? "",
 });
+let selectionTitleText = $("#selected-title").textContent ?? "";
+const titleMeasure = document.createElement("canvas").getContext("2d")!;
+function syncSelectionTitleWrap() {
+  const title = $("#selected-title"), surface = $(".file-summary");
+  const style = getComputedStyle(title);
+  titleMeasure.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const spacing = Number.parseFloat(style.letterSpacing) || 0;
+  const width = titleMeasure.measureText(selectionTitleText).width + spacing * [...selectionTitleText].length;
+  const wrapTitle = surface.clientWidth > 0 && width > surface.clientWidth - 10;
+  title.classList.toggle("title-wrap", wrapTitle);
+  if (wrapTitle) selectionTitle.finish();
+  return wrapTitle;
+}
+new ResizeObserver(syncSelectionTitleWrap).observe($(".file-summary"));
+document.fonts.addEventListener("loadingdone", syncSelectionTitleWrap);
 const columnTitle = createRollingText($("#column-name"), {
   ...textOptions,
   text: $("#column-name").textContent ?? "",
@@ -269,6 +286,7 @@ function savePrefs() {
   selectedCode.update({ animated: !prefs.reduced && mode === "archive" });
   hoverCode.update({ animated: !prefs.reduced && mode === "archive" });
   $("#stage").classList.toggle("reduce-motion", prefs.reduced);
+  $("#stage").classList.toggle("super-performance", superPerformanceEnabled());
   syncWallpaperBackground();
 }
 let previousLayout = "";
@@ -337,6 +355,7 @@ function setMode(next: Mode) {
   }
   if (next === "detail" && mode !== "detail") recordAccess();
   mode = next;
+  setDesignStage(next === "boot" ? "intro" : next === "detail" ? "read" : "archive");
   syncWallpaperBackground();
   audio.setScene(next);
   if (next !== "boot" && audioPreview) {
@@ -407,7 +426,9 @@ function updateSelection(navigation?: ArchiveNavigation) {
   const r = records[selected];
   const { lane } = fileLocation(selected);
   const files = columnFiles(lane);
-  selectionTitle.update({ text: r.title, animated: !prefs.reduced && mode === "archive" });
+  selectionTitleText = r.title;
+  const wrapTitle = syncSelectionTitleWrap();
+  selectionTitle.update({ text: r.title, animated: !prefs.reduced && mode === "archive" && !wrapTitle });
   clearanceTitle.update({ text: r.date, animated: !prefs.reduced && mode === "archive" });
   categoryTitle.update({ text: r.tag, animated: !prefs.reduced && mode === "archive" });
   const direction =
@@ -1223,7 +1244,9 @@ Object.assign(window, {
     archive: () => setMode("archive"),
     detail: () => openFile(),
     select: (i: number) => select(i),
+    design: (values: Partial<typeof designParameters>) => setDesignParameters(values),
     stats: () => ({
+      design: { ...designParameters, stage: designState.stage, weight: designState.weight },
       ...scene?.getStats(),
       threeState,
       fps: Math.round(fps),
@@ -1239,4 +1262,3 @@ Object.assign(window, {
   },
 });
 if (import.meta.hot) import.meta.hot.dispose(() => audio.dispose());
-
