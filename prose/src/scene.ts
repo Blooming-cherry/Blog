@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { ArchiveVisibility } from "./archive-visibility";
 import { disposeThreeTree } from "./three-resources";
 import { ThemeWave } from "./theme-motion";
-import { themeMaterial, themeEnvironment, skyPalette } from "./theme-material";
+import { themeMaterial, themeEnvironment, disposeThemeEnvironment, skyPalette } from "./theme-material";
 import { RhythmMotion, rhythmDisplacement, quietBands, type MusicBands, type RhythmStyle } from "./archive-play-motion";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { createArchiveLighting, type LightingLook } from "./archive-lighting";
@@ -74,6 +74,7 @@ export class ArchiveScene {
   dispose() {
     this.inputEvents.abort();
     this.cancelPointer();
+    disposeThemeEnvironment(this.scene);
     disposeThreeTree(this.scene);
     this.appearance.disposeSources();
     this.model.clear();
@@ -117,6 +118,9 @@ export class ArchiveScene {
   private themeAttribute?: THREE.InstancedBufferAttribute;
   get themeAmount() { return this.theme.background(performance.now() / 1000); }
   setTheme(dark: boolean, immediate = false) { this.theme.set(dark, performance.now() / 1000, this.selectedCell, immediate); }
+  private readingStill = false;
+  private decorationTime = 0;
+  setReadingStill(still: boolean) { this.readingStill = still; }
   private playfield = { enabled: false, bands: quietBands(), strength: 1, flatten: 0, target: null as string | null, breathing: true };
   private flatMix = 0;
   private rhythm = new RhythmMotion();
@@ -1141,6 +1145,8 @@ export class ArchiveScene {
     const dt = Math.min(elapsed, 0.05);
     this.last = time;
     this.clock = time;
+    if (!this.readingStill) this.decorationTime = time;
+    const decorationTime = this.decorationTime;
     if (!this.loaded) return;
     const step = this.reduced ? 1 : Math.min(elapsed, .25) / 1.1;
     this.presence += Math.sign(this.presenceTarget - this.presence) * Math.min(step, Math.abs(this.presenceTarget - this.presence));
@@ -1158,7 +1164,7 @@ export class ArchiveScene {
     if (cinematic) {
       this.scanTime = shot;
       this.scanBlend = 1;
-    } else {
+    } else if (!this.readingStill) {
       this.scanTime += dt;
       this.scanBlend *= Math.exp(-dt * 3);
     }
@@ -1219,7 +1225,7 @@ export class ArchiveScene {
     // Keep the illuminated set near the origin. Lateral navigation is a track
     // movement of the whole array, just like the existing front/back rail.
     const trackX = cinematic ? 0 : this.columnCamera.value;
-    this.pulses = this.pulses.filter((p) => time - p.time < 3.2);
+    if (!this.readingStill) this.pulses = this.pulses.filter((p) => time - p.time < 3.2);
     const aligningCopy = this.outgoing.some((o) => o.returnY !== null);
     const idle =
       !cinematic &&
@@ -1230,14 +1236,14 @@ export class ArchiveScene {
       this.returnY === null &&
       !aligningCopy &&
       time - this.lastInteraction > 2.5;
-    this.idleGain = cinematic
+    this.idleGain = this.readingStill ? this.idleGain : cinematic
       ? 0
       : THREE.MathUtils.lerp(
           this.idleGain,
           idle ? (this.playfield.enabled ? (this.playfield.breathing && !this.relayActive ? 1 - this.playfield.bands.activity : 0) : 1) : 0,
           1 - Math.exp(-dt * (idle ? 0.8 : 4)),
         );
-    this.pulseGain = THREE.MathUtils.lerp(
+    this.pulseGain = this.readingStill ? this.pulseGain : THREE.MathUtils.lerp(
       this.pulseGain,
       this.targetDetail || this.returnY !== null || aligningCopy ? 0 : 1,
       1 - Math.exp(-dt * 8),
@@ -1280,7 +1286,7 @@ export class ArchiveScene {
       const breathing = idleWave(
           row + this.coordinateOrigin.row,
           lane + this.coordinateOrigin.lane,
-          time,
+          decorationTime,
         ) *
           this.idleGain;
       let pulseHeight = 0;
@@ -1288,7 +1294,7 @@ export class ArchiveScene {
         let ripple = 0;
         for (const p of this.pulses) {
           const distance = Math.hypot(row - p.row, (lane - p.lane) * 2.2);
-          const age = time - p.time;
+          const age = decorationTime - p.time;
           ripple +=
             this.selectionPulse(distance, age) *
             (this.deferSelectionPulse ? rippleEnvelope(distance, age) : 1);
@@ -1700,6 +1706,7 @@ export class ArchiveScene {
         .map((v) => Math.round(v * 10000) / 10000),
       fieldOfView: this.camera.fov,
       loaded: this.loaded,
+      decorationFrozen: this.readingStill,
       drawCalls: this.renderer.info.render.calls,
       superPerformance: this.superPerformance,
       presentation: this.presence,

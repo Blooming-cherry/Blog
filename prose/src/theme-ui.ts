@@ -3,6 +3,7 @@ import { applyDesignTheme } from "./sky-design";
 export let themeAmount = 0;
 export function paintTheme(amount: number) {
   themeAmount = amount;
+  document.documentElement.dataset.colorTheme = amount > .5 ? "dark" : "light";
   document.documentElement.dataset.darkSurface = String(amount > .0001);
   applyDesignTheme(amount);
 }

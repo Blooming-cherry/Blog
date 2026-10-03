@@ -12,7 +12,7 @@ export const designState = { stage: "intro" as DesignStage, weight: 0, revision:
 export function designStrength() { return designParameters.presence * designState.weight; }
 /** Three author parameters, with no visitor menu or independent theme storage. */
 export function setDesignParameters(values: Partial<typeof designParameters>) {
-  if (values.palette !== undefined) designParameters.palette = values.palette in design.palettes ? values.palette : "dawn";
+  if (values.palette !== undefined) designParameters.palette = Object.hasOwn(design.palettes, values.palette) ? values.palette : "dawn";
   if (Number.isFinite(values.presence)) designParameters.presence = Math.max(0, Math.min(1, values.presence!));
   if (Number.isFinite(values.titleScale)) designParameters.titleScale = Math.max(.9, Math.min(1.1, values.titleScale!));
   designState.revision++;

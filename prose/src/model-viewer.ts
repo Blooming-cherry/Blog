@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { disposeThreeTree } from "./three-resources";
-import { themeEnvironment } from "./theme-material";
+import { themeEnvironment, disposeThemeEnvironment } from "./theme-material";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createArchiveLighting } from "./archive-lighting";
 import { damp } from "./motion";
@@ -40,6 +40,7 @@ export class ModelViewer {
     this.request++;
     if (this.isOpen) this.finishClose();
     this.controls.dispose();
+    disposeThemeEnvironment(this.scene);
     disposeThreeTree(this.scene);
     for (const pass of this.pipeline.composer.passes) pass.dispose();
     this.pipeline.composer.dispose();

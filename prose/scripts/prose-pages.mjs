@@ -16,6 +16,7 @@ import { POSTS_DIR, loadRecords, readPost } from "./prose-source.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DIST = path.join(ROOT, "dist");
+const design = JSON.parse(await fs.readFile(path.join(ROOT, "design", "sky-palettes.json"), "utf8"));
 const ATTACH_SRC = path.join(POSTS_DIR, "..", "attachments");
 
 /** 散文里写得很随意：C / Cpp / C++ / ts / TypeScript 都出现过。 */
@@ -87,52 +88,74 @@ async function buildFontStylesheet() {
   return rebased;
 }
 
-/** 正文页样式：独立一份，不引入应用那 664KB 的 CSS。 */
+/** Static reading never waits for the archive's fonts, model or renderer. */
 function buildStylesheet() {
+  const palette = design.palettes[design.defaults.palette].light;
+  const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  const fallback = Object.entries(palette).map(([name, value]) => `--${name}: ${value}; --${name}-rgb: ${rgb(value).join(", ")};`).join("\n  ");
+  const strength = design.defaults.presence * .35;
+  const sky = ["top", "middle", "horizon"].map(name => `--read-${name}: rgb(${rgb(palette.paper).map((v, i) => Math.round(v + (rgb(palette[name])[i] - v) * strength)).join(", ")});`).join("\n  ");
   return `
-/* 文苑正文页。刻意只做浅色一种面貌：它是文档，跟着系统翻深色会让
-   Rhine Lab 的暖棕/琥珀调子失效。配色全部显式写死，不依赖任何继承。 */
+/* Tokens come from the same author palette as the archive and home index. */
 :root {
   color-scheme: light;
-  --paper: #eae5e1;
-  --ink: #080a08;
-  --muted: #77756d;
-  --line: #aaa59a;
-  --panel: #edebe4;
-  --field: #e7e3d9;
-  --accent: #9b7247;
-
-  /* 正文用博客那一套，不是 MiSans：MiSans 的字面紧、字距收，
-     长文连读会发闷。这一串就是 blog 的 source/_data/styles.styl 里
-     .post-body 那份，只在 Lato 之后补了两个跨平台兜底
-     （雅黑只在 Windows 有、苹方只在 Apple 有，Linux/旧安卓不至于掉到默认体）。 */
+  ${fallback}
+  ${sky}
+  --title-scale: ${design.defaults.titleScale};
+  --sheet-opacity: .96;
+  /* Preserve the existing system body/MiSans chrome division. */
   --read: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", Lato, sans-serif;
-  /* MiSans 退到只服务页眉页脚的终端语气，Rhine Lab 的调子留在那里。 */
   --chrome: "MiSans", "Mi Sans", system-ui, sans-serif;
-
-  /* 版心：对齐博客实测的 900px（1600 视口下正文列宽，18px 时约 50 字/行）。
-     gutter 算在 max-width 之外，否则实际行宽会被两侧内边距吃掉 64px。 */
-  --measure: 900px;
+  --serif: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  --measure: 720px;
   --gutter: 32px;
 }
 * { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); }
 body {
   margin: 0;
-  background: var(--paper);
+  padding: 48px var(--gutter) 0;
+  background-color: var(--paper);
+  background-image: linear-gradient(180deg, var(--read-top), var(--read-middle) 30%, var(--read-horizon) 70%);
+  background-size: 100% 100lvh;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--read);
   font-size: 18px;
-  line-height: 2;
+  line-height: 1.9;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 .sheet {
   max-width: calc(var(--measure) + var(--gutter) * 2);
   margin: 0 auto;
-  padding: 72px var(--gutter) 40px;
+  padding: 32px var(--gutter) 40px;
+  border: 1px solid rgba(var(--line-rgb), .4);
+  border-radius: 18px;
+  background: rgba(var(--paper-rgb), var(--sheet-opacity));
+  box-shadow: 0 14px 42px rgba(var(--ink-rgb), .06);
+  /* The text surface is opaque enough by itself and never blurs its content. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
-
-/* 页眉沿用详情面板的终端语气：小号、大写、拉开字距。 */
+.rd-toolbar { position: fixed; right: max(16px, calc((100vw - 784px) / 2 - 132px)); bottom: 18px; z-index: 2; display: flex; justify-content: flex-end; }
+.rd-toolbar:has(button[hidden]) { display: none; }
+.rd-toolbar button {
+  min-height: 44px;
+  min-width: 108px;
+  padding: 0 14px;
+  font: 13px var(--chrome);
+  color: var(--ink);
+  background: var(--field);
+  border: 1px solid rgba(var(--accent-rgb), .5);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 120ms, background 120ms;
+}
+.rd-toolbar button:hover { color: var(--accent); background: var(--paper); }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+button[hidden] { display: none; }
 .rd-meta {
   display: flex;
   flex-wrap: wrap;
@@ -147,163 +170,55 @@ body {
 }
 .rd-meta b { font-weight: 400; color: var(--accent); }
 h1 {
-  font-size: 30px;
-  line-height: 1.45;
+  font-family: var(--serif);
+  font-size: calc(48px * var(--title-scale));
+  line-height: 1.25;
   font-weight: 600;
-  letter-spacing: .5px;
+  letter-spacing: .02em;
+  overflow-wrap: anywhere;
   margin: 26px 0 0;
 }
-.rd-sub {
-  margin: 12px 0 0;
-  color: var(--muted);
-  font-size: 14px;
-  letter-spacing: .4px;
-}
-
-/* 正文 */
-.rd-body { margin-top: 44px; }
+.rd-sub { margin: 16px 0 0; color: var(--muted); font-size: 14px; letter-spacing: .02em; overflow-wrap: anywhere; }
+.rd-body { margin-top: 36px; overflow-wrap: anywhere; }
 .rd-body p { margin: 0 0 1.1em; }
-/* 标题级差照 NEXT 的 1.625em − .125em × n 取，跟博客里读到的一致。 */
-.rd-body h2,
-.rd-body h3,
-.rd-body h4 {
-  font-weight: 600;
-  line-height: 1.5;
-  margin: 2.2em 0 .9em;
-}
+.rd-body h2, .rd-body h3, .rd-body h4 { font-weight: 600; line-height: 1.5; margin: 2.2em 0 .9em; }
 .rd-body h2 { font-size: 1.375em; }
 .rd-body h3 { font-size: 1.25em; }
 .rd-body h4 { font-size: 1.125em; }
 .rd-body a { color: var(--accent); text-underline-offset: 3px; }
 .rd-body strong { font-weight: 600; }
 .rd-body hr { border: 0; border-top: 1px solid var(--line); margin: 2.4em 0; }
-.rd-body ul,
-.rd-body ol { padding-left: 1.5em; margin: 0 0 1.15em; }
+.rd-body ul, .rd-body ol { padding-left: 1.5em; margin: 0 0 1.15em; }
 .rd-body li { margin: .3em 0; }
-.rd-body blockquote {
-  margin: 1.6em 0;
-  padding: .2em 0 .2em 1.2em;
-  border-left: 2px solid var(--accent);
-  color: var(--muted);
-}
+.rd-body blockquote { margin: 1.6em 0; padding: .2em 0 .2em 1.2em; border-left: 2px solid var(--accent); color: var(--muted); }
 .rd-body blockquote p:last-child { margin-bottom: 0; }
-.rd-body img {
-  display: block;
-  /* --w 来自正文里的「|700」尺寸提示（见 cleanAlts）；没写就满栏。 */
-  max-width: min(100%, var(--w, 100%));
-  height: auto;
-  margin: 1.8em auto;
-  border: 1px solid var(--line);
-  background: var(--panel);
-}
-/* 代码块。博客 codeblock.highlight_theme 是 normal（= Tomorrow 浅色），
-   高亮器同为 highlight.js，所以下面这套 token 配色直接照抄
-   highlight.js/styles/base16/tomorrow.css，不做「近似」。
-   排版参数照抄 NEXT：
-     $code-font-family      consolas, Menlo, monospace, $font-family-chinese
-     $table-font-size       $font-size-small = .875em   → 18px 下 15.75px
-     $line-height-code-block 1.6
-     $code-background       $gainsboro #eee / $code-foreground $black-light #555  ← 行内 code
-   唯一【刻意不照抄博客】的一处：pre 底色取透明，跟纸面同色，只留一条细线勾边。
-   博客那里是 Tomorrow 的 #f7f7f7 灰盒，在暖棕纸面上会浮出一块冷灰。
-   token 颜色因此要落在 #eae5e1 上而不是 #f7f7f7 上——base16 里除注释外的
-   槽位都足够深，注释 #8e908c 的对比度会从 2.9:1 掉到 2.5:1，这是这条改动
-   唯一付出的代价，介意就把 .hljs-comment 换成 #7a7c78。 */
-.rd-body code {
-  font-size: .875em;
-  background: #eee;
-  border-radius: 3px;
-  color: #555;
-  padding: 2px 4px;
-  overflow-wrap: break-word;
-}
-.rd-body pre,
-.rd-body code {
-  font-family: consolas, Menlo, monospace, "PingFang SC", "Microsoft YaHei";
-}
-.rd-body pre {
-  /* 跟纸面同色，靠一条细线（与 hr / img / table 同一条 --line）划出边界。
-     行内 code 仍是浅底块：它没有独立的行可以画线，去掉底色就没法辨认了。 */
-  background: transparent;
-  border: 1px solid var(--line);
-  color: #4d4d4c;
-  line-height: 1.6;
-  margin: 0 auto 20px;
-  padding: 10px;
-  overflow: auto;
-}
-/* 字号只落在 pre code 上（NEXT 也是这么写的）：pre 若也设 .875em，
-   code 会再乘一次变成 13.78px，块里的字比博客小一整档。 */
-.rd-body pre code {
-  background: none;
-  color: #4d4d4c;
-  font-size: .875em;
-  padding: 0;
-  overflow-wrap: normal;
-}
-/* Tomorrow —— 括号里是 base16 槽位，与 tomorrow.css 逐一对应 */
-.rd-body .hljs-comment { color: #8e908c; }                                   /* base03 */
-.rd-body .hljs-tag { color: #969896; }                                        /* base04 */
-.rd-body .hljs-subst,
-.rd-body .hljs-punctuation,
-.rd-body .hljs-operator { color: #4d4d4c; }                                   /* base05 */
-.rd-body .hljs-operator { opacity: .7; }
-.rd-body .hljs-bullet,
-.rd-body .hljs-variable,
-.rd-body .hljs-template-variable,
-.rd-body .hljs-selector-tag,
-.rd-body .hljs-name,
-.rd-body .hljs-deletion { color: #c82829; }                                   /* base08 */
-.rd-body .hljs-symbol,
-.rd-body .hljs-number,
-.rd-body .hljs-link,
-.rd-body .hljs-attr,
-.rd-body .hljs-variable.constant_,
-.rd-body .hljs-literal { color: #f5871f; }                                    /* base09 */
-.rd-body .hljs-title,
-.rd-body .hljs-class .hljs-title,
-.rd-body .hljs-title.class_ { color: #eab700; }                               /* base0A */
-.rd-body .hljs-strong { color: #eab700; font-weight: bold; }
-.rd-body .hljs-code,
-.rd-body .hljs-addition,
-.rd-body .hljs-title.class_.inherited__,
-.rd-body .hljs-string { color: #718c00; }                                     /* base0B */
-.rd-body .hljs-built_in,
-.rd-body .hljs-doctag,
-.rd-body .hljs-quote,
-.rd-body .hljs-keyword.hljs-atrule,
-.rd-body .hljs-regexp { color: #3e999f; }                                     /* base0C */
-.rd-body .hljs-function .hljs-title,
-.rd-body .hljs-attribute,
-.rd-body .ruby .hljs-property,
-.rd-body .hljs-title.function_,
-.rd-body .hljs-section { color: #4271ae; }                                    /* base0D */
-.rd-body .hljs-type,
-.rd-body .hljs-template-tag,
-.rd-body .diff .hljs-meta,
-.rd-body .hljs-keyword { color: #8959a8; }                                    /* base0E */
-.rd-body .hljs-emphasis { color: #8959a8; font-style: italic; }
-.rd-body .hljs-meta,
-.rd-body .hljs-meta .hljs-keyword,
-.rd-body .hljs-meta .hljs-string { color: #a3685a; }                          /* base0F */
-.rd-body .hljs-meta .hljs-keyword,
-.rd-body .hljs-meta-keyword { font-weight: bold; }
-.rd-body table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.6em 0;
-  font-size: 15px;
-}
-.rd-body th,
-.rd-body td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
+.rd-body img { display: block; max-width: min(100%, var(--w, 100%)); height: auto; margin: 1.8em auto; border: 1px solid var(--line); background: var(--panel); }
+.rd-body code { font-size: .875em; background: var(--field); border-radius: 3px; color: var(--ink); padding: 2px 4px; overflow-wrap: break-word; }
+.rd-body pre, .rd-body code { font-family: consolas, Menlo, monospace, "PingFang SC", "Microsoft YaHei"; }
+.rd-body pre { background: transparent; border: 1px solid var(--line); color: var(--ink); line-height: 1.6; margin: 0 auto 20px; padding: 14px; overflow: auto; }
+.rd-body pre code { background: none; color: var(--ink); font-size: .875em; padding: 0; overflow-wrap: normal; }
+/* Existing syntax tokens now derive from the shared, readable semantics. */
+.rd-body :is(.hljs-comment, .hljs-tag) { color: var(--muted); }
+.rd-body :is(.hljs-subst, .hljs-punctuation, .hljs-operator) { color: var(--ink); }
+.rd-body :is(.hljs-bullet, .hljs-variable, .hljs-template-variable, .hljs-selector-tag, .hljs-name, .hljs-deletion,
+.hljs-symbol, .hljs-number, .hljs-link, .hljs-attr, .hljs-variable.constant_, .hljs-literal,
+.hljs-title, .hljs-class .hljs-title, .hljs-title.class_, .hljs-code, .hljs-addition, .hljs-title.class_.inherited__, .hljs-string,
+.hljs-built_in, .hljs-doctag, .hljs-quote, .hljs-keyword.hljs-atrule, .hljs-regexp,
+.hljs-function .hljs-title, .hljs-attribute, .ruby .hljs-property, .hljs-title.function_, .hljs-section,
+.hljs-type, .hljs-template-tag, .diff .hljs-meta, .hljs-keyword, .hljs-meta) { color: var(--accent); }
+.rd-body .hljs-strong { color: var(--accent); font-weight: bold; }
+.rd-body .hljs-emphasis { color: var(--accent); font-style: italic; }
+.rd-body :is(.hljs-meta .hljs-keyword, .hljs-meta-keyword) { font-weight: bold; }
+.rd-body table { width: 100%; border-collapse: collapse; margin: 1.6em 0; font-size: 15px; }
+.rd-body th, .rd-body td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
 .rd-body th { background: var(--panel); font-weight: 600; }
-
-/* 页脚：回目录 + 前后一篇 */
 .rd-foot {
   max-width: calc(var(--measure) + var(--gutter) * 2);
-  margin: 0 auto 96px;
-  padding: 22px var(--gutter) 0;
-  border-top: 1px solid var(--line);
+  margin: 22px auto 64px;
+  padding: 22px var(--gutter);
+  border: 1px solid rgba(var(--line-rgb), .4);
+  border-radius: 18px;
+  background: rgba(var(--paper-rgb), var(--sheet-opacity));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -315,27 +230,118 @@ h1 {
 .rd-foot a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; }
 .rd-foot a:hover { border-bottom-color: var(--accent); color: var(--accent); }
 .rd-foot .back { text-transform: uppercase; }
-.rd-pager { display: flex; gap: 18px; color: var(--muted); }
-.rd-pager a { color: var(--muted); }
+.rd-pager { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); }
+.rd-pager a { color: var(--muted); overflow-wrap: anywhere; }
 .rd-pager span { color: var(--line); }
-
-/* 手机上版心本来就是满的，收 gutter 换行宽；字号退到 17px 免得一行装不下几个字。 */
+[data-sky-stage="focus"] { --sheet-opacity: 1; }
+[data-sky-stage="focus"] body { background-image: none; }
+[data-sky-stage="focus"] .sheet { box-shadow: none; }
+[data-reduced="true"] button { transition: none; }
 @media (max-width: 720px) {
   :root { --gutter: 20px; }
-  body { font-size: 17px; }
-  .sheet { padding: 40px var(--gutter) 24px; }
-  h1 { font-size: 24px; }
-  .rd-foot {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 64px;
-    padding: 18px var(--gutter) 0;
-  }
+  body { padding: 16px 0 64px; }
+  .rd-toolbar { left: 0; right: 0; bottom: 0; height: 60px; padding: 8px 16px; border-top: 1px solid var(--line); background: var(--paper); }
+  .sheet { padding: 28px var(--gutter) 24px; border-radius: 14px; }
+  h1 { font-size: calc(34px * var(--title-scale)); }
+  .rd-meta { gap: 10px 16px; }
+  .rd-foot { flex-direction: column; align-items: flex-start; margin-bottom: max(32px, env(safe-area-inset-bottom)); padding: 18px var(--gutter); border-radius: 14px; }
 }
+@media (max-width: 370px) { :root { --gutter: 16px; } }
 `;
 }
 
-function pageHtml({ rec, body, prev, next }) {
+/** Blocking first-paint setup, then one small progressive-enhancement control. */
+function readerScript(rec, index) {
+  const config = JSON.stringify({ design, record: { id: rec.id, index } }).replace(/</g, "\\u003c");
+  return `(${readerRuntime.toString()})(${config});`;
+}
+function readerRuntime(config) {
+  const { design, record } = config, root = document.documentElement;
+  const key = "rhine-archive-session";
+  const readObject = (storage, name) => {
+    try { const value = JSON.parse(storage.getItem(name) || "null"); return value && typeof value === "object" && !Array.isArray(value) ? value : {}; } catch { return {}; }
+  };
+  const saveSnapshot = snapshot => { try { sessionStorage.setItem(key, JSON.stringify(snapshot)); } catch {} };
+  const base = new URL("../", location.href);
+  let snapshot = readObject(sessionStorage, key);
+  const existing = snapshot.version === 1 && snapshot.entered === true && typeof snapshot.selectedId === "string";
+  const author = existing && snapshot.parameters && typeof snapshot.parameters === "object" ? snapshot.parameters : design.defaults;
+  const params = {
+    palette: Object.hasOwn(design.palettes, author.palette) ? author.palette : design.defaults.palette,
+    presence: Number.isFinite(author.presence) ? Math.max(0, Math.min(1, author.presence)) : design.defaults.presence,
+    titleScale: Number.isFinite(author.titleScale) ? Math.max(.9, Math.min(1.1, author.titleScale)) : design.defaults.titleScale,
+  };
+  const query = new URLSearchParams(location.search);
+  if (query.has("palette")) params.palette = Object.hasOwn(design.palettes, query.get("palette")) ? query.get("palette") : design.defaults.palette;
+  for (const [name, min, max] of [["presence", 0, 1], ["titleScale", .9, 1.1]]) {
+    if (query.has(name) && query.get(name)?.trim()) {
+      const value = Number(query.get(name));
+      if (Number.isFinite(value)) params[name] = Math.max(min, Math.min(max, value));
+    }
+  }
+  if (!existing) snapshot = { version: 1, entered: true, selectedId: record.id, selectedIndex: record.index, parameters: params, archiveUrl: base.href };
+  else snapshot.parameters = params;
+  saveSnapshot(snapshot);
+  let focus = false;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  function paint() {
+    const prefs = readObject(localStorage, "rhine-settings");
+    const theme = prefs.colorTheme === "dark" ? "dark" : "light", palette = design.palettes[params.palette][theme];
+    root.dataset.colorTheme = theme;
+    root.dataset.darkSurface = String(theme === "dark");
+    root.dataset.skyPalette = params.palette;
+    root.dataset.skyStage = focus ? "focus" : "read";
+    root.dataset.reduced = String(typeof prefs.reduced === "boolean" ? prefs.reduced : reduced.matches);
+    root.style.colorScheme = theme;
+    for (const [name, value] of Object.entries(palette)) {
+      const channel = rgb(value).join(", ");
+      root.style.setProperty(`--${name}`, value);
+      root.style.setProperty(`--${name}-rgb`, channel);
+      root.style.setProperty(`--theme-${name}`, value);
+      root.style.setProperty(`--theme-${name}-rgb`, channel);
+      root.style.setProperty(`--sky-${name}-rgb`, channel);
+    }
+    const paper = rgb(palette.paper), strength = params.presence * .35;
+    for (const name of ["top", "middle", "horizon"]) root.style.setProperty(`--read-${name}`, `rgb(${paper.map((v, i) => Math.round(v + (rgb(palette[name])[i] - v) * strength)).join(", ")})`);
+    root.style.setProperty("--title-scale", String(params.titleScale));
+    root.style.setProperty("--sky-title-scale", String(params.titleScale));
+    root.style.setProperty("--sky-presence", String(params.presence));
+    root.style.setProperty("--sky-strength", String(focus ? 0 : strength));
+    root.style.setProperty("--sheet-opacity", focus ? "1" : ".96");
+  }
+  paint();
+  addEventListener("storage", event => { if (event.key === "rhine-settings") paint(); });
+  addEventListener("pageshow", paint);
+  reduced.addEventListener("change", paint);
+  addEventListener("DOMContentLoaded", () => {
+    const button = document.querySelector('[data-action="focus-reading"]');
+    button.hidden = false;
+    button.addEventListener("click", () => {
+      const position = scrollY;
+      focus = !focus; paint();
+      button.textContent = focus ? "恢复氛围" : "专注阅读";
+      button.setAttribute("aria-pressed", String(focus));
+      scrollTo(0, position);
+    });
+    const back = document.querySelector("a.back");
+    const target = new URL(base);
+    target.searchParams.set("archive", snapshot.selectedId || record.id);
+    for (const [name, value] of Object.entries(params)) target.searchParams.set(name, String(value));
+    back.href = target.href;
+    let archiveHistory = false;
+    try {
+      const previous = new URL(document.referrer), archive = new URL(snapshot.archiveUrl || base.href);
+      archiveHistory = history.length > 1 && previous.origin === location.origin && archive.origin === location.origin && previous.pathname === archive.pathname;
+    } catch {}
+    back.addEventListener("click", event => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || !archiveHistory) return;
+      event.preventDefault(); history.back();
+    });
+  }, { once: true });
+}
+
+function pageHtml({ rec, index, body, prev, next }) {
   const title = `${rec.title} · 文苑`;
   const pager = [
     prev ? `<a href="../${prev.id.toLowerCase()}/">← ${esc(prev.title)}</a>` : `<span>←</span>`,
@@ -348,12 +354,14 @@ function pageHtml({ rec, body, prev, next }) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(rec.description || rec.subtitle || rec.title)}">
+<script>${readerScript(rec, index)}</script>
 <link rel="icon" href="../favicon.svg">
 <link rel="stylesheet" href="../prose-fonts.css">
 <link rel="stylesheet" href="../prose-read.css">
 </head>
 <body>
 <article class="sheet">
+  <div class="rd-toolbar"><button type="button" data-action="focus-reading" aria-pressed="false" hidden>专注阅读</button></div>
   <div class="rd-meta"><b>FILE ${esc(rec.id)}</b><span>${esc(rec.date)}</span><span>${esc(rec.tag)}</span></div>
   <h1>${esc(rec.title)}</h1>
 ${rec.subtitle ? `  <p class="rd-sub">${esc(rec.subtitle)}</p>\n` : ""}  <div class="rd-body">
@@ -389,7 +397,7 @@ for (let i = 0; i < records.length; i++) {
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(
     path.join(dir, "index.html"),
-    pageHtml({ rec, body: html, prev: records[i - 1], next: records[i + 1] }),
+    pageHtml({ rec, index: i, body: html, prev: records[i - 1], next: records[i + 1] }),
     "utf8",
   );
 }
