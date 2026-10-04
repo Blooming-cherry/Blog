@@ -663,7 +663,9 @@ export class ArchiveScene {
     this.lastInteraction = this.clock;
     const next = fileLocation(index).slot;
     const canonical = fileLocation(index);
-    const cell = this.looping
+    // An explicit navigation cell overrides the hidden-mode canonical re-base,
+    // so a restored loop position survives the scene's hidden -> archive handoff.
+    const cell = (navigation && "cell" in navigation) || this.looping
       ? selectionCell(index, this.selectedCell, navigation)
       : { lane: canonical.lane, row: canonical.row };
     const changed = !sameCell(cell, this.selectedCell);

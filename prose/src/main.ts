@@ -1171,8 +1171,13 @@ function completeStartup(silent: boolean) {
   const fade = prefs.reduced ? 0 : 600;
   bootStart = performance.now() / 1000 - (reviewParams.has("time") ? Number(reviewParams.get("time")) : 1.76);
   if (!reviewParams.has("time")) bootStart += fade / 1000;
-  setMode("boot");
-  if (resumeArchive || reviewParams.get("scene") === "archive" || (prefs.reduced && !reviewParams.has("time"))) setMode("archive");
+  // Same-session resume skips the boot scene so the restored loop cell is not
+  // re-based to canonical by the hidden-mode handoff.
+  if (resumeArchive) setMode("archive");
+  else {
+    setMode("boot");
+    if (reviewParams.get("scene") === "archive" || (prefs.reduced && !reviewParams.has("time"))) setMode("archive");
+  }
   if (reviewParams.get("scene") === "detail") setMode("detail");
   if (isWallpaper && wallpaperHost()?.properties.boot?.value === false) setMode("archive");
   $("#stage").inert = false;
