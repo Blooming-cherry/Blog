@@ -224,3 +224,139 @@
 .post-body .katex-display > .katex {
   margin: 0 auto;
 }
+
+/* ── H-01: shared Songti headings and a restrained article-link band ── */
+.site-title {
+  font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  letter-spacing: .04em;
+}
+
+.index.posts-expand .post-block {
+  position: relative;
+  isolation: isolate;
+}
+.index.posts-expand .post-block::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: -20px;
+  right: -20px;
+  height: 96px;
+  border-radius: 8px;
+  background: unquote("rgba(var(--sky-accent-rgb), .06)");
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity 120ms ease;
+}
+.index.posts-expand .post-block:has(.post-title-link:focus-visible)::before,
+.index.posts-expand .post-block:has(.post-title-link:active)::before {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .index.posts-expand .post-block:has(.post-title-link:hover)::before {
+    opacity: 1;
+  }
+}
+.index.posts-expand .post-title {
+  font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  font-size: calc(27px * var(--sky-title-scale));
+  line-height: 1.4;
+  letter-spacing: .02em;
+  text-wrap: pretty;
+}
+.index.posts-expand .post-title-link {
+  transition: color 120ms ease;
+}
+.index.posts-expand .post-title-link:hover,
+.index.posts-expand .post-title-link:active,
+.index.posts-expand .post-title-link:focus-visible {
+  color: unquote("rgb(var(--sky-accent-rgb))");
+}
+.index.posts-expand .post-title-link:focus-visible {
+  outline: unquote("1px solid rgb(var(--sky-accent-rgb))");
+  outline-offset: 5px;
+  border-radius: 2px;
+}
+.index.posts-expand .post-title-link::before {
+  background: unquote("rgb(var(--sky-accent-rgb))");
+  height: 1px;
+}
+.index.posts-expand .post-meta {
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 9px;
+  color: unquote("rgb(var(--sky-muted-rgb))");
+  font-variant-numeric: tabular-nums;
+}
+.index.posts-expand .post-meta-item {
+  display: inline-block;
+  vertical-align: baseline;
+}
+.index.posts-expand .post-meta .post-meta-item + .post-meta-item::before {
+  margin: 0 .7em;
+}
+.index.posts-expand .post-meta time {
+  border-bottom-color: unquote("rgba(var(--sky-line-rgb), .7)");
+}
+.index.posts-expand .post-meta a {
+  color: inherit;
+  border-bottom-color: unquote("rgba(var(--sky-line-rgb), .7)");
+}
+
+@media (max-width: 767px) {
+  .index.posts-expand .post-title {
+    font-size: calc(23px * var(--sky-title-scale));
+    line-height: 1.45;
+  }
+  .index.posts-expand .post-meta {
+    font-size: 12px;
+    line-height: 1.9;
+    margin-top: 8px;
+  }
+  .index.posts-expand .post-block::before {
+    left: -10px;
+    right: -10px;
+    height: 116px;
+  }
+}
+
+/* The homepage's existing floating player follows the same OS theme as NexT. */
+@media (prefers-color-scheme: dark) {
+  #miniPlayer, #mpPlaylist {
+    background: unquote("rgba(var(--sky-paper-rgb), .96)");
+    border-color: unquote("rgba(var(--sky-line-rgb), .55)");
+    box-shadow: unquote("0 4px 24px rgba(var(--sky-paper-rgb), .4)");
+  }
+  #mpOverlay { background: unquote("rgba(var(--sky-paper-rgb), .45)"); }
+  .mp-ctrl, #mpBtn {
+    background: unquote("rgb(var(--sky-panel-rgb))");
+    border-color: unquote("rgba(var(--sky-line-rgb), .6)");
+    color: unquote("rgb(var(--sky-muted-rgb))");
+  }
+  .mp-ctrl:hover, #mpBtn:hover {
+    border-color: unquote("rgb(var(--sky-line-rgb))");
+    color: unquote("rgb(var(--sky-ink-rgb))");
+  }
+  #mpTitle, .mpp-name { color: unquote("rgb(var(--sky-ink-rgb))"); }
+  .mpp-num, .mpp-artist { color: unquote("rgb(var(--sky-muted-rgb))"); }
+  .mpp-row:hover { background: unquote("rgb(var(--sky-field-rgb))"); }
+  .mpp-row.active { background: unquote("rgb(var(--sky-panel-rgb))"); }
+  .mpp-row.active .mpp-num { color: unquote("rgb(var(--sky-ink-rgb))"); }
+  #mpDisc, #mpDisc:hover, #mpDisc.expanded {
+    box-shadow: unquote("0 0 0 3px rgb(var(--sky-line-rgb)), inset 0 0 0 2px rgb(var(--sky-paper-rgb))");
+  }
+  .back-to-top {
+    background: unquote("rgb(var(--sky-panel-rgb))");
+    color: unquote("rgb(var(--sky-muted-rgb))");
+  }
+  .back-to-top:hover { color: unquote("rgb(var(--sky-accent-rgb))"); }
+  .b2t-disc {
+    background: unquote("conic-gradient(rgb(var(--sky-line-rgb)) 0deg 90deg, rgb(var(--sky-panel-rgb)) 90deg 180deg, rgb(var(--sky-line-rgb)) 180deg 270deg, rgb(var(--sky-panel-rgb)) 270deg 360deg)");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .index.posts-expand .post-block::before,
+  .index.posts-expand .post-title-link { transition: none; }
+}
