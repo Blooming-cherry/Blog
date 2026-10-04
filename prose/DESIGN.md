@@ -309,6 +309,8 @@ WE 画质下拉增加「自定义」，仅此选择且超级模式关闭时显�
 
 SkyTransition 使用现有 850ms 背景通道时长，从当前权重接续到 Intro=0、Archive=1、Read=.35；ThemeWave 原时序不变。首次原开场的结束节点直接进入 Archive。运行时减少动态效果完成新增运动并显示最终内容。
 
+档案区四面板为透明细勾边，非毛玻璃：底色 rgba(paper, .025+.04·presence)、无 backdrop blur 与 box-shadow，边框 rgba(line, .22)。面板沿用 archive-ui 的 pointer-events:none 穿透，保证阵列拖动；边缘 rim 由文档级 pointermove 按各面板边界匹配指针，写入 --rim-x/--rim-y，hover/focus-within/pointerdown 将边框提为 accent .38、rim 透明度 0.25→1。减少动态效果时 rim 固定 50%/0%、transition:none，无持续装饰动画。滚动数字隐藏测量层（.rn-measure/.rn-value）去除 text-shadow，避免纸面 halo 泄漏；仅可见标题层保留纸面晕影。
+
 全文仍由 scripts/prose-pages.mjs 生成现有 w-NNN 路由。首帧同步读取既有明暗偏好及三个作者参数，标题与正文始终可读。纸面 .96，无正文模糊；专注时为 1，切换保留阅读位置且刷新不记忆。唯一控制桌面置于正文外侧，手机底部纸面操作条；正文末尾为操作条留出空间。
 
 浏览器历史与每标签页快照恢复 selectedId、循环 selectedCell、列内记忆及 palette/presence/titleScale。修饰键链接保持原生；正文返回无档案历史时回到原档案路径并选中对应文章。三维失败进入可检索、可打开正文的档案界面。场景销毁同时释放天空纹理。
