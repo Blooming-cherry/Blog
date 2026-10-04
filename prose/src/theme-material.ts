@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import design from "../design/sky-palettes.json";
-import { currentPalette, designParameters, designState, designStrength } from "./sky-design";
+import { currentResolved, designState, designStrength } from "./sky-design";
 
 const surfaces: Record<string, string> = {
   Frosted_Polymer: "#626b70", Ivory_Edges: "#687277", Optical_Diffuser: "#192226",
@@ -41,7 +41,9 @@ export function themeMaterial(material: THREE.Material, name: string, instanced 
 
 /** New color literals belong to this palette, ready for author presets. */
 export const skyPalette = design.palettes;
-const skyWidth = 96, skyHeight = 256, middleStop = .3, horizonStop = .55;
+const skyWidth = 96, skyHeight = 256;
+// Height measured from the top: zenith at 1.0, horizon at 0.0.
+const skyStopHeights = [1, .72, .5, .28, 0];
 const sample = new THREE.Color();
 type Baseline = { sky: THREE.DataTexture; pixels: Uint16Array; haze: { value: number }; materials: WeakSet<THREE.Material>; amount: number; revision: number; intensity: number; exposure: number; lights: { light: THREE.Light; intensity: number }[]; floor?: { material: THREE.MeshStandardMaterial; color: THREE.Color } };
 const scenes = new WeakMap<THREE.Scene, Baseline>();
@@ -121,17 +123,24 @@ export function themeEnvironment(scene: THREE.Scene, renderer: THREE.WebGLRender
   });
   scene.background = baseline.sky;
   if (amount !== baseline.amount || baseline.revision !== designState.revision) {
-    const palette = currentPalette(), strength = designStrength();
-    const paper = new THREE.Color(palette.light.paper).lerp(new THREE.Color(palette.dark.paper), amount);
-    const nodes = (["top", "middle", "horizon"] as const).map(key => paper.clone().lerp(
-      new THREE.Color(palette.light[key]).lerp(new THREE.Color(palette.dark[key]), amount), strength));
-    const glow = new THREE.Color(palette.light.horizon).lerp(new THREE.Color(palette.dark.horizon), amount)
-      .lerp(new THREE.Color(palette.light.accent).lerp(new THREE.Color(palette.dark.accent), amount), .08);
+    const resolved = currentResolved(), strength = designStrength();
+    const paper = new THREE.Color(resolved.light.surface.paper).lerp(new THREE.Color(resolved.dark.surface.paper), amount);
+    const steps = ["zenith", "upper", "lower", "haze", "horizon"] as const;
+    const nodes = steps.map(key => paper.clone().lerp(
+      new THREE.Color(resolved.light.sky[key]).lerp(new THREE.Color(resolved.dark.sky[key]), amount), strength));
+    const glow = new THREE.Color(resolved.light.sky.horizon).lerp(new THREE.Color(resolved.dark.sky.horizon), amount)
+      .lerp(new THREE.Color(resolved.light.surface.accent).lerp(new THREE.Color(resolved.dark.surface.accent), amount), .08);
     for (let row = 0; row < skyHeight; row++) {
       // DataTexture starts at the bottom: convert to height measured from the top.
       const height = 1 - row / (skyHeight - 1);
-      const segment = height < middleStop ? 0 : 1;
-      const fraction = segment === 0 ? height / middleStop : (height - middleStop) / (horizonStop - middleStop);
+      let segment = skyStopHeights.length - 2, fraction = 0;
+      for (let i = 0; i < skyStopHeights.length - 1; i++) {
+        if (height <= skyStopHeights[i] && height >= skyStopHeights[i + 1]) {
+          segment = i;
+          fraction = (skyStopHeights[i] - height) / (skyStopHeights[i] - skyStopHeights[i + 1]);
+          break;
+        }
+      }
       const rowColor = nodes[segment].clone().lerp(nodes[segment + 1], THREE.MathUtils.clamp(fraction, 0, 1));
       for (let column = 0; column < skyWidth; column++) {
         const x = column / (skyWidth - 1);
@@ -151,11 +160,11 @@ export function themeEnvironment(scene: THREE.Scene, renderer: THREE.WebGLRender
     baseline.haze.value = baseline.floor ? .92 * Math.min(1, strength / design.defaults.presence) : 0;
     // Keep the semantic fog color for diagnostics; rendered fog samples each
     // pixel's sky height so upper cards cannot flatten the gradient to one color.
-    if (scene.fog) scene.fog.color.copy(nodes[2]);
+    if (scene.fog) scene.fog.color.copy(nodes[3]);
   }
   if (baseline.floor) {
-    const palette = currentPalette();
-    floorColor.set(palette.light.floor).lerp(new THREE.Color(palette.dark.floor), amount);
+    const resolved = currentResolved();
+    floorColor.set(resolved.light.surface.floor).lerp(new THREE.Color(resolved.dark.surface.floor), amount);
     baseline.floor.material.color.copy(floorColor);
   }
   scene.environmentIntensity = THREE.MathUtils.lerp(baseline.intensity, .32, amount);

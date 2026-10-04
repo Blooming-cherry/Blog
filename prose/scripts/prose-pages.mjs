@@ -88,21 +88,25 @@ async function buildFontStylesheet() {
   return rebased;
 }
 
-/** Static reading never waits for the archive's fonts, model or renderer. */
+/** Static reading never waits for the archive's fonts, model or renderer.
+ * One unified sky: text sits directly on the same five-step gradient, no paper
+ * card, no focus/reading-mode control. */
 function buildStylesheet() {
-  const palette = design.palettes[design.defaults.palette].light;
+  const family = design.palettes[design.defaults.palette];
+  const palette = family.light;
   const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
-  const fallback = Object.entries(palette).map(([name, value]) => `--${name}: ${value}; --${name}-rgb: ${rgb(value).join(", ")};`).join("\n  ");
+  const surface = Object.entries(palette.surface).map(([name, value]) => `--${name}: ${value}; --${name}-rgb: ${rgb(value).join(", ")};`).join("\n  ");
   const strength = design.defaults.presence * .35;
-  const sky = ["top", "middle", "horizon"].map(name => `--read-${name}: rgb(${rgb(palette.paper).map((v, i) => Math.round(v + (rgb(palette[name])[i] - v) * strength)).join(", ")});`).join("\n  ");
+  const noon = palette.sky.reduce((a, b) => (Math.abs(a.h - 12) < Math.abs(b.h - 12) ? a : b));
+  const paper = rgb(palette.surface.paper);
+  const sky = design.steps.map(name => `--read-${name}: rgb(${paper.map((v, i) => Math.round(v + (rgb(noon[name])[i] - v) * strength)).join(", ")});`).join("\n  ");
   return `
 /* Tokens come from the same author palette as the archive and home index. */
 :root {
   color-scheme: light;
-  ${fallback}
+  ${surface}
   ${sky}
   --title-scale: ${design.defaults.titleScale};
-  --sheet-opacity: .96;
   /* Preserve the existing system body/MiSans chrome division. */
   --read: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", Lato, sans-serif;
   --chrome: "MiSans", "Mi Sans", system-ui, sans-serif;
@@ -116,7 +120,7 @@ body {
   margin: 0;
   padding: 48px var(--gutter) 0;
   background-color: var(--paper);
-  background-image: linear-gradient(180deg, var(--read-top), var(--read-middle) 30%, var(--read-horizon) 70%);
+  background-image: linear-gradient(180deg, var(--read-zenith), var(--read-upper) 26%, var(--read-lower) 52%, var(--read-haze) 74%, var(--read-horizon));
   background-size: 100% 100lvh;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -131,31 +135,12 @@ body {
   max-width: calc(var(--measure) + var(--gutter) * 2);
   margin: 0 auto;
   padding: 32px var(--gutter) 40px;
-  border: 1px solid rgba(var(--line-rgb), .4);
-  border-radius: 18px;
-  background: rgba(var(--paper-rgb), var(--sheet-opacity));
-  box-shadow: 0 14px 42px rgba(var(--ink-rgb), .06);
-  /* The text surface is opaque enough by itself and never blurs its content. */
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  /* Unified sky: the reading column is open, not a separate paper card. */
+  background: none;
+  border: 0;
+  box-shadow: none;
 }
-.rd-toolbar { position: fixed; right: max(16px, calc((100vw - 784px) / 2 - 132px)); bottom: 18px; z-index: 2; display: flex; justify-content: flex-end; }
-.rd-toolbar:has(button[hidden]) { display: none; }
-.rd-toolbar button {
-  min-height: 44px;
-  min-width: 108px;
-  padding: 0 14px;
-  font: 13px var(--chrome);
-  color: var(--ink);
-  background: var(--field);
-  border: 1px solid rgba(var(--accent-rgb), .5);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: color 120ms, background 120ms;
-}
-.rd-toolbar button:hover { color: var(--accent); background: var(--paper); }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-button[hidden] { display: none; }
 .rd-meta {
   display: flex;
   flex-wrap: wrap;
@@ -216,9 +201,8 @@ h1 {
   max-width: calc(var(--measure) + var(--gutter) * 2);
   margin: 22px auto 64px;
   padding: 22px var(--gutter);
-  border: 1px solid rgba(var(--line-rgb), .4);
-  border-radius: 18px;
-  background: rgba(var(--paper-rgb), var(--sheet-opacity));
+  border-top: 1px solid rgba(var(--line-rgb), .4);
+  background: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -233,18 +217,14 @@ h1 {
 .rd-pager { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); }
 .rd-pager a { color: var(--muted); overflow-wrap: anywhere; }
 .rd-pager span { color: var(--line); }
-[data-sky-stage="focus"] { --sheet-opacity: 1; }
-[data-sky-stage="focus"] body { background-image: none; }
-[data-sky-stage="focus"] .sheet { box-shadow: none; }
 [data-reduced="true"] button { transition: none; }
 @media (max-width: 720px) {
   :root { --gutter: 20px; }
   body { padding: 16px 0 64px; }
-  .rd-toolbar { left: 0; right: 0; bottom: 0; height: 60px; padding: 8px 16px; border-top: 1px solid var(--line); background: var(--paper); }
-  .sheet { padding: 28px var(--gutter) 24px; border-radius: 14px; }
+  .sheet { padding: 28px var(--gutter) 24px; }
   h1 { font-size: calc(34px * var(--title-scale)); }
   .rd-meta { gap: 10px 16px; }
-  .rd-foot { flex-direction: column; align-items: flex-start; margin-bottom: max(32px, env(safe-area-inset-bottom)); padding: 18px var(--gutter); border-radius: 14px; }
+  .rd-foot { flex-direction: column; align-items: flex-start; margin-bottom: max(32px, env(safe-area-inset-bottom)); padding: 18px var(--gutter); }
 }
 @media (max-width: 370px) { :root { --gutter: 16px; } }
 `;
@@ -279,22 +259,48 @@ function readerRuntime(config) {
       if (Number.isFinite(value)) params[name] = Math.max(min, Math.min(max, value));
     }
   }
+  const reviewHour = query.has("hour") ? Number(query.get("hour")) : NaN;
+  let hour = Number.isFinite(reviewHour) ? reviewHour : new Date().getHours() + new Date().getMinutes() / 60;
   if (!existing) snapshot = { version: 1, entered: true, selectedId: record.id, selectedIndex: record.index, parameters: params, archiveUrl: base.href };
   else snapshot.parameters = params;
   saveSnapshot(snapshot);
-  let focus = false;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  const hexToLinear = hex => { const c = parseInt(hex.slice(1), 16); return [(c >> 16) & 255, (c >> 8) & 255, c & 255].map(v => { const s = v / 255; return s <= .04045 ? s / 12.92 : ((s + .055) / 1.055) ** 2.4; }); };
+  const linearToHex = (r, g, b) => { const enc = v => { const c = Math.max(0, Math.min(1, v)); const s = c <= .0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - .055; return Math.round(Math.max(0, Math.min(1, s)) * 255).toString(16).padStart(2, "0"); }; return "#" + enc(r) + enc(g) + enc(b); };
+  const oklab = (r, g, b) => { const l = .4122214708 * r + .5363325363 * g + .0514459929 * b, m = .2119034982 * r + .6806995451 * g + .1073969566 * b, s = .0883024619 * r + .2817188376 * g + .6299787005 * b; const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s); return [.2104542553 * l_ + .793617785 * m_ - .0040720468 * s_, 1.9779984951 * l_ - 2.428592205 * m_ + .4505937099 * s_, .0259040371 * l_ + .7827717662 * m_ - .808675766 * s_]; };
+  const srgb = (L, a, b) => { const l_ = L + .3963377774 * a + .2158037573 * b, m_ = L - .1055613458 * a - .0638541728 * b, s_ = L - .0894841775 * a - 1.291485548 * b; return [4.0767416621 * l_ ** 3 - 3.3077115913 * m_ ** 3 + .2309699292 * s_ ** 3, -1.2684380046 * l_ ** 3 + 2.6097574011 * m_ ** 3 - .3413193965 * s_ ** 3, -.0041960863 * l_ ** 3 - .7034186147 * m_ ** 3 + 1.707614701 * s_ ** 3]; };
+  const mix = (A, B, t) => { const x = hexToLinear(A), y = hexToLinear(B); const p = oklab(...x), q = oklab(...y); const L = p[0] + (q[0] - p[0]) * t, a = p[1] + (q[1] - p[1]) * t, b = p[2] + (q[2] - p[2]) * t; return linearToHex(...srgb(L, a, b)); };
+  function resolveSky() {
+    const family = design.palettes[params.palette];
+    const resolve = keyframes => {
+      const sorted = [...keyframes].sort((x, y) => x.h - y.h);
+      const first = sorted[0], last = sorted[sorted.length - 1];
+      const wrapped = [...sorted, { ...first, h: first.h + 24 }];
+      const h = ((hour % 24) + 24) % 24;
+      let from = wrapped[0], to = wrapped[1];
+      for (let i = 0; i < wrapped.length - 1; i++) if (h >= wrapped[i].h && h <= wrapped[i + 1].h) { from = wrapped[i]; to = wrapped[i + 1]; break; }
+      if (h < first.h) { from = { ...last, h: last.h - 24 }; to = first; }
+      const t = Math.max(0, Math.min(1, (h - from.h) / (to.h - from.h || 1)));
+      const out = {};
+      for (const step of design.steps) out[step] = mix(from[step], to[step], t);
+      return out;
+    };
+    return { light: { sky: resolve(family.light.sky), surface: family.light.surface }, dark: { sky: resolve(family.dark.sky), surface: family.dark.surface } };
+  }
   function paint() {
     const prefs = readObject(localStorage, "rhine-settings");
-    const theme = prefs.colorTheme === "dark" ? "dark" : "light", palette = design.palettes[params.palette][theme];
+    const theme = prefs.colorTheme === "dark" ? "dark" : "light";
+    const resolved = resolveSky();
+    const palette = resolved[theme];
     root.dataset.colorTheme = theme;
     root.dataset.darkSurface = String(theme === "dark");
     root.dataset.skyPalette = params.palette;
-    root.dataset.skyStage = focus ? "focus" : "read";
+    root.dataset.skyStage = "read";
+    root.dataset.skyHour = hour.toFixed(2);
     root.dataset.reduced = String(typeof prefs.reduced === "boolean" ? prefs.reduced : reduced.matches);
     root.style.colorScheme = theme;
-    for (const [name, value] of Object.entries(palette)) {
+    for (const [name, value] of Object.entries(palette.surface)) {
       const channel = rgb(value).join(", ");
       root.style.setProperty(`--${name}`, value);
       root.style.setProperty(`--${name}-rgb`, channel);
@@ -302,32 +308,28 @@ function readerRuntime(config) {
       root.style.setProperty(`--theme-${name}-rgb`, channel);
       root.style.setProperty(`--sky-${name}-rgb`, channel);
     }
-    const paper = rgb(palette.paper), strength = params.presence * .35;
-    for (const name of ["top", "middle", "horizon"]) root.style.setProperty(`--read-${name}`, `rgb(${paper.map((v, i) => Math.round(v + (rgb(palette[name])[i] - v) * strength)).join(", ")})`);
+    const paper = rgb(palette.surface.paper), strength = params.presence * .35;
+    for (const name of design.steps) root.style.setProperty(`--read-${name}`, `rgb(${paper.map((v, i) => Math.round(v + (rgb(palette.sky[name])[i] - v) * strength)).join(", ")})`);
     root.style.setProperty("--title-scale", String(params.titleScale));
     root.style.setProperty("--sky-title-scale", String(params.titleScale));
     root.style.setProperty("--sky-presence", String(params.presence));
-    root.style.setProperty("--sky-strength", String(focus ? 0 : strength));
-    root.style.setProperty("--sheet-opacity", focus ? "1" : ".96");
+    root.style.setProperty("--sky-strength", String(strength));
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", palette.surface.paper);
   }
+  function syncHour() { if (Number.isFinite(reviewHour)) return; const now = new Date(); hour = now.getHours() + now.getMinutes() / 60; paint(); }
   paint();
   addEventListener("storage", event => { if (event.key === "rhine-settings") paint(); });
   addEventListener("pageshow", paint);
   reduced.addEventListener("change", paint);
+  setInterval(syncHour, 5 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) syncHour(); });
   addEventListener("DOMContentLoaded", () => {
-    const button = document.querySelector('[data-action="focus-reading"]');
-    button.hidden = false;
-    button.addEventListener("click", () => {
-      const position = scrollY;
-      focus = !focus; paint();
-      button.textContent = focus ? "恢复氛围" : "专注阅读";
-      button.setAttribute("aria-pressed", String(focus));
-      scrollTo(0, position);
-    });
     const back = document.querySelector("a.back");
     const target = new URL(base);
     target.searchParams.set("archive", snapshot.selectedId || record.id);
     for (const [name, value] of Object.entries(params)) target.searchParams.set(name, String(value));
+    if (Number.isFinite(reviewHour)) target.searchParams.set("hour", String(reviewHour));
     back.href = target.href;
     let archiveHistory = false;
     try {
@@ -353,6 +355,7 @@ function pageHtml({ rec, index, body, prev, next }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
+<meta name="theme-color" content="#F4EFE6">
 <meta name="description" content="${esc(rec.description || rec.subtitle || rec.title)}">
 <script>${readerScript(rec, index)}</script>
 <link rel="icon" href="../favicon.svg">
@@ -361,7 +364,6 @@ function pageHtml({ rec, index, body, prev, next }) {
 </head>
 <body>
 <article class="sheet">
-  <div class="rd-toolbar"><button type="button" data-action="focus-reading" aria-pressed="false" hidden>专注阅读</button></div>
   <div class="rd-meta"><b>FILE ${esc(rec.id)}</b><span>${esc(rec.date)}</span><span>${esc(rec.tag)}</span></div>
   <h1>${esc(rec.title)}</h1>
 ${rec.subtitle ? `  <p class="rd-sub">${esc(rec.subtitle)}</p>\n` : ""}  <div class="rd-body">

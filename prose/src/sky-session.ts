@@ -34,5 +34,8 @@ export function applyAuthorParameters(params: URLSearchParams, restored?: Archiv
 export function readingHref(href: string) {
   const url = new URL(href, location.href);
   for (const [name, value] of Object.entries(designParameters)) url.searchParams.set(name, String(value));
+  // Relay a fixed author-review hour across documents so the sky stays continuous.
+  const hour = new URLSearchParams(location.search).get("hour");
+  if (hour !== null) url.searchParams.set("hour", hour);
   return url.href;
 }

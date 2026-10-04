@@ -1,5 +1,5 @@
 import { designState, setDesignStage, type DesignStage } from "./sky-design";
-const weights: Record<DesignStage, number> = { intro: 0, archive: 1, read: .35, focus: 0 };
+const weights: Record<DesignStage, number> = { intro: 0, archive: 1, read: .35 };
 /** Same 850 ms background channel as ThemeWave, sampled from the current value. */
 export class SkyTransition {
   private from = 0;

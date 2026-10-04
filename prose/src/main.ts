@@ -39,7 +39,7 @@ let workbench: Workbench | undefined;
 import { ArchivePlayground } from "./archive-playground";
 import { ARRAY_OPENING_END, openingShowsDetail } from "./wallpaper-opening";
 import { paintTheme, themeSettingsMarkup } from "./theme-ui";
-import { designParameters, designState, setDesignParameters } from "./sky-design";
+import { designParameters, designState, setDesignParameters, setSkyHour } from "./sky-design";
 import "./sky-design.css";
 import { installSkyInteraction } from "./sky-interaction";
 import { SkyTransition } from "./sky-transition";
@@ -110,10 +110,19 @@ let mode: Mode = "boot",
 let modal: "search" | "settings" | null = null,
   searchQuery = "",
   filter = "全部档案";
-let activeTab = "overview";
 const reviewParams = new URLSearchParams(location.search);
 const restoredArchive = !isWallpaper ? readArchiveSnapshot() : undefined;
 applyAuthorParameters(reviewParams, restoredArchive);
+const reviewHour = reviewParams.has("hour") ? Number(reviewParams.get("hour")) : NaN;
+function syncSkyHour() {
+  if (Number.isFinite(reviewHour)) { setSkyHour(reviewHour); return; }
+  const now = new Date();
+  setSkyHour(now.getHours() + now.getMinutes() / 60);
+}
+syncSkyHour();
+// Low-frequency clock sampling; refresh on visibility, never bound to scroll.
+setInterval(syncSkyHour, 5 * 60 * 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) syncSkyHour(); });
 const requestedArchive = reviewParams.get("archive");
 const resumeArchive = !isWallpaper && Boolean(restoredArchive?.entered || requestedArchive);
 const skyTransition = new SkyTransition();
@@ -342,12 +351,9 @@ function fit() {
     viewer?.resize();
   }
   updateQualitySummary();
-  // Re-measure line covers and tab underline after wrapping changes.
+  // Re-measure redaction line covers after wrapping changes.
   requestAnimationFrame(() => {
     documentDecryption.refresh();
-    const tab = document.querySelector<HTMLElement>(".detail-tabs button.active");
-    const indicator = document.querySelector<HTMLElement>(".tab-indicator");
-    if (tab && indicator) indicator.style.transform = `translateX(${tab.offsetLeft}px) scaleX(${tab.offsetWidth})`;
   });
 }
 window.addEventListener("resize", fit);
@@ -422,7 +428,6 @@ function select(index: number, navigation?: ArchiveNavigation) {
   selected = (index + records.length) % records.length;
   columnMemory[wrap(fileLocation(selected).lane, archiveColumns.length)] = selected;
   if (mode === "detail") setMode("archive");
-  activeTab = "overview";
   scene?.select(selected, navigation);
   updateSelection(navigation);
   if (started && mode === "archive" && !isWallpaper) saveArchiveContext();
@@ -525,57 +530,15 @@ function renderDetail() {
   const r = records[selected];
   $("#object-id").textContent = "NO." + String(selected + 1).padStart(3, "0");
   $("#detail-content").innerHTML = `
-  <div class="detail-kicker"><span>FILE ${r.id}</span><span>${escapeHtml(r.tag)}</span></div>
-  <h2>${escapeHtml(r.title)}</h2><div class="detail-title-cn">${escapeHtml(r.subtitle || r.date)}<span>${escapeHtml(r.date)}</span></div>
+  <h2>${escapeHtml(r.title)}</h2>
+  <div class="detail-meta"><span>FILE ${r.id}</span><i>·</i><span>${escapeHtml(r.date)}</span><i>·</i><span>${escapeHtml(r.tag)}</span></div>
   <div class="detail-rule"></div>
-  <dl class="metadata"><div><dt>DATE / 编目日期</dt><dd>${escapeHtml(r.date)}</dd></div><div><dt>TAG / 分类</dt><dd>${escapeHtml(r.tag)}</dd></div><div><dt>FILE / 编号</dt><dd>${escapeHtml(r.id)}</dd></div></dl>
-  <div class="detail-tabs" role="tablist"><button id="tab-overview" class="active" role="tab" aria-controls="tab-panel" aria-selected="true" data-tab="overview">01 <span>诗引</span></button><button id="tab-notes" role="tab" aria-controls="tab-panel" aria-selected="false" data-tab="notes">02 <span>副题</span></button><i class="tab-indicator" aria-hidden="true"></i></div>
-  <div id="tab-panel" class="tab-panel" role="tabpanel">${overview()}</div>
+  <p class="detail-quote">${escapeHtml(r.description || "（本篇无引）")}</p>
+  ${r.subtitle ? `<p class="detail-subtitle">${escapeHtml(r.subtitle)}</p>` : ""}
   <div class="detail-actions"><a class="solid-button" href="${readingHref(assetUrl(`${r.id.toLowerCase()}/`))}">READ FULL TEXT <span>阅读全文 →</span></a><a class="export-button" href="${assetUrl(`archives/RHINE-LAB-${r.id}.txt`)}" download="RHINE-LAB-${r.id}.txt" aria-label="导出 ${r.id} 档案">EXPORT <span>↓</span></a></div>
   <div class="detail-footnote"><span>PROSE ARCHIVE / 文苑</span><span>${String(selected + 1).padStart(3, "0")} / ${String(records.length).padStart(3, "0")}</span></div>`;
   $("#detail-content").setAttribute("tabindex", "-1");
   documentDecryption.reset($("#detail-content"), true);
-  setTab(activeTab, false);
-}
-function overview() {
-  return `<div class="panel-label">EPIGRAPH / 诗引</div><p>${escapeHtml(records[selected].description || "（本篇无引）")}</p>`;
-}
-function setTab(tab: string, sound = true) {
-  if (sound && tab === activeTab) return;
-  activeTab = tab;
-  document.querySelectorAll("[data-tab]").forEach((b) => {
-    const active = (b as HTMLElement).dataset.tab === tab;
-    b.classList.toggle("active", active);
-    b.setAttribute("aria-selected", String(active));
-    b.setAttribute("tabindex", active ? "0" : "-1");
-  });
-  const r = records[selected];
-  const tabButton = $<HTMLButtonElement>(`[data-tab="${tab}"]`);
-  const indicator = $(".tab-indicator");
-  indicator.style.transition = sound ? "" : "none";
-  indicator.style.transform = `translateX(${tabButton.offsetLeft}px) scaleX(${tabButton.offsetWidth})`;
-  $("#tab-panel").setAttribute("aria-labelledby", tabButton.id);
-  $("#tab-panel").innerHTML =
-    tab === "overview"
-      ? overview()
-      : tab === "notes"
-        ? `<div class="panel-label">SUBTITLE / 副题</div><p>${escapeHtml(r.subtitle || "（本篇无副题）")}</p>`
-        : `<div class="panel-label">ACCESS LOG / 本次访问</div>${accessLog
-            .filter((entry) => entry.id === r.id)
-            .slice(0, 4)
-            .map(
-              (entry) =>
-                `<div class="log-row"><span>${entry.time}</span><span>JOYCE MOORE</span><b>READ AUTHORIZED</b></div>`,
-            )
-            .join(
-              "",
-            )}<p class="log-note">本次会话已通过身份验证。档案内容以当前终端可访问范围展示。</p>`;
-  $("#tab-panel").scrollTop = 0;
-  documentDecryption.refresh();
-  if (sound) {
-    tabTransition.reveal($("#tab-panel"), prefs.reduced);
-    audio.play("ui-tick");
-  }
 }
 function notify(message: string) {
   clearTimeout(toastTimer);
@@ -752,10 +715,6 @@ document.addEventListener("click", (e) => {
     renderResults();
     return;
   }
-  if (el.dataset.tab) {
-    setTab(el.dataset.tab);
-    return;
-  }
   const action = el.dataset.action;
   if (action === "toggle-three") { void toggleThree(); return; }
   if (action === "sound-preview") audio.play("confirm");
@@ -855,18 +814,6 @@ document.addEventListener("keydown", (e) => {
     return;
   }
   if (typing || modal || !ready) return;
-  if (
-    (e.target as HTMLElement).dataset.tab &&
-    ["ArrowLeft", "ArrowRight"].includes(e.key)
-  ) {
-    e.preventDefault();
-    const tabs = ["overview", "notes", "history"];
-    setTab(
-      tabs[(tabs.indexOf(activeTab) + (e.key === "ArrowRight" ? 1 : 2)) % 3],
-    );
-    $<HTMLButtonElement>(`[data-tab="${activeTab}"]`).focus();
-    return;
-  }
   if (e.key === "/") {
     e.preventDefault();
     if (mode === "boot") setMode("archive");
