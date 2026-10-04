@@ -355,7 +355,7 @@ function pageHtml({ rec, index, body, prev, next }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="theme-color" content="#F4EFE6">
+<meta name="theme-color" content="${design.palettes[design.defaults.palette].light.surface.paper}">
 <meta name="description" content="${esc(rec.description || rec.subtitle || rec.title)}">
 <script>${readerScript(rec, index)}</script>
 <link rel="icon" href="../favicon.svg">
