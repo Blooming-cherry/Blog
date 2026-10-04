@@ -111,9 +111,13 @@ body, #viewport, #stage { color: var(--theme-ink); background: var(--theme-paper
 #stage[data-layout="portrait"] .callout-rule { margin-top: 10px; }
 #stage[data-layout="portrait"] .file-summary { margin-top: 8px; gap: 6px; }
 #stage[data-layout="portrait"] .read-file { margin-top: 12px; width: 100%; justify-content: space-between; }
-#stage[data-layout="portrait"] .archive-counter { bottom: 58px; left: var(--edge); padding: 6px 10px; }
-#stage[data-layout="portrait"] .archive-navigation { bottom: 58px; left: var(--edge); width: calc(100% - 2 * var(--edge)); }
-#stage[data-layout="portrait"] .column-navigation { bottom: 58px; right: var(--edge); }
+#stage[data-layout="portrait"] .archive-counter { bottom: 58px; left: var(--edge); padding: 7px 12px; }
+#stage[data-layout="portrait"] .archive-counter > div { font-size: 22px; }
+#stage[data-layout="portrait"] .archive-counter .tiny-label { display: none; }
+#stage[data-layout="portrait"] .archive-navigation { bottom: 116px; left: var(--edge); width: calc(100% - 2 * var(--edge)); transform: none; translate: none; }
+#stage[data-layout="portrait"] .column-navigation { bottom: 58px; right: var(--edge); max-width: calc(100% - 2 * var(--edge) - 150px); gap: 6px; padding: 7px 10px; }
+#stage[data-layout="portrait"] .column-navigation > div > span { display: none; }
+#stage[data-layout="portrait"] .column-navigation strong { font-size: 12px; }
 #stage[data-layout="portrait"] .system-footer { bottom: var(--bottom-edge); padding: 2px 8px; }
 #stage[data-layout="portrait"] .system-nav { padding: 0 4px; }
 #stage[data-layout="portrait"] .back-button { padding: 4px 10px; }
