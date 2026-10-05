@@ -1,84 +1,118 @@
-/* The renderer owns the sky. Archive UI is a high-transparency open outline:
- * inset thin edge + inset top highlight; no blur, no heavy shadow, no capsule. */
-:root { --sky-serif: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif; --sky-radius: 16px; }
+/* Reading/sky tokens. Titles keep a moderate serif, labels stay sans. The
+ * archive preview restores the online geometry from style.css/responsive.css;
+ * this file only maps palette colors onto it and joins the footer controls
+ * into one non-overlapping rail. */
+:root {
+  --sky-serif: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+}
 body, #viewport, #stage { color: var(--theme-ink); background: var(--theme-paper); }
 .loading { color: var(--theme-ink); background: var(--theme-paper); }
 .entry-status, .entry-silent, .entry-start:disabled { color: var(--theme-muted); }
 .entry-start { border-color: var(--theme-line); }
 #stage[data-mode="boot"] .boot-white { background: var(--theme-paper); }
 #stage[data-mode="boot"] .boot-background { background: radial-gradient(ellipse at 51% 48%, var(--theme-field), var(--theme-paper) 76%); }
+
+/* Chrome text inherits the palette ink; no panel, no blur. */
 #stage:is([data-mode="archive"], [data-mode="detail"]) :is(.brand, .system-nav, .system-footer, .powered) { color: var(--theme-ink); }
-#stage:is([data-mode="archive"], [data-mode="detail"]) :is(.system-nav, .system-footer, .powered, .archive-hint, .hover-label, .back-button, .object-caption) {
-  background: none; border: 0; border-radius: 0; padding: 10px 14px; text-shadow: 0 0 3px var(--theme-paper), 0 0 8px var(--theme-paper);
-}
 
-/* Unified thin-edge recipe: high-transparency base, inset thin edge, inset top highlight. */
-#stage[data-mode="archive"] :is(.archive-callout, .archive-counter, .archive-navigation, .column-navigation),
-#stage[data-mode="detail"] .detail-content {
-  box-sizing: border-box; background: rgba(var(--theme-paper-rgb), .04);
-  border: 1px solid rgba(var(--theme-edge-rgb), .22); border-radius: var(--sky-radius);
-  box-shadow: inset 0 1px 0 rgba(var(--theme-highlight-rgb), .4); backdrop-filter: none; -webkit-backdrop-filter: none; color: var(--theme-ink);
-  text-shadow: 0 0 3px var(--theme-paper), 0 0 7px var(--theme-paper);
-  transition: border-color 180ms, background 180ms, box-shadow 180ms;
+/* The callout stays a transparent container: no card, no backdrop-filter, no
+ * text blur. Only colors come from the palette; geometry is the online baseline. */
+#stage[data-mode="archive"] .archive-callout { color: var(--theme-ink); }
+#stage[data-mode="archive"] .eyebrow { color: var(--theme-muted); }
+#stage[data-mode="archive"] .file-title { color: var(--theme-ink); }
+#stage[data-mode="archive"] .file-open { color: var(--theme-ink); }
+#stage[data-mode="archive"] .file-summary { color: var(--theme-ink); }
+#stage[data-mode="archive"] #selected-clearance { color: var(--theme-muted); }
+/* ACCESS FILE keeps the online geometry; a 1px inset highlight edge (neutral
+ * edge ring + brighter top) replaces any thick brown outline. No background,
+ * no outer glow, no layout change. */
+#stage[data-mode="archive"] .read-file {
+  color: var(--theme-ink);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--theme-edge-rgb), 0.45),
+    inset 0 1px 0 rgba(var(--theme-highlight-rgb), 0.7);
+  transition: opacity 0.7s 0.4s, box-shadow 180ms;
 }
-/* Restrained feedback: a fixed edge accent, no pointer-chasing light. */
-#stage[data-mode="archive"] :is(.archive-callout, .archive-counter, .archive-navigation, .column-navigation):is(:hover, :focus-within, [data-rim-hover], [data-rim-pressed]),
-#stage[data-mode="detail"] .detail-content:is(:hover, :focus-within) {
-  border-color: rgba(var(--theme-accent-rgb), .42);
-  box-shadow: inset 0 1px 0 rgba(var(--theme-highlight-rgb), .55);
+#stage[data-mode="archive"] .read-file:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--theme-edge-rgb), 0.6),
+    inset 0 1px 0 rgba(var(--theme-highlight-rgb), 0.92);
 }
-#stage[data-mode="archive"] [data-rim-pressed] { background: rgba(var(--theme-accent-rgb), .07); }
-
-/* Horizontal, center-focused preview window. */
-#stage[data-mode="archive"] .archive-callout { left: 50%; top: 58%; translate: -50% 0; width: min(720px, calc(100% - 2 * var(--edge))); padding: 18px 26px 20px; }
-#stage[data-mode="archive"] .eyebrow { margin: 0 0 10px; font-size: 11px; line-height: 1.5; display: flex; align-items: baseline; gap: 8px; color: var(--theme-ink); }
-#stage[data-mode="archive"] .eyebrow > span { margin-left: 0; }
-#stage[data-mode="archive"] .eyebrow > span:first-child { display: none; }
-/* Category tags are a small sans label; no oversized serif expression. */
-#stage[data-mode="archive"] #archive-category { display: inline; font-family: inherit; font-size: 11px; font-weight: 600; line-height: 1.4; letter-spacing: 1.4px; text-transform: uppercase; color: var(--theme-muted); }
-#stage[data-mode="archive"] .file-title { font-size: 13px; font-weight: 500; flex-wrap: wrap; gap: 8px; background: none; border-radius: 0; padding: 0; color: var(--theme-muted); }
-#stage[data-mode="archive"] .file-open { font-size: 17px; margin-left: auto; }
-#stage[data-mode="archive"] .callout-rule { margin: 12px 0 0; background: rgba(var(--theme-accent-rgb), .42); }
-#stage[data-mode="archive"] .callout-rule i { left: 0; background: var(--theme-accent); }
-#stage[data-mode="archive"] .file-summary { display: grid; width: 100%; gap: 8px; margin: 14px 0 0; }
-/* Real article titles keep a moderate serif; labels stay sans. */
-#stage[data-mode="archive"] #selected-title { font-family: var(--sky-serif); font-size: calc(26px * var(--sky-title-scale)); font-weight: 500; letter-spacing: .02em; line-height: 1.4; color: var(--theme-ink); min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
-#selected-title.title-wrap { width: 100% !important; height: auto !important; }
-#selected-title.title-wrap > .rn-value { position: static !important; inset: auto; color: inherit !important; white-space: normal; }
-#selected-title.title-wrap > :is(.rn-measure, .rn-visual) { display: none !important; }
-#stage[data-mode="archive"] #selected-clearance { justify-self: start; padding: 0; border-radius: 0; background: none; color: var(--theme-muted); font-size: 12px; }
-#stage[data-mode="archive"] .read-file { margin: 16px 0 0; min-height: 40px; padding: 0 14px; gap: 24px; font-size: 13px; border: 1px solid rgba(var(--theme-accent-rgb), .55); border-radius: 8px; color: var(--theme-ink); background: rgba(var(--theme-paper-rgb), .06); }
-
-/* One long horizontal bar: counter · scale ticks · column. */
-#stage[data-mode="archive"] .archive-counter { left: var(--edge); bottom: 86px; padding: 10px 16px; display: flex; flex-direction: row; align-items: baseline; gap: 12px; }
-#stage[data-mode="archive"] .archive-counter > div { margin-top: 0; font-size: 26px; line-height: 1; gap: 10px; }
-#stage[data-mode="archive"] .archive-counter :is(.tiny-label, i, .count-total) { font-size: 11px; letter-spacing: 1.2px; }
-#stage[data-mode="archive"] :is(.archive-navigation, .column-navigation) { padding: 8px 12px; bottom: 86px; }
-#stage[data-mode="archive"] .archive-navigation { left: calc(var(--edge) + 210px); width: calc(100% - 2 * var(--edge) - 560px); gap: 14px; }
-#stage[data-mode="archive"] .file-ticks { flex: 1; min-width: 0; gap: 0; justify-content: space-between; }
-#stage[data-mode="archive"] .file-ticks button { flex: 1; min-width: 0; width: auto; height: 40px; }
-#stage[data-mode="archive"] .file-ticks button::before { left: 50%; translate: -50% 0; }
-#stage[data-mode="archive"] .archive-navigation > button { flex: none; width: 40px; height: 40px; }
-#stage[data-mode="archive"] .column-navigation { right: var(--edge); left: auto; gap: 12px; }
-#stage[data-mode="archive"] .column-navigation > div { min-width: 0; }
-#stage[data-mode="archive"] .column-navigation > div > span { font-size: 10px; letter-spacing: 1.2px; color: var(--theme-muted); }
-#stage[data-mode="archive"] .column-navigation strong { font-size: 13px; font-weight: 500; }
-#stage[data-mode="archive"] :is(.tiny-label, .archive-counter i, .count-total, .column-navigation > div > span) { color: var(--theme-muted); }
-#stage[data-mode="archive"] .archive-counter :is(.tiny-label, i, .count-total),
-#stage[data-mode="archive"] .column-navigation > div { background: none; border-radius: 0; padding: 3px 5px; }
-#stage .archive-hint { color: var(--theme-muted); padding: 6px 10px; bottom: 62px; left: var(--edge); }
+#stage[data-mode="archive"] .read-file:active {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--theme-edge-rgb), 0.5),
+    inset 0 1px 2px rgba(var(--theme-ink-rgb), 0.14);
+}
+#stage[data-mode="archive"] .read-file:focus-visible {
+  outline: 2px solid var(--theme-line);
+  outline-offset: 4px;
+}
+#stage[data-mode="archive"] .callout-rule { background: var(--theme-line); }
+#stage[data-mode="archive"] .callout-rule i { background: var(--theme-ink); }
+#stage .archive-hint { color: var(--theme-muted); }
 #stage .hover-label { color: var(--theme-muted); }
-#stage .system-footer { color: var(--theme-muted); padding: 8px 12px; }
-#stage .system-footer > span { color: var(--theme-muted); }
-#stage .powered { font-size: 15px; }
-#stage .file-ticks button.selected::before { background: var(--theme-accent); }
+#stage .archive-counter :is(.tiny-label, i, .count-total) { color: var(--theme-muted); }
+#stage .column-navigation > div > span { color: var(--theme-muted); }
+#stage .column-navigation strong { color: var(--theme-ink); }
 #stage .file-ticks button::before { background: var(--theme-line); }
-#stage :is(.archive-navigation, .column-navigation) > button { border-radius: 9px; }
-/* No lift/scale on hover: color-only feedback. */
-#stage :is(.archive-ui, .detail-ui, .system-nav, .system-footer) button { transition: background 120ms, color 120ms, border-color 120ms; }
-#stage :is(.archive-ui, .detail-ui, .system-nav, .system-footer) button:hover { color: var(--theme-ink); background: rgba(var(--theme-accent-rgb), .09); }
-#stage :is(.archive-ui, .detail-ui, .system-nav, .system-footer) button:active { background: rgba(var(--theme-accent-rgb), .14); }
-#stage :is(button, a):focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 4px; }
+#stage .file-ticks button.selected::before { background: var(--theme-ink); }
+#stage .file-ticks button:hover::before { background: var(--theme-accent); }
+
+/* One common footer bar: counter · ticks · column · direction. The ticks keep
+ * their online 21.7px step; the column block sits to the right of the scale
+ * instead of overlapping it, so its disabled arrows never cover a tick. */
+#stage[data-mode="archive"] .archive-rail {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  bottom: 131px;
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  pointer-events: none;
+}
+#stage[data-mode="archive"] .archive-rail > * {
+  position: static;
+}
+#stage[data-mode="archive"] .archive-counter {
+  flex: none;
+  bottom: auto;
+  left: auto;
+}
+#stage[data-mode="archive"] .archive-navigation {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 33px;
+  left: auto;
+  bottom: auto;
+}
+#stage[data-mode="archive"] .file-ticks {
+  flex: 0 0 auto;
+  gap: 12px;
+}
+#stage[data-mode="archive"] .file-ticks button {
+  flex: 0 0 14px;
+  width: 14px;
+}
+#stage[data-mode="archive"] .column-navigation {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  left: auto;
+  bottom: auto;
+}
+/* Disabled column arrows keep a valid disabled state and never intercept the
+ * tick scale or paint a false hover. */
+#stage .column-navigation button:disabled {
+  pointer-events: none;
+  opacity: 0.25;
+  cursor: default;
+}
+#stage .column-navigation button:disabled:hover {
+  background: none;
+}
 
 /* Reduced detail: title, one meta line, quote, one primary action. */
 #stage[data-mode="detail"] .detail-content { padding: 26px 28px; }
@@ -94,38 +128,65 @@ body, #viewport, #stage { color: var(--theme-ink); background: var(--theme-paper
 #stage .solid-button { border: 1px solid var(--theme-accent); color: var(--theme-ink); background: rgba(var(--theme-paper-rgb), .94); }
 #stage .solid-button > span { color: inherit; }
 #stage .detail-content a { color: var(--theme-accent); }
-/* No extra wallpaper frosting, including performance and no-filter browsers. */
-#stage[data-mode="archive"] :is(.archive-callout, .archive-counter, .archive-navigation, .column-navigation).frost-surface::after { display: none; }
+
+/* Mobile: the rail wraps into explicit rows and every arrow, tick and column
+ * stays inside the viewport; ticks flex so 21 local items fit. */
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-rail {
+  left: var(--edge);
+  right: var(--edge);
+  bottom: 58px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-navigation {
+  flex: 1 1 100%;
+  order: -1;
+  gap: 6px;
+  transform: none;
+  left: auto;
+  bottom: auto;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-navigation > button {
+  flex: none;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .file-ticks {
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 0;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .file-ticks button {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .file-ticks button::before {
+  left: 50%;
+  translate: -50% 0;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-counter {
+  flex: 0 0 auto;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .column-navigation {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .column-navigation > div {
+  min-width: 0;
+}
+#stage[data-layout="portrait"][data-mode="archive"] .column-navigation > div > span { display: none; }
+
+/* Reduce motion keeps the terminal states only. */
 #stage.reduce-motion :is(.archive-ui, .detail-ui, .system-nav, .system-footer) button,
-#stage.reduce-motion :is(.archive-callout, .archive-counter, .archive-navigation, .column-navigation),
+#stage.reduce-motion :is(.archive-rail, .archive-callout, .archive-counter, .archive-navigation, .column-navigation),
 #stage.reduce-motion .detail-content { transition: none; }
-#stage:is([data-layout="compact"], [data-layout="portrait"]) { --sky-radius: 12px; }
-#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-callout { top: 56%; width: calc(100% - 2 * var(--edge)); padding: 16px 18px; }
-#stage:is([data-layout="compact"], [data-layout="portrait"]) #selected-title { font-size: calc(22px * var(--sky-title-scale)); }
-#stage:is([data-layout="compact"], [data-layout="portrait"]) #selected-title { background: none; border-radius: 0; padding: 0; }
-#stage:is([data-layout="compact"], [data-layout="portrait"]) .detail-content { padding: 18px; }
-#stage:is([data-layout="compact"], [data-layout="portrait"]) .detail-content h2 { font-size: calc(30px * var(--sky-title-scale)); }
-#stage:is([data-layout="portrait"][data-mode="archive"]) .archive-callout { top: auto; bottom: 176px; width: calc(100% - 2 * var(--edge)); left: var(--edge); translate: 0 0; }
-#stage[data-layout="portrait"] .eyebrow { margin-bottom: 8px; }
-#stage[data-layout="portrait"] .file-title { font-size: 12px; }
-#stage[data-layout="portrait"] .callout-rule { margin-top: 10px; }
-#stage[data-layout="portrait"] .file-summary { margin-top: 8px; gap: 6px; }
-#stage[data-layout="portrait"] .read-file { margin-top: 12px; width: 100%; justify-content: space-between; }
-#stage[data-layout="portrait"] .archive-counter { bottom: 58px; left: var(--edge); padding: 7px 12px; }
-#stage[data-layout="portrait"] .archive-counter > div { font-size: 22px; }
-#stage[data-layout="portrait"] .archive-counter .tiny-label { display: none; }
-#stage[data-layout="portrait"] .archive-navigation { bottom: 116px; left: var(--edge); width: calc(100% - 2 * var(--edge)); transform: none; translate: none; }
-#stage[data-layout="portrait"] .column-navigation { bottom: 58px; right: var(--edge); max-width: calc(100% - 2 * var(--edge) - 150px); gap: 6px; padding: 7px 10px; }
-#stage[data-layout="portrait"] .column-navigation > div > span { display: none; }
-#stage[data-layout="portrait"] .column-navigation strong { font-size: 12px; }
-#stage[data-layout="portrait"] .system-footer { bottom: var(--bottom-edge); padding: 2px 8px; }
-#stage[data-layout="portrait"] .system-nav { padding: 0 4px; }
-#stage[data-layout="portrait"] .back-button { padding: 4px 10px; }
-#stage[data-layout="portrait"] .object-caption { padding: 4px 10px; }
-#stage[data-layout="portrait"] .detail-content { border-top-color: var(--theme-line); }
-@media (max-width: 370px) { #stage[data-layout="portrait"] { --edge: max(16px, env(safe-area-inset-left), env(safe-area-inset-right)); } #stage[data-layout="portrait"] .archive-callout { padding: 14px 16px; } #stage[data-layout="portrait"] .archive-navigation { gap: 4px; } #stage[data-layout="portrait"] .file-ticks { gap: 0; } }
-@media (max-height: 440px) and (orientation: landscape) { #stage[data-layout="compact"][data-mode="archive"] .archive-callout { top: 52%; padding: 10px 14px; } #stage[data-layout="compact"] .read-file { margin-top: 10px; } #stage[data-layout="compact"] .detail-content { padding: 16px; } }
+
 /* Rolling engines keep a transparent measurement/accessibility layer. A halo
  * must never reveal that layer over the visible glyph reels. */
 #stage :is(.rn-value, .rn-measure) { text-shadow: none; }
 #stage #selected-title.title-wrap > .rn-value { text-shadow: 0 0 3px var(--theme-paper), 0 0 7px var(--theme-paper); }
+
+/* Fixed viewport host keeps a full touch target outside scaled archive UI. */
+.sky-pool-host { position: absolute; z-index: 8; top: max(18px, env(safe-area-inset-top)); right: max(18px, env(safe-area-inset-right)); width: 44px; height: 44px; display: grid; place-items: center; }
+body:has(#stage[data-mode="boot"]) .sky-pool-host { visibility: hidden; }
+body:has(#stage:is([data-layout="compact"], [data-layout="portrait"])) .sky-pool-host { top: max(76px, calc(env(safe-area-inset-top) + 60px)); }

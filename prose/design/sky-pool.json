@@ -1,0 +1,160 @@
+{
+  "order": [
+    "dusk",
+    "celadon",
+    "ink"
+  ],
+  "palettes": {
+    "dusk": {
+      "label": {
+        "zh": "暮",
+        "eng": "Dusk"
+      },
+      "note": "暖紫转琥珀。池 B 第一个，与池 A 的纸感最接近，进入时不突兀。",
+      "light": {
+        "sky": {
+          "zenith": "#6B5B7E",
+          "upper": "#8C7793",
+          "lower": "#B39AA0",
+          "haze": "#D4B9A8",
+          "horizon": "#E8C08A"
+        },
+        "surface": {
+          "paper": "#F5EFE5",
+          "ink": "#33292E",
+          "muted": "#5F5257",
+          "line": "#ADA098",
+          "edge": "#BDB0A6",
+          "highlight": "#FFFFFF",
+          "accent": "#9A5A3C",
+          "panel": "#EFE8DE",
+          "field": "#E7DFD3",
+          "floor": "#D6C6B4"
+        }
+      },
+      "dark": {
+        "sky": {
+          "zenith": "#16101F",
+          "upper": "#241A2E",
+          "lower": "#3A2A3C",
+          "haze": "#4E3840",
+          "horizon": "#63432E"
+        },
+        "surface": {
+          "paper": "#1E1822",
+          "ink": "#EDE4DC",
+          "muted": "#B5A9AE",
+          "line": "#6B5F66",
+          "edge": "#7E7178",
+          "highlight": "#EAE2DC",
+          "accent": "#D89A6E",
+          "panel": "#271F2B",
+          "field": "#302735",
+          "floor": "#241D29"
+        }
+      }
+    },
+    "celadon": {
+      "label": {
+        "zh": "青",
+        "eng": "Celadon"
+      },
+      "note": "青瓷与山水。冷调，饱和度低但色相明确，和池 A 三套都拉得开。",
+      "light": {
+        "sky": {
+          "zenith": "#7A9690",
+          "upper": "#95AEA6",
+          "lower": "#B4C6BC",
+          "haze": "#D0D8CE",
+          "horizon": "#E6E7DA"
+        },
+        "surface": {
+          "paper": "#F2F3EC",
+          "ink": "#28302E",
+          "muted": "#525E5A",
+          "line": "#A3ADA6",
+          "edge": "#B4BEB6",
+          "highlight": "#FFFFFF",
+          "accent": "#4E7A6A",
+          "panel": "#EBEDE5",
+          "field": "#E2E7DE",
+          "floor": "#CDD6CC"
+        }
+      },
+      "dark": {
+        "sky": {
+          "zenith": "#0C1A1C",
+          "upper": "#15282A",
+          "lower": "#22383A",
+          "haze": "#2E4644",
+          "horizon": "#42543F"
+        },
+        "surface": {
+          "paper": "#161E1E",
+          "ink": "#E2E9E4",
+          "muted": "#A7B4AE",
+          "line": "#5D6C67",
+          "edge": "#6F7E78",
+          "highlight": "#E0E8E3",
+          "accent": "#8FC0A8",
+          "panel": "#1E2828",
+          "field": "#263131",
+          "floor": "#1B2424"
+        }
+      }
+    },
+    "ink": {
+      "label": {
+        "zh": "墨",
+        "eng": "Ink"
+      },
+      "note": "近单色，水墨与阴天。跨度最大（浅色 44），赭石点缀避免发死。池 B 第三个，最肃。",
+      "light": {
+        "sky": {
+          "zenith": "#6E7278",
+          "upper": "#8B8F94",
+          "lower": "#AEB1B4",
+          "haze": "#CFCEC9",
+          "horizon": "#E9E7E0"
+        },
+        "surface": {
+          "paper": "#F4F3EF",
+          "ink": "#2B2D30",
+          "muted": "#585B5F",
+          "line": "#A8A9A8",
+          "edge": "#B9BAB8",
+          "highlight": "#FFFFFF",
+          "accent": "#8A6A4A",
+          "panel": "#EDEDE9",
+          "field": "#E6E6E2",
+          "floor": "#D2D1CC"
+        }
+      },
+      "dark": {
+        "sky": {
+          "zenith": "#0E1013",
+          "upper": "#1A1D21",
+          "lower": "#272B30",
+          "haze": "#383C41",
+          "horizon": "#4C4F52"
+        },
+        "surface": {
+          "paper": "#191B1E",
+          "ink": "#E7E7E5",
+          "muted": "#AFB2B4",
+          "line": "#63676B",
+          "edge": "#75797D",
+          "highlight": "#E6E6E4",
+          "accent": "#C0A180",
+          "panel": "#212427",
+          "field": "#292D31",
+          "floor": "#1E2124"
+        }
+      }
+    }
+  },
+  "keys": {
+    "pool": "rhine-sky-pool",
+    "palette": "rhine-sky-palette"
+  }
+}

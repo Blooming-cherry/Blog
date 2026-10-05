@@ -62,10 +62,9 @@
   background: linear-gradient(180deg, rgba(var(--theme-paper-rgb), .82), transparent 36%), linear-gradient(0deg, rgba(var(--theme-paper-rgb), .84), transparent 25%), radial-gradient(ellipse at 48% 48%, transparent 42%, rgba(var(--theme-paper-rgb), .48) 90%);
 }
 
-/* Archive color and haze belong to WebGL; these existing masks now only
- * shelter the reading area as the camera reaches the detail state. */
-#stage .archive-atmosphere,
-#stage .archive-atmosphere::before { background: none; }
+/* Archive color and haze belong to WebGL; the paper ::before veil stays as the
+ * archive's paper mask. The ::after overlay only shelters the reading area as
+ * the camera reaches the detail state. */
 #stage .archive-atmosphere::after {
   background: linear-gradient(90deg, transparent 40%, rgba(var(--theme-paper-rgb), .18) 59%, rgba(var(--theme-paper-rgb), .74) 72%, var(--theme-paper) 100%);
   opacity: var(--detail-shade, 0);

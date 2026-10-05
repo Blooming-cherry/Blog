@@ -39,11 +39,16 @@ let workbench: Workbench | undefined;
 import { ArchivePlayground } from "./archive-playground";
 import { ARRAY_OPENING_END, openingShowsDetail } from "./wallpaper-opening";
 import { paintTheme, themeSettingsMarkup } from "./theme-ui";
-import { designParameters, designState, setDesignParameters, setSkyHour } from "./sky-design";
+import { designParameters, designState, currentResolved, setDesignParameters, setSkyHour } from "./sky-design";
 import "./sky-design.css";
+import { createSkyPoolButton } from "../design/sky-pool-button.mjs";
+import { skyPoolButtonView } from "../design/sky-pool-state.mjs";
+import skyPool from "../design/sky-pool.json";
+import { resolveSkyHour, mixColors } from "./sky-resolve";
+import "../design/sky-pool-button.css";
 import { installSkyInteraction } from "./sky-interaction";
 import { SkyTransition } from "./sky-transition";
-import { applyAuthorParameters, readArchiveSnapshot, writeArchiveSnapshot, readingHref, type ArchiveSnapshot } from "./sky-session";
+import { applyAuthorParameters, readArchiveSnapshot, writeArchiveSnapshot, readingHref, type ArchiveSnapshot, skyPoolState } from "./sky-session";
 let playground: ArchivePlayground | undefined;
 import { WallpaperEffects } from "./wallpaper-effects";
 import { WallpaperBackground } from "./wallpaper-background";
@@ -75,9 +80,7 @@ $("#stage").innerHTML = `
   <section id="archive-ui" class="archive-ui" aria-label="档案选择">
     <div class="archive-callout"><div class="eyebrow">INTERNAL DATABASE <span>／</span> <span id="archive-category">文苑</span></div><button class="file-title" data-action="open">FILE NUMBER: <span id="selected-id">W-<span id="selected-code">001</span></span><span class="file-open">↗</span></button><div class="callout-rule"><i></i></div><div class="file-summary"><span id="selected-title">文苑</span><span id="selected-clearance">2026-01-01</span></div><button class="read-file" data-action="open">ACCESS FILE <span>→</span></button></div>
     <div id="hover-label" class="hover-label" hidden>W-<span id="hover-code">001</span> / <span id="hover-title"></span></div>
-    <div class="archive-counter"><span class="tiny-label">ARCHIVE / SELECT</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">12</span></div></div>
-    <div class="archive-navigation"><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div>
-    <div class="column-navigation"><button data-action="column-prev" aria-label="上一列">←</button><div><span id="column-number">COLUMN <span id="column-index">01</span> / <span id="column-total">01</span></span><strong id="column-name">文苑</strong></div><button data-action="column-next" aria-label="下一列">→</button></div>
+    <div class="archive-rail"><div class="archive-counter"><span class="tiny-label">ARCHIVE / SELECT</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">12</span></div></div><div class="archive-navigation"><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div><div class="column-navigation"><button data-action="column-prev" aria-label="上一列">←</button><div><span id="column-number">COLUMN <span id="column-index">01</span> / <span id="column-total">01</span></span><strong id="column-name">文苑</strong></div><button data-action="column-next" aria-label="下一列">→</button></div></div>
     <div class="archive-hint"><kbd>←</kbd> <kbd>→</kbd> 切换列 <span>／</span> <kbd>↑</kbd> <kbd>↓</kbd> 前后档案 <span>／</span> <kbd>ENTER</kbd> 读取</div>
   </section>
   <section id="detail-ui" class="detail-ui" aria-label="档案内容" hidden>
@@ -285,11 +288,36 @@ function saveAudioPrefs() {
   } catch {}
   configureAudio();
 }
+let poolButton: ReturnType<typeof createSkyPoolButton> | undefined;
+if (!isWallpaper) {
+  const host = document.createElement("div");
+  host.className = "sky-pool-host";
+  $("#viewport").append(host);
+  poolButton = createSkyPoolButton({ root: host, onAdvance: () => {
+    setDesignParameters({ palette: skyPoolState.advance().palette as typeof designParameters.palette }, prefs.reduced ? 0 : 850);
+    updatePoolButton();
+  } });
+  window.addEventListener("pagehide", event => { if (!event.persisted) poolButton?.dispose(); });
+}
+function updatePoolButton() {
+  if (!poolButton) return;
+  const amount = prefs.colorTheme === "dark" ? 1 : 0;
+  const resolved = currentResolved();
+  const sky = Object.fromEntries(Object.entries(resolved.light.sky).map(([key, value]) => [key, mixColors(value, resolved.dark.sky[key as keyof typeof resolved.dark.sky], amount)]));
+  const surface = Object.fromEntries(Object.entries(resolved.light.surface).map(([key, value]) => [key, mixColors(value, resolved.dark.surface[key as keyof typeof resolved.dark.surface], amount)]));
+  const prism = skyPool.order.map(name => {
+    const family = resolveSkyHour(name as typeof designParameters.palette, designState.hour);
+    return mixColors(family.light.sky.zenith, family.dark.sky.zenith, amount);
+  });
+  poolButton.update(skyPoolButtonView(skyPoolState.view(designParameters.palette), { sky, surface }, prism, prefs.reduced));
+}
+updatePoolButton();
 function superPerformanceEnabled() { return isWallpaper ? wallpaperHost()?.properties.superperformance?.value === true : prefs.superPerformance; }
 function effectiveRenderQuality() { return superPerformanceEnabled() ? superPerformanceQuality : prefs.rendering; }
 function savePrefs() {
   saveAudioPrefs();
   if (prefs.reduced) {
+    setDesignParameters({ palette: designParameters.palette });
     skyTransition.finish();
     if (started && mode === "boot") setMode("archive");
     if (mode === "detail") documentDecryption.reset($("#detail-content"), true);
@@ -315,6 +343,7 @@ function savePrefs() {
   $("#stage").classList.toggle("reduce-motion", prefs.reduced);
   $("#stage").classList.toggle("super-performance", superPerformanceEnabled());
   syncWallpaperBackground();
+  updatePoolButton();
 }
 let previousLayout = "";
 function fit() {
@@ -778,6 +807,7 @@ document.addEventListener("click", (e) => {
   }
 });
 document.addEventListener("keydown", (e) => {
+  if ((e.target as Element)?.closest?.(".sky-pool-host")) return;
   if (!started) return;
   if (viewer?.isOpen) return;
   if (playground?.active && !modal) {
@@ -915,6 +945,7 @@ function frame(ms: number) {
   workbench?.tick();
   const time = ms / 1000;
   skyTransition.tick(ms);
+  updatePoolButton();
   scene?.setReadingStill(mode === "detail" && !skyTransition.active);
   const theme = scene?.themeAmount ?? (prefs.colorTheme === "dark" ? 1 : 0);
   paintTheme(theme);
@@ -1151,6 +1182,8 @@ function saveArchiveContext(): ArchiveSnapshot {
     version: 1, entered: true, selectedId: records[selected].id, selectedIndex: selected,
     cell: scene?.getStats().selectedCell ?? fileLocation(selected), columnMemory: [...columnMemory],
     parameters: { ...designParameters }, archiveUrl: location.href,
+    // Archive retains its frozen pre-R1 renderer; relay the reader phase unchanged.
+    skyPhase: readArchiveSnapshot()?.skyPhase ?? 0,
   };
   writeArchiveSnapshot(snapshot);
   return snapshot;
@@ -1162,6 +1195,7 @@ function restoreArchiveContext() {
   const index = records.findIndex(record => record.id === snapshot.selectedId);
   if (index < 0) return;
   applyAuthorParameters(new URLSearchParams(location.search), snapshot);
+  updatePoolButton();
   if (snapshot.columnMemory?.length === columnMemory.length) snapshot.columnMemory.forEach((item, lane) => { if (records[item]) columnMemory[lane] = item; });
   select(index, snapshot.cell ? { cell: snapshot.cell } : undefined);
   setMode("archive");
