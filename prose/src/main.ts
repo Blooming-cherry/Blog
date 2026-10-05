@@ -39,6 +39,16 @@ let workbench: Workbench | undefined;
 import { ArchivePlayground } from "./archive-playground";
 import { ARRAY_OPENING_END, openingShowsDetail } from "./wallpaper-opening";
 import { paintTheme, themeSettingsMarkup } from "./theme-ui";
+import { designParameters, designState, currentResolved, setDesignParameters, setSkyHour } from "./sky-design";
+import "./sky-design.css";
+import { createSkyPoolButton } from "../design/sky-pool-button.mjs";
+import { skyPoolButtonView } from "../design/sky-pool-state.mjs";
+import skyPool from "../design/sky-pool.json";
+import { resolveSkyHour, mixColors } from "./sky-resolve";
+import "../design/sky-pool-button.css";
+import { installSkyInteraction } from "./sky-interaction";
+import { SkyTransition } from "./sky-transition";
+import { applyAuthorParameters, readArchiveSnapshot, writeArchiveSnapshot, readingHref, type ArchiveSnapshot, skyPoolState } from "./sky-session";
 let playground: ArchivePlayground | undefined;
 import { WallpaperEffects } from "./wallpaper-effects";
 import { WallpaperBackground } from "./wallpaper-background";
@@ -70,9 +80,7 @@ $("#stage").innerHTML = `
   <section id="archive-ui" class="archive-ui" aria-label="档案选择">
     <div class="archive-callout"><div class="eyebrow">INTERNAL DATABASE <span>／</span> <span id="archive-category">文苑</span></div><button class="file-title" data-action="open">FILE NUMBER: <span id="selected-id">W-<span id="selected-code">001</span></span><span class="file-open">↗</span></button><div class="callout-rule"><i></i></div><div class="file-summary"><span id="selected-title">文苑</span><span id="selected-clearance">2026-01-01</span></div><button class="read-file" data-action="open">ACCESS FILE <span>→</span></button></div>
     <div id="hover-label" class="hover-label" hidden>W-<span id="hover-code">001</span> / <span id="hover-title"></span></div>
-    <div class="archive-counter"><span class="tiny-label">ARCHIVE / SELECT</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">12</span></div></div>
-    <div class="archive-navigation"><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div>
-    <div class="column-navigation"><button data-action="column-prev" aria-label="上一列">←</button><div><span id="column-number">COLUMN <span id="column-index">01</span> / <span id="column-total">01</span></span><strong id="column-name">文苑</strong></div><button data-action="column-next" aria-label="下一列">→</button></div>
+    <div class="archive-rail"><div class="archive-counter"><span class="tiny-label">ARCHIVE / SELECT</span><div><span id="selected-number">01</span><i>/</i><span class="count-total">12</span></div></div><div class="archive-navigation"><button data-action="prev" aria-label="上一个档案">↑</button><div id="file-ticks" class="file-ticks"></div><button data-action="next" aria-label="下一个档案">↓</button></div><div class="column-navigation"><button data-action="column-prev" aria-label="上一列">←</button><div><span id="column-number">COLUMN <span id="column-index">01</span> / <span id="column-total">01</span></span><strong id="column-name">文苑</strong></div><button data-action="column-next" aria-label="下一列">→</button></div></div>
     <div class="archive-hint"><kbd>←</kbd> <kbd>→</kbd> 切换列 <span>／</span> <kbd>↑</kbd> <kbd>↓</kbd> 前后档案 <span>／</span> <kbd>ENTER</kbd> 读取</div>
   </section>
   <section id="detail-ui" class="detail-ui" aria-label="档案内容" hidden>
@@ -92,6 +100,8 @@ $("#boot-background").insertAdjacentHTML(
   '<div class="boot-white"></div>',
 );
 const bootSequence = new BootSequence($("#stage"));
+const disposeSkyInteraction = installSkyInteraction($("#stage"));
+window.addEventListener("pagehide", event => { if (!event.persisted) disposeSkyInteraction(); });
 $("#viewport").insertAdjacentHTML("beforeend", '<button class="mobile-entry" data-action="skip">进入档案 <span>→</span></button>');
 
 type Mode = "boot" | "archive" | "detail";
@@ -103,8 +113,24 @@ let mode: Mode = "boot",
 let modal: "search" | "settings" | null = null,
   searchQuery = "",
   filter = "全部档案";
-let activeTab = "overview";
 const reviewParams = new URLSearchParams(location.search);
+const restoredArchive = !isWallpaper ? readArchiveSnapshot() : undefined;
+applyAuthorParameters(reviewParams, restoredArchive);
+const reviewHour = reviewParams.has("hour") ? Number(reviewParams.get("hour")) : NaN;
+function syncSkyHour() {
+  if (Number.isFinite(reviewHour)) { setSkyHour(reviewHour); return; }
+  const now = new Date();
+  setSkyHour(now.getHours() + now.getMinutes() / 60);
+}
+syncSkyHour();
+// Low-frequency clock sampling; refresh on visibility, never bound to scroll.
+setInterval(syncSkyHour, 5 * 60 * 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) syncSkyHour(); });
+const requestedArchive = reviewParams.get("archive");
+const resumeArchive = !isWallpaper && Boolean(restoredArchive?.entered || requestedArchive);
+const skyTransition = new SkyTransition();
+let navigationRevision = 0;
+let navigationTimer: ReturnType<typeof setTimeout> | undefined;
 let frozenTime =
   reviewParams.get("freeze") === "1"
     ? Number(reviewParams.get("time") ?? 0)
@@ -186,6 +212,21 @@ const selectionTitle = createRollingText($("#selected-title"), {
   ...textOptions,
   text: $("#selected-title").textContent ?? "",
 });
+let selectionTitleText = $("#selected-title").textContent ?? "";
+const titleMeasure = document.createElement("canvas").getContext("2d")!;
+function syncSelectionTitleWrap() {
+  const title = $("#selected-title"), surface = $(".file-summary");
+  const style = getComputedStyle(title);
+  titleMeasure.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const spacing = Number.parseFloat(style.letterSpacing) || 0;
+  const width = titleMeasure.measureText(selectionTitleText).width + spacing * [...selectionTitleText].length;
+  const wrapTitle = surface.clientWidth > 0 && width > surface.clientWidth - 10;
+  title.classList.toggle("title-wrap", wrapTitle);
+  if (wrapTitle) selectionTitle.finish();
+  return wrapTitle;
+}
+new ResizeObserver(syncSelectionTitleWrap).observe($(".file-summary"));
+document.fonts.addEventListener("loadingdone", syncSelectionTitleWrap);
 const columnTitle = createRollingText($("#column-name"), {
   ...textOptions,
   text: $("#column-name").textContent ?? "",
@@ -214,7 +255,7 @@ const loading = $("#loading");
 $("#viewport").append(loading);
 $("#stage").inert = true;
 $(".mobile-entry").inert = true;
-const entry = !isWallpaper && !reviewEntry && (prefs.sound || prefs.music) ? new StartupGate({
+const entry = !isWallpaper && !reviewEntry && !resumeArchive && (prefs.sound || prefs.music) ? new StartupGate({
   root: loading,
   unlock: () => audio.unlock(),
   cancel: () => audio.cancelEntry(),
@@ -238,17 +279,48 @@ function recordAccess() {
     time: new Date().toLocaleTimeString("en-GB"),
   });
 }
+let explicitMotion = typeof storedPrefs.reduced === "boolean";
 function saveAudioPrefs() {
   try {
-    localStorage.setItem("rhine-settings", JSON.stringify(prefs));
+    const saved: Partial<typeof prefs> = { ...prefs };
+    if (!explicitMotion) delete saved.reduced;
+    localStorage.setItem("rhine-settings", JSON.stringify(saved));
   } catch {}
   configureAudio();
 }
+let poolButton: ReturnType<typeof createSkyPoolButton> | undefined;
+if (!isWallpaper) {
+  const host = document.createElement("div");
+  host.className = "sky-pool-host";
+  $("#viewport").append(host);
+  poolButton = createSkyPoolButton({ root: host, onAdvance: () => {
+    setDesignParameters({ palette: skyPoolState.advance().palette as typeof designParameters.palette }, prefs.reduced ? 0 : 850);
+    updatePoolButton();
+  } });
+  window.addEventListener("pagehide", event => { if (!event.persisted) poolButton?.dispose(); });
+}
+function updatePoolButton() {
+  if (!poolButton) return;
+  const amount = prefs.colorTheme === "dark" ? 1 : 0;
+  const resolved = currentResolved();
+  const sky = Object.fromEntries(Object.entries(resolved.light.sky).map(([key, value]) => [key, mixColors(value, resolved.dark.sky[key as keyof typeof resolved.dark.sky], amount)]));
+  const surface = Object.fromEntries(Object.entries(resolved.light.surface).map(([key, value]) => [key, mixColors(value, resolved.dark.surface[key as keyof typeof resolved.dark.surface], amount)]));
+  const prism = skyPool.order.map(name => {
+    const family = resolveSkyHour(name as typeof designParameters.palette, designState.hour);
+    return mixColors(family.light.sky.zenith, family.dark.sky.zenith, amount);
+  });
+  poolButton.update(skyPoolButtonView(skyPoolState.view(designParameters.palette), { sky, surface }, prism, prefs.reduced));
+}
+updatePoolButton();
 function superPerformanceEnabled() { return isWallpaper ? wallpaperHost()?.properties.superperformance?.value === true : prefs.superPerformance; }
 function effectiveRenderQuality() { return superPerformanceEnabled() ? superPerformanceQuality : prefs.rendering; }
 function savePrefs() {
   saveAudioPrefs();
   if (prefs.reduced) {
+    setDesignParameters({ palette: designParameters.palette });
+    skyTransition.finish();
+    if (started && mode === "boot") setMode("archive");
+    if (mode === "detail") documentDecryption.reset($("#detail-content"), true);
     rollingTitles.forEach(title => title.finish());
     detailTransition.finish();
     modalTransition?.finish();
@@ -256,7 +328,7 @@ function savePrefs() {
   }
   scene?.setReduced(prefs.reduced);
   scene?.setTheme(prefs.colorTheme === "dark", prefs.reduced || !started);
-  document.querySelectorAll<HTMLElement>("[data-color-theme]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.colorTheme === prefs.colorTheme)));
+  document.querySelectorAll<HTMLElement>("button[data-color-theme]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.colorTheme === prefs.colorTheme)));
   scene?.setSuperPerformance(superPerformanceEnabled());
   viewer?.setSuperPerformance(superPerformanceEnabled());
   scene?.setQuality(effectiveRenderQuality());
@@ -269,7 +341,9 @@ function savePrefs() {
   selectedCode.update({ animated: !prefs.reduced && mode === "archive" });
   hoverCode.update({ animated: !prefs.reduced && mode === "archive" });
   $("#stage").classList.toggle("reduce-motion", prefs.reduced);
+  $("#stage").classList.toggle("super-performance", superPerformanceEnabled());
   syncWallpaperBackground();
+  updatePoolButton();
 }
 let previousLayout = "";
 function fit() {
@@ -306,12 +380,9 @@ function fit() {
     viewer?.resize();
   }
   updateQualitySummary();
-  // Re-measure line covers and tab underline after wrapping changes.
+  // Re-measure redaction line covers after wrapping changes.
   requestAnimationFrame(() => {
     documentDecryption.refresh();
-    const tab = document.querySelector<HTMLElement>(".detail-tabs button.active");
-    const indicator = document.querySelector<HTMLElement>(".tab-indicator");
-    if (tab && indicator) indicator.style.transform = `translateX(${tab.offsetLeft}px) scaleX(${tab.offsetWidth})`;
   });
 }
 window.addEventListener("resize", fit);
@@ -337,6 +408,10 @@ function setMode(next: Mode) {
   }
   if (next === "detail" && mode !== "detail") recordAccess();
   mode = next;
+  skyTransition.set(next === "boot" ? "intro" : next === "detail" ? "read" : "archive", prefs.reduced || !started || previousMode === next);
+  if (next !== "detail") { navigationRevision++; clearTimeout(navigationTimer); }
+  scene?.setReadingStill(false);
+  if (next === "archive" && started && !isWallpaper) saveArchiveContext();
   syncWallpaperBackground();
   audio.setScene(next);
   if (next !== "boot" && audioPreview) {
@@ -371,7 +446,7 @@ function setMode(next: Mode) {
   if (next === "detail" && previousMode !== "detail") {
     renderDetail();
     pendingDetailFocus = true;
-    if (!scene) {
+    {
       $("#detail-content").style.opacity = "1";
       $("#detail-content").style.translate = "0 0";
       $("#detail-content").inert = false;
@@ -382,9 +457,9 @@ function select(index: number, navigation?: ArchiveNavigation) {
   selected = (index + records.length) % records.length;
   columnMemory[wrap(fileLocation(selected).lane, archiveColumns.length)] = selected;
   if (mode === "detail") setMode("archive");
-  activeTab = "overview";
   scene?.select(selected, navigation);
   updateSelection(navigation);
+  if (started && mode === "archive" && !isWallpaper) saveArchiveContext();
   const columnMove = navigation && "axis" in navigation && navigation.axis === "lane";
   audio.play(columnMove ? "column" : "tick", columnMove ? navigation.direction * .45 : 0);
 }
@@ -407,7 +482,9 @@ function updateSelection(navigation?: ArchiveNavigation) {
   const r = records[selected];
   const { lane } = fileLocation(selected);
   const files = columnFiles(lane);
-  selectionTitle.update({ text: r.title, animated: !prefs.reduced && mode === "archive" });
+  selectionTitleText = r.title;
+  const wrapTitle = syncSelectionTitleWrap();
+  selectionTitle.update({ text: r.title, animated: !prefs.reduced && mode === "archive" && !wrapTitle });
   clearanceTitle.update({ text: r.date, animated: !prefs.reduced && mode === "archive" });
   categoryTitle.update({ text: r.tag, animated: !prefs.reduced && mode === "archive" });
   const direction =
@@ -482,57 +559,15 @@ function renderDetail() {
   const r = records[selected];
   $("#object-id").textContent = "NO." + String(selected + 1).padStart(3, "0");
   $("#detail-content").innerHTML = `
-  <div class="detail-kicker"><span>FILE ${r.id}</span><span>${escapeHtml(r.tag)}</span></div>
-  <h2>${escapeHtml(r.title)}</h2><div class="detail-title-cn">${escapeHtml(r.subtitle || r.date)}<span>${escapeHtml(r.date)}</span></div>
+  <h2>${escapeHtml(r.title)}</h2>
+  <div class="detail-meta"><span>FILE ${r.id}</span><i>·</i><span>${escapeHtml(r.date)}</span><i>·</i><span>${escapeHtml(r.tag)}</span></div>
   <div class="detail-rule"></div>
-  <dl class="metadata"><div><dt>DATE / 编目日期</dt><dd>${escapeHtml(r.date)}</dd></div><div><dt>TAG / 分类</dt><dd>${escapeHtml(r.tag)}</dd></div><div><dt>FILE / 编号</dt><dd>${escapeHtml(r.id)}</dd></div></dl>
-  <div class="detail-tabs" role="tablist"><button id="tab-overview" class="active" role="tab" aria-controls="tab-panel" aria-selected="true" data-tab="overview">01 <span>诗引</span></button><button id="tab-notes" role="tab" aria-controls="tab-panel" aria-selected="false" data-tab="notes">02 <span>副题</span></button><i class="tab-indicator" aria-hidden="true"></i></div>
-  <div id="tab-panel" class="tab-panel" role="tabpanel">${overview()}</div>
-  <div class="detail-actions"><a class="solid-button" href="${assetUrl(`${r.id.toLowerCase()}/`)}">READ FULL TEXT <span>阅读全文 →</span></a><a class="export-button" href="${assetUrl(`archives/RHINE-LAB-${r.id}.txt`)}" download="RHINE-LAB-${r.id}.txt" aria-label="导出 ${r.id} 档案">EXPORT <span>↓</span></a></div>
+  <p class="detail-quote">${escapeHtml(r.description || "（本篇无引）")}</p>
+  ${r.subtitle ? `<p class="detail-subtitle">${escapeHtml(r.subtitle)}</p>` : ""}
+  <div class="detail-actions"><a class="solid-button" href="${readingHref(assetUrl(`${r.id.toLowerCase()}/`))}">READ FULL TEXT <span>阅读全文 →</span></a><a class="export-button" href="${assetUrl(`archives/RHINE-LAB-${r.id}.txt`)}" download="RHINE-LAB-${r.id}.txt" aria-label="导出 ${r.id} 档案">EXPORT <span>↓</span></a></div>
   <div class="detail-footnote"><span>PROSE ARCHIVE / 文苑</span><span>${String(selected + 1).padStart(3, "0")} / ${String(records.length).padStart(3, "0")}</span></div>`;
   $("#detail-content").setAttribute("tabindex", "-1");
-  documentDecryption.reset($("#detail-content"), prefs.reduced || !scene || scene.decryptionFrame.phase === "clear");
-  setTab(activeTab, false);
-}
-function overview() {
-  return `<div class="panel-label">EPIGRAPH / 诗引</div><p>${escapeHtml(records[selected].description || "（本篇无引）")}</p>`;
-}
-function setTab(tab: string, sound = true) {
-  if (sound && tab === activeTab) return;
-  activeTab = tab;
-  document.querySelectorAll("[data-tab]").forEach((b) => {
-    const active = (b as HTMLElement).dataset.tab === tab;
-    b.classList.toggle("active", active);
-    b.setAttribute("aria-selected", String(active));
-    b.setAttribute("tabindex", active ? "0" : "-1");
-  });
-  const r = records[selected];
-  const tabButton = $<HTMLButtonElement>(`[data-tab="${tab}"]`);
-  const indicator = $(".tab-indicator");
-  indicator.style.transition = sound ? "" : "none";
-  indicator.style.transform = `translateX(${tabButton.offsetLeft}px) scaleX(${tabButton.offsetWidth})`;
-  $("#tab-panel").setAttribute("aria-labelledby", tabButton.id);
-  $("#tab-panel").innerHTML =
-    tab === "overview"
-      ? overview()
-      : tab === "notes"
-        ? `<div class="panel-label">SUBTITLE / 副题</div><p>${escapeHtml(r.subtitle || "（本篇无副题）")}</p>`
-        : `<div class="panel-label">ACCESS LOG / 本次访问</div>${accessLog
-            .filter((entry) => entry.id === r.id)
-            .slice(0, 4)
-            .map(
-              (entry) =>
-                `<div class="log-row"><span>${entry.time}</span><span>JOYCE MOORE</span><b>READ AUTHORIZED</b></div>`,
-            )
-            .join(
-              "",
-            )}<p class="log-note">本次会话已通过身份验证。档案内容以当前终端可访问范围展示。</p>`;
-  $("#tab-panel").scrollTop = 0;
-  documentDecryption.refresh();
-  if (sound) {
-    tabTransition.reveal($("#tab-panel"), prefs.reduced);
-    audio.play("ui-tick");
-  }
+  documentDecryption.reset($("#detail-content"), true);
 }
 function notify(message: string) {
   clearTimeout(toastTimer);
@@ -671,13 +706,14 @@ document.addEventListener("change", (e) => {
   if (el.dataset.pref) {
     const key = el.dataset.pref;
     if (key === "sound" || key === "music" || key === "reduced" || key === "quality" || key === "superPerformance") prefs[key] = el.checked;
+    if (key === "reduced") explicitMotion = true;
     if (key === "sound" || key === "music") saveAudioPrefs(); else savePrefs();
     if (key === "reduced") $("#motion-preference-note").outerHTML = motionSettingsMarkup();
     audio.play("confirm");
   }
 });
 document.addEventListener("click", (e) => {
-  const themeButton = (e.target as Element).closest<HTMLElement>("[data-color-theme]");
+  const themeButton = (e.target as Element).closest<HTMLElement>("button[data-color-theme]");
   if (themeButton) { prefs.colorTheme = themeButton.dataset.colorTheme === "dark" ? "dark" : "light"; savePrefs(); return; }
   if (!started) return;
   if (modalClosing) return;
@@ -706,10 +742,6 @@ document.addEventListener("click", (e) => {
         ),
       );
     renderResults();
-    return;
-  }
-  if (el.dataset.tab) {
-    setTab(el.dataset.tab);
     return;
   }
   const action = el.dataset.action;
@@ -761,6 +793,7 @@ document.addEventListener("click", (e) => {
     replayBoot();
   }
   if (action === "enable-motion") {
+    explicitMotion = true;
     prefs.reduced = false;
     savePrefs();
     replayBoot();
@@ -774,6 +807,7 @@ document.addEventListener("click", (e) => {
   }
 });
 document.addEventListener("keydown", (e) => {
+  if ((e.target as Element)?.closest?.(".sky-pool-host")) return;
   if (!started) return;
   if (viewer?.isOpen) return;
   if (playground?.active && !modal) {
@@ -810,18 +844,6 @@ document.addEventListener("keydown", (e) => {
     return;
   }
   if (typing || modal || !ready) return;
-  if (
-    (e.target as HTMLElement).dataset.tab &&
-    ["ArrowLeft", "ArrowRight"].includes(e.key)
-  ) {
-    e.preventDefault();
-    const tabs = ["overview", "notes", "history"];
-    setTab(
-      tabs[(tabs.indexOf(activeTab) + (e.key === "ArrowRight" ? 1 : 2)) % 3],
-    );
-    $<HTMLButtonElement>(`[data-tab="${activeTab}"]`).focus();
-    return;
-  }
   if (e.key === "/") {
     e.preventDefault();
     if (mode === "boot") setMode("archive");
@@ -901,7 +923,7 @@ function bootFrame(t: number) {
     lift = ease((t - 26) / 1.8),
     zoom = 0.55 * ease((t - 27.3) / 1.65) + 0.45 * ease((t - 29.0) / 5.0);
   if (t >= 35) {
-    setMode("detail");
+    setMode(isWallpaper ? "detail" : "archive");
     return undefined;
   }
   return { reveal, lift, zoom, time: t };
@@ -922,6 +944,9 @@ function frame(ms: number) {
   if (document.hidden) { requestAnimationFrame(frame); return; }
   workbench?.tick();
   const time = ms / 1000;
+  skyTransition.tick(ms);
+  updatePoolButton();
+  scene?.setReadingStill(mode === "detail" && !skyTransition.active);
   const theme = scene?.themeAmount ?? (prefs.colorTheme === "dark" ? 1 : 0);
   paintTheme(theme);
   viewer?.setTheme(theme);
@@ -938,11 +963,10 @@ function frame(ms: number) {
   playground?.position();
   if (scene && mode === "detail") {
     documentDecryption.update(time, scene.decryptionFrame, prefs.reduced);
-    $("#detail-content").style.opacity = String(scene.detailVisibility);
-    $("#detail-content").style.translate =
-      `0 ${(1 - scene.detailVisibility) * 18}px`;
-    $("#detail-content").inert = scene.detailVisibility < 0.1;
-    if (pendingDetailFocus && scene.detailVisibility >= 0.1 && !modal && !viewer?.isOpen) {
+    $("#detail-content").style.opacity = "1";
+    $("#detail-content").style.translate = "0 0";
+    $("#detail-content").inert = false;
+    if (pendingDetailFocus && !modal && !viewer?.isOpen) {
       $("#detail-content").focus({ preventScroll: true });
       pendingDetailFocus = false;
     }
@@ -1072,6 +1096,7 @@ async function start() {
     }
     await Promise.all([
       scene?.load(),
+      Promise.race([Promise.allSettled([
       loadBootWebfonts(),
       // With unicode-range faces, preload the opening's actual characters,
       // not every font shard. Other archive text loads on demand.
@@ -1079,11 +1104,17 @@ async function start() {
       document.fonts.load("400 20px MiSans", "身份信息确认请求已接收开始处理权限验证通过欢迎访问莱茵生命内部资料档案编号保密级别商业区选择档案：0123456789 JOYCE MOORE"),
       document.fonts.load("600 20px MiSans", "SYNTHESIZE INFORMATION ANALYSIS OS"),
       document.fonts.load("700 20px MiSans", "RHINE LAB WELCOME TO INTERNAL DATABASE"),
+      ]), new Promise(resolve => setTimeout(resolve, 2500))]),
     ]);
-    if (scene) bindScene(scene);
+    const restoredId = requestedArchive || restoredArchive?.selectedId;
+    const restoredIndex = records.findIndex(record => record.id.toLowerCase() === restoredId?.toLowerCase());
+    selected = restoredIndex >= 0 ? restoredIndex : 0;
+    if (restoredArchive?.columnMemory?.length === columnMemory.length) restoredArchive.columnMemory.forEach((index, lane) => { if (records[index]) columnMemory[lane] = index; });
+    const cell = restoredArchive?.selectedId.toLowerCase() === records[selected].id.toLowerCase() ? restoredArchive.cell : undefined;
+    if (scene) bindScene(scene, cell);
     savePrefs();
     ready = true;
-    select(0);
+    select(selected, cell ? { cell } : undefined);
     if (entry) entry.ready();
     else {
       if (isWallpaper) {
@@ -1094,8 +1125,15 @@ async function start() {
     }
   } catch (error) {
     console.error(error);
-    $("#loading").innerHTML =
-      '<div class="error-state"><strong>CONNECTION INTERRUPTED</strong><p>三维档案资源未能载入。请确认浏览器已启用硬件加速，然后重新连接。</p><button onclick="location.reload()">RECONNECT →</button></div>';
+    scene?.dispose(); scene = undefined; threeState = "off";
+    ready = true;
+    const id = requestedArchive || restoredArchive?.selectedId;
+    const index = records.findIndex(record => record.id.toLowerCase() === id?.toLowerCase());
+    select(index >= 0 ? index : 0);
+    savePrefs();
+    completeStartup(true);
+    setMode("archive");
+    notify("三维暂未载入，仍可检索档案并阅读全文。");
   }
 }
 function completeStartup(silent: boolean) {
@@ -1111,8 +1149,13 @@ function completeStartup(silent: boolean) {
   const fade = prefs.reduced ? 0 : 600;
   bootStart = performance.now() / 1000 - (reviewParams.has("time") ? Number(reviewParams.get("time")) : 1.76);
   if (!reviewParams.has("time")) bootStart += fade / 1000;
-  setMode("boot");
-  if (reviewParams.get("scene") === "archive" || (prefs.reduced && !reviewParams.has("time"))) setMode("archive");
+  // Same-session resume skips the boot scene so the restored loop cell is not
+  // re-based to canonical by the hidden-mode handoff.
+  if (resumeArchive) setMode("archive");
+  else {
+    setMode("boot");
+    if (reviewParams.get("scene") === "archive" || (prefs.reduced && !reviewParams.has("time"))) setMode("archive");
+  }
   if (reviewParams.get("scene") === "detail") setMode("detail");
   if (isWallpaper && wallpaperHost()?.properties.boot?.value === false) setMode("archive");
   $("#stage").inert = false;
@@ -1133,6 +1176,57 @@ function completeStartup(silent: boolean) {
   // begins after startup is complete and remains atomic.
   setTimeout(() => void initPwa(notify), 1500);
 }
+
+function saveArchiveContext(): ArchiveSnapshot {
+  const snapshot: ArchiveSnapshot = {
+    version: 1, entered: true, selectedId: records[selected].id, selectedIndex: selected,
+    cell: scene?.getStats().selectedCell ?? fileLocation(selected), columnMemory: [...columnMemory],
+    parameters: { ...designParameters }, archiveUrl: location.href,
+    // Archive retains its frozen pre-R1 renderer; relay the reader phase unchanged.
+    skyPhase: readArchiveSnapshot()?.skyPhase ?? 0,
+  };
+  writeArchiveSnapshot(snapshot);
+  return snapshot;
+}
+function restoreArchiveContext() {
+  navigationRevision++; clearTimeout(navigationTimer);
+  const snapshot = readArchiveSnapshot();
+  if (!snapshot || !ready || isWallpaper) return;
+  const index = records.findIndex(record => record.id === snapshot.selectedId);
+  if (index < 0) return;
+  applyAuthorParameters(new URLSearchParams(location.search), snapshot);
+  updatePoolButton();
+  if (snapshot.columnMemory?.length === columnMemory.length) snapshot.columnMemory.forEach((item, lane) => { if (records[item]) columnMemory[lane] = item; });
+  select(index, snapshot.cell ? { cell: snapshot.cell } : undefined);
+  setMode("archive");
+  skyTransition.finish();
+}
+window.addEventListener("pageshow", event => { if (event.persisted) restoreArchiveContext(); });
+window.addEventListener("popstate", restoreArchiveContext);
+document.addEventListener("click", event => {
+  const anchor = (event.target as Element).closest<HTMLAnchorElement>("a.solid-button");
+  if (!anchor || !started || mode !== "detail") return;
+  const snapshot = saveArchiveContext();
+  history.replaceState({ ...history.state, rhineArchive: snapshot }, "");
+  // Native modified clicks remain real article links, including new tabs.
+  if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || anchor.target === "_blank") return;
+  event.preventDefault();
+  const revision = ++navigationRevision;
+  clearTimeout(navigationTimer);
+  const href = anchor.href;
+  skyTransition.tick();
+  const leave = () => { if (revision === navigationRevision && mode === "detail") location.assign(href); };
+  if (prefs.reduced || !skyTransition.active) leave();
+  else navigationTimer = setTimeout(leave, skyTransition.remaining);
+});
+const systemMotion = matchMedia("(prefers-reduced-motion: reduce)");
+systemMotion.addEventListener("change", event => {
+  // Explicit saved preference retains authority over later OS changes.
+  if (typeof readLocal<{ reduced?: boolean }>("rhine-settings", {}).reduced === "boolean") return;
+  prefs.reduced = event.matches;
+  savePrefs();
+});
+
 updateSelection();
 const customBackground = isWallpaper ? new WallpaperBackground($("#stage"), notify) : undefined;
 function syncWallpaperBackground(retry = false) {
@@ -1223,7 +1317,9 @@ Object.assign(window, {
     archive: () => setMode("archive"),
     detail: () => openFile(),
     select: (i: number) => select(i),
+    design: (values: Partial<typeof designParameters>) => setDesignParameters(values),
     stats: () => ({
+      design: { ...designParameters, stage: designState.stage, weight: designState.weight },
       ...scene?.getStats(),
       threeState,
       fps: Math.round(fps),
@@ -1239,4 +1335,3 @@ Object.assign(window, {
   },
 });
 if (import.meta.hot) import.meta.hot.dispose(() => audio.dispose());
-

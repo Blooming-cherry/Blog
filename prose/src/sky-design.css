@@ -1,0 +1,192 @@
+/* Reading/sky tokens. Titles keep a moderate serif, labels stay sans. The
+ * archive preview restores the online geometry from style.css/responsive.css;
+ * this file only maps palette colors onto it and joins the footer controls
+ * into one non-overlapping rail. */
+:root {
+  --sky-serif: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+}
+body, #viewport, #stage { color: var(--theme-ink); background: var(--theme-paper); }
+.loading { color: var(--theme-ink); background: var(--theme-paper); }
+.entry-status, .entry-silent, .entry-start:disabled { color: var(--theme-muted); }
+.entry-start { border-color: var(--theme-line); }
+#stage[data-mode="boot"] .boot-white { background: var(--theme-paper); }
+#stage[data-mode="boot"] .boot-background { background: radial-gradient(ellipse at 51% 48%, var(--theme-field), var(--theme-paper) 76%); }
+
+/* Chrome text inherits the palette ink; no panel, no blur. */
+#stage:is([data-mode="archive"], [data-mode="detail"]) :is(.brand, .system-nav, .system-footer, .powered) { color: var(--theme-ink); }
+
+/* The callout stays a transparent container: no card, no backdrop-filter, no
+ * text blur. Only colors come from the palette; geometry is the online baseline. */
+#stage[data-mode="archive"] .archive-callout { color: var(--theme-ink); }
+#stage[data-mode="archive"] .eyebrow { color: var(--theme-muted); }
+#stage[data-mode="archive"] .file-title { color: var(--theme-ink); }
+#stage[data-mode="archive"] .file-open { color: var(--theme-ink); }
+#stage[data-mode="archive"] .file-summary { color: var(--theme-ink); }
+#stage[data-mode="archive"] #selected-clearance { color: var(--theme-muted); }
+/* ACCESS FILE keeps the online geometry; a 1px inset highlight edge (neutral
+ * edge ring + brighter top) replaces any thick brown outline. No background,
+ * no outer glow, no layout change. */
+#stage[data-mode="archive"] .read-file {
+  color: var(--theme-ink);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--theme-edge-rgb), 0.45),
+    inset 0 1px 0 rgba(var(--theme-highlight-rgb), 0.7);
+  transition: opacity 0.7s 0.4s, box-shadow 180ms;
+}
+#stage[data-mode="archive"] .read-file:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--theme-edge-rgb), 0.6),
+    inset 0 1px 0 rgba(var(--theme-highlight-rgb), 0.92);
+}
+#stage[data-mode="archive"] .read-file:active {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--theme-edge-rgb), 0.5),
+    inset 0 1px 2px rgba(var(--theme-ink-rgb), 0.14);
+}
+#stage[data-mode="archive"] .read-file:focus-visible {
+  outline: 2px solid var(--theme-line);
+  outline-offset: 4px;
+}
+#stage[data-mode="archive"] .callout-rule { background: var(--theme-line); }
+#stage[data-mode="archive"] .callout-rule i { background: var(--theme-ink); }
+#stage .archive-hint { color: var(--theme-muted); }
+#stage .hover-label { color: var(--theme-muted); }
+#stage .archive-counter :is(.tiny-label, i, .count-total) { color: var(--theme-muted); }
+#stage .column-navigation > div > span { color: var(--theme-muted); }
+#stage .column-navigation strong { color: var(--theme-ink); }
+#stage .file-ticks button::before { background: var(--theme-line); }
+#stage .file-ticks button.selected::before { background: var(--theme-ink); }
+#stage .file-ticks button:hover::before { background: var(--theme-accent); }
+
+/* One common footer bar: counter · ticks · column · direction. The ticks keep
+ * their online 21.7px step; the column block sits to the right of the scale
+ * instead of overlapping it, so its disabled arrows never cover a tick. */
+#stage[data-mode="archive"] .archive-rail {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  bottom: 131px;
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  pointer-events: none;
+}
+#stage[data-mode="archive"] .archive-rail > * {
+  position: static;
+}
+#stage[data-mode="archive"] .archive-counter {
+  flex: none;
+  bottom: auto;
+  left: auto;
+}
+#stage[data-mode="archive"] .archive-navigation {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 33px;
+  left: auto;
+  bottom: auto;
+}
+#stage[data-mode="archive"] .file-ticks {
+  flex: 0 0 auto;
+  gap: 12px;
+}
+#stage[data-mode="archive"] .file-ticks button {
+  flex: 0 0 14px;
+  width: 14px;
+}
+#stage[data-mode="archive"] .column-navigation {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  left: auto;
+  bottom: auto;
+}
+/* Disabled column arrows keep a valid disabled state and never intercept the
+ * tick scale or paint a false hover. */
+#stage .column-navigation button:disabled {
+  pointer-events: none;
+  opacity: 0.25;
+  cursor: default;
+}
+#stage .column-navigation button:disabled:hover {
+  background: none;
+}
+
+/* Reduced detail: title, one meta line, quote, one primary action. */
+#stage[data-mode="detail"] .detail-content { padding: 26px 28px; }
+#stage .detail-content h2 { font-family: var(--sky-serif); font-size: calc(44px * var(--sky-title-scale)); font-weight: 600; line-height: 1.25; letter-spacing: .02em; }
+#stage .detail-content .detail-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-family: inherit; font-size: 11px; letter-spacing: 1.3px; text-transform: uppercase; color: var(--theme-muted); }
+#stage .detail-content .detail-meta i { font-style: normal; color: var(--theme-line); }
+#stage .detail-content .detail-quote { margin: 18px 0 0; font-size: 18px; line-height: 1.9; color: var(--theme-ink); }
+#stage .detail-content .detail-subtitle { margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: var(--theme-muted); }
+#stage .detail-content :is(p, li) { color: var(--theme-ink); font-size: 18px; line-height: 1.9; }
+#stage :is(.detail-kicker, .detail-kicker span, .detail-title-cn > span, .metadata dt, .detail-tabs button, .detail-footnote, .object-caption small, .object-caption > div) { color: var(--theme-muted); }
+#stage :is(.detail-rule, .tab-indicator) { background: var(--theme-accent); }
+#stage :is(.detail-tabs, .export-button, .back-button small) { border-color: var(--theme-line); }
+#stage .solid-button { border: 1px solid var(--theme-accent); color: var(--theme-ink); background: rgba(var(--theme-paper-rgb), .94); }
+#stage .solid-button > span { color: inherit; }
+#stage .detail-content a { color: var(--theme-accent); }
+
+/* Mobile: the rail wraps into explicit rows and every arrow, tick and column
+ * stays inside the viewport; ticks flex so 21 local items fit. */
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-rail {
+  left: var(--edge);
+  right: var(--edge);
+  bottom: 58px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-navigation {
+  flex: 1 1 100%;
+  order: -1;
+  gap: 6px;
+  transform: none;
+  left: auto;
+  bottom: auto;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-navigation > button {
+  flex: none;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .file-ticks {
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 0;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .file-ticks button {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .file-ticks button::before {
+  left: 50%;
+  translate: -50% 0;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .archive-counter {
+  flex: 0 0 auto;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .column-navigation {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+#stage:is([data-layout="compact"], [data-layout="portrait"])[data-mode="archive"] .column-navigation > div {
+  min-width: 0;
+}
+#stage[data-layout="portrait"][data-mode="archive"] .column-navigation > div > span { display: none; }
+
+/* Reduce motion keeps the terminal states only. */
+#stage.reduce-motion :is(.archive-ui, .detail-ui, .system-nav, .system-footer) button,
+#stage.reduce-motion :is(.archive-rail, .archive-callout, .archive-counter, .archive-navigation, .column-navigation),
+#stage.reduce-motion .detail-content { transition: none; }
+
+/* Rolling engines keep a transparent measurement/accessibility layer. A halo
+ * must never reveal that layer over the visible glyph reels. */
+#stage :is(.rn-value, .rn-measure) { text-shadow: none; }
+#stage #selected-title.title-wrap > .rn-value { text-shadow: 0 0 3px var(--theme-paper), 0 0 7px var(--theme-paper); }
+
+/* Fixed viewport host keeps a full touch target outside scaled archive UI. */
+.sky-pool-host { position: absolute; z-index: 8; top: max(18px, env(safe-area-inset-top)); right: max(18px, env(safe-area-inset-right)); width: 44px; height: 44px; display: grid; place-items: center; }
+body:has(#stage[data-mode="boot"]) .sky-pool-host { visibility: hidden; }
+body:has(#stage:is([data-layout="compact"], [data-layout="portrait"])) .sky-pool-host { top: max(76px, calc(env(safe-area-inset-top) + 60px)); }

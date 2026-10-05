@@ -1,0 +1,93 @@
+/* Placement belongs to the host. All decoration stays within this 44px target. */
+.sky-pool-button {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  flex: 0 0 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sky-button-ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  isolation: isolate;
+}
+
+.sky-pool-button::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--sky-button-edge) 42%, transparent);
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--sky-button-zenith) 16%, transparent);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  box-shadow:
+    0 2px 6px color-mix(in srgb, var(--sky-button-ink) 13%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--sky-button-highlight) 48%, transparent);
+  pointer-events: none;
+}
+
+.sky-pool-button__face {
+  position: relative;
+  display: block;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sky-pool-button__card,
+.sky-pool-button__prism {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.sky-pool-button__card {
+  background: linear-gradient(160deg, var(--sky-button-zenith), var(--sky-button-horizon));
+}
+
+.sky-pool-button__prism {
+  opacity: 0;
+  background: conic-gradient(
+    color-mix(in srgb, var(--sky-button-prism-ink), var(--sky-button-dusk)) 0deg,
+    var(--sky-button-dusk) 10deg 110deg,
+    var(--sky-button-celadon) 130deg 230deg,
+    var(--sky-button-prism-ink) 250deg 350deg,
+    color-mix(in srgb, var(--sky-button-prism-ink), var(--sky-button-dusk)) 360deg
+  );
+  transition: transform 600ms cubic-bezier(.4, 0, .2, 1);
+}
+
+.sky-pool-button[data-pool='B'] .sky-pool-button__card { opacity: 0; }
+.sky-pool-button[data-pool='B'] .sky-pool-button__prism { opacity: 1; }
+.sky-pool-button[data-reduced='true'] .sky-pool-button__prism { transition: none; }
+
+.sky-pool-button:focus-visible {
+  outline: 2px solid var(--sky-button-ink);
+  outline-offset: -1px;
+}
+
+.sky-pool-button:active::before {
+  background: color-mix(in srgb, var(--sky-button-zenith) 32%, transparent);
+  box-shadow:
+    inset 0 1px 3px color-mix(in srgb, var(--sky-button-ink) 28%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--sky-button-highlight) 40%, transparent);
+}
+
+.sky-pool-button:active .sky-pool-button__face { scale: .93; }

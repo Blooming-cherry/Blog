@@ -1,0 +1,85 @@
+{
+  "defaults": { "palette": "dawn", "presence": 0.65, "titleScale": 1 },
+  "steps": ["zenith", "upper", "lower", "haze", "horizon"],
+  "hours": [0, 5, 6, 7.5, 11, 14.5, 16.5],
+  "palettes": {
+    "dawn": {
+      "light": {
+        "surface": { "paper": "#F4EFE6", "ink": "#2A2E31", "muted": "#565D61", "line": "#A9A49B", "edge": "#B9B4AB", "highlight": "#FFFFFF", "accent": "#8A5B3D", "panel": "#EFEAE1", "field": "#E7E2D9", "floor": "#D8C9B9" },
+        "sky": [
+          { "h": 0, "zenith": "#4E6484", "upper": "#6E829C", "lower": "#9AACBE", "haze": "#C0C7CE", "horizon": "#D4C9BA" },
+          { "h": 5, "zenith": "#6C84A2", "upper": "#8A9DB4", "lower": "#AFBCCA", "haze": "#CCCFD2", "horizon": "#DCCBB8" },
+          { "h": 6, "zenith": "#86A0BD", "upper": "#A2B3C6", "lower": "#C2CAD3", "haze": "#D4D2CD", "horizon": "#E5CFB6" },
+          { "h": 7.5, "zenith": "#A0B8D0", "upper": "#BAC8D6", "lower": "#D0D6DA", "haze": "#DCD8CF", "horizon": "#EDD8C0" },
+          { "h": 11, "zenith": "#B8CADB", "upper": "#CDD6E0", "lower": "#DCE0E2", "haze": "#E2DCD2", "horizon": "#F3EBDD" },
+          { "h": 14.5, "zenith": "#A6BCD2", "upper": "#BECBD8", "lower": "#D2D7DB", "haze": "#DCD6CC", "horizon": "#EDDFCB" },
+          { "h": 16.5, "zenith": "#809BB8", "upper": "#A0B2C6", "lower": "#C0C8D0", "haze": "#D2CDC4", "horizon": "#E5C39F" }
+        ]
+      },
+      "dark": {
+        "surface": { "paper": "#171E28", "ink": "#EAE5DB", "muted": "#AEB6BE", "line": "#5A6672", "edge": "#6E7A86", "highlight": "#E7ECF0", "accent": "#D4AC7F", "panel": "#1F2833", "field": "#27313D", "floor": "#192125" },
+        "sky": [
+          { "h": 0, "zenith": "#0A1422", "upper": "#131F32", "lower": "#22303F", "haze": "#2E3A47", "horizon": "#352E2B" },
+          { "h": 5, "zenith": "#0C1830", "upper": "#17283E", "lower": "#273A4E", "haze": "#33424E", "horizon": "#3A3028" },
+          { "h": 6, "zenith": "#0E1C38", "upper": "#1B2F48", "lower": "#2D4257", "haze": "#384A56", "horizon": "#413427" },
+          { "h": 7.5, "zenith": "#101F3E", "upper": "#20344E", "lower": "#32485C", "haze": "#3D505B", "horizon": "#48382A" },
+          { "h": 11, "zenith": "#111B2B", "upper": "#26364A", "lower": "#3A4E60", "haze": "#42555F", "horizon": "#4E3D2C" },
+          { "h": 14.5, "zenith": "#101C30", "upper": "#233449", "lower": "#374A5C", "haze": "#40525E", "horizon": "#4A392B" },
+          { "h": 16.5, "zenith": "#0E1626", "upper": "#1C2B3F", "lower": "#2E3E50", "haze": "#394855", "horizon": "#453224" }
+        ]
+      }
+    },
+    "tea": {
+      "light": {
+        "surface": { "paper": "#F5EFE6", "ink": "#332D28", "muted": "#5E5852", "line": "#ABA294", "edge": "#BCB2A2", "highlight": "#FFFFFF", "accent": "#8A6A3F", "panel": "#EFE8DD", "field": "#E7DFD2", "floor": "#D8C9B9" },
+        "sky": [
+          { "h": 0, "zenith": "#5E5568", "upper": "#7E7488", "lower": "#A79BAA", "haze": "#C5B8B8", "horizon": "#D4C0A8" },
+          { "h": 5, "zenith": "#746A7E", "upper": "#94899C", "lower": "#B5AAB8", "haze": "#CDC0BE", "horizon": "#DCC5A6" },
+          { "h": 6, "zenith": "#8C8295", "upper": "#A89DA9", "lower": "#C2B8C0", "haze": "#D4C7C1", "horizon": "#E5CBA8" },
+          { "h": 7.5, "zenith": "#A298A8", "upper": "#B9B0B8", "lower": "#CDC5C8", "haze": "#DACFC6", "horizon": "#EDD4AE" },
+          { "h": 11, "zenith": "#B3AAB6", "upper": "#C6BEC2", "lower": "#D5CECB", "haze": "#E0D7C9", "horizon": "#F2DFB8" },
+          { "h": 14.5, "zenith": "#A49BAB", "upper": "#BAB1BE", "lower": "#CEC6C9", "haze": "#DCD2C7", "horizon": "#ECD5AE" },
+          { "h": 16.5, "zenith": "#887D94", "upper": "#A49AAE", "lower": "#C0B7C2", "haze": "#D2C7BE", "horizon": "#E2BE93" }
+        ]
+      },
+      "dark": {
+        "surface": { "paper": "#24221F", "ink": "#EEE5D8", "muted": "#BFB6AC", "line": "#6E665E", "edge": "#827A70", "highlight": "#E9E2D6", "accent": "#D1AB78", "panel": "#2D2A25", "field": "#38332B", "floor": "#282620" },
+        "sky": [
+          { "h": 0, "zenith": "#181421", "upper": "#241D2C", "lower": "#362B3A", "haze": "#43363F", "horizon": "#463327" },
+          { "h": 5, "zenith": "#1B1626", "upper": "#292030", "lower": "#3A2E3F", "haze": "#473A44", "horizon": "#4B3626" },
+          { "h": 6, "zenith": "#1E1830", "upper": "#2E2438", "lower": "#403345", "haze": "#4C3E48", "horizon": "#523926" },
+          { "h": 7.5, "zenith": "#211B36", "upper": "#322A3F", "lower": "#453849", "haze": "#51434C", "horizon": "#583C25" },
+          { "h": 11, "zenith": "#24221F", "upper": "#343434", "lower": "#4B4140", "haze": "#574D48", "horizon": "#5F4526" },
+          { "h": 14.5, "zenith": "#201B29", "upper": "#302833", "lower": "#43373F", "haze": "#4F4443", "horizon": "#563C26" },
+          { "h": 16.5, "zenith": "#1A1522", "upper": "#28212E", "lower": "#392E3C", "haze": "#463A40", "horizon": "#4E3521" }
+        ]
+      }
+    },
+    "slate": {
+      "light": {
+        "surface": { "paper": "#F2EFE8", "ink": "#2A3036", "muted": "#505B64", "line": "#9CA7AC", "edge": "#AEB8BD", "highlight": "#FFFFFF", "accent": "#4E6B80", "panel": "#ECEAE4", "field": "#E0E5E7", "floor": "#C9CECB" },
+        "sky": [
+          { "h": 0, "zenith": "#3E4E5C", "upper": "#5C6C7A", "lower": "#84929E", "haze": "#A8B2B8", "horizon": "#C8C4BC" },
+          { "h": 5, "zenith": "#566773", "upper": "#72828F", "lower": "#98A4AD", "haze": "#B4BCBE", "horizon": "#D0C9BE" },
+          { "h": 6, "zenith": "#70808C", "upper": "#8A98A3", "lower": "#AAB4BB", "haze": "#BFC5C5", "horizon": "#D8CFC0" },
+          { "h": 7.5, "zenith": "#8A9AA4", "upper": "#A0ADB6", "lower": "#BCC3C7", "haze": "#CACDCA", "horizon": "#E0D6C4" },
+          { "h": 11, "zenith": "#ACBFCE", "upper": "#BFCBD4", "lower": "#D2D8DA", "haze": "#DADBD4", "horizon": "#EBEAE5" },
+          { "h": 14.5, "zenith": "#9AAEBE", "upper": "#B0BDC8", "lower": "#C7CFD3", "haze": "#D2D5CF", "horizon": "#E2DBCB" },
+          { "h": 16.5, "zenith": "#6E8294", "upper": "#8C9BA9", "lower": "#ABB6BF", "haze": "#C2C7C6", "horizon": "#D6C5A8" }
+        ]
+      },
+      "dark": {
+        "surface": { "paper": "#18212B", "ink": "#E6E9E8", "muted": "#B3BEC7", "line": "#5E6F7E", "edge": "#71808D", "highlight": "#E3E8EB", "accent": "#A6C1D1", "panel": "#202B36", "field": "#2A3742", "floor": "#1D2931" },
+        "sky": [
+          { "h": 0, "zenith": "#0A111A", "upper": "#121D28", "lower": "#1F2C38", "haze": "#2A3742", "horizon": "#2E3538" },
+          { "h": 5, "zenith": "#0C1520", "upper": "#16232F", "lower": "#24323F", "haze": "#2F3D47", "horizon": "#323A3A" },
+          { "h": 6, "zenith": "#0E1A27", "upper": "#1A2937", "lower": "#2A3946", "haze": "#35434C", "horizon": "#373F3D" },
+          { "h": 7.5, "zenith": "#101E2D", "upper": "#1F2F3E", "lower": "#30404D", "haze": "#3A4850", "horizon": "#3C443F" },
+          { "h": 11, "zenith": "#101D2C", "upper": "#2A3C4D", "lower": "#384A58", "haze": "#42535A", "horizon": "#4A5148" },
+          { "h": 14.5, "zenith": "#0F1C2A", "upper": "#223344", "lower": "#32444F", "haze": "#3D4C52", "horizon": "#424A43" },
+          { "h": 16.5, "zenith": "#0D1723", "upper": "#1A2936", "lower": "#293845", "haze": "#344148", "horizon": "#393E38" }
+        ]
+      }
+    }
+  }
+}
