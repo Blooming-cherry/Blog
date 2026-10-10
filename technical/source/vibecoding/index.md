@@ -9,6 +9,10 @@ comments: false
 
 ---
 
+### 2026-10-10
+
+- **[开源我的文风：spring-tea-prose](2026-10-10-spring-tea-prose-open-source.html)** — 把「我的声音」写成可执行判据：谱系 / 弱德之美 / 私人典故库 / 8 条禁忌；两档文风与可调浓度，附全文
+
 ### 2026-09-18
 
 - **[主站手机端闪退修复日志](2026-09-18-blog-mobile-crash-remediation.html)** — Live2D/PJAX 资源累积、零交互音频加载与重复监听器的 RED/GREEN 修复闭环
