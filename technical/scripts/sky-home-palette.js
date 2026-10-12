@@ -24,5 +24,5 @@ function variables(theme) {
 }
 
 hexo.extend.filter.register('theme_inject', injects => {
-  injects.head.raw('sky-home-palette', `<style id="sky-home-palette">:root{${variables(palette.light)}--sky-title-scale:${titleScale};}@media(prefers-color-scheme:dark){:root{${variables(palette.dark)}}}</style>`);
+  injects.head.raw('sky-home-palette', `<style id="sky-home-palette">:root{${variables(palette.light.surface)}--sky-title-scale:${titleScale};}@media(prefers-color-scheme:dark){:root{${variables(palette.dark.surface)}}}</style>`);
 });
