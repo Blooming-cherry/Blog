@@ -225,6 +225,28 @@
   margin: 0 auto;
 }
 
+/* ── 表格：长链接不撑破版心，窄屏在版心内横向滚动 ── */
+/* 主题已给 .table-container 加了 overflow:auto，这里补两点：
+   1) 无空格长串（URL、代码）允许断行，避免把表格撑出内容区；
+   2) 触摸设备保留惯性滚动，窄屏收紧单元格内边距。
+   注意：不要给首列加 white-space:nowrap —— 其他文章的首列是
+   中文短语，禁止折行反而会把表格撑宽。                     */
+.post-body .table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.post-body table th,
+.post-body table td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+@media (max-width: 767px) {
+  .post-body table th,
+  .post-body table td {
+    padding: 6px 8px;
+  }
+}
+
 /* ── H-01: shared Songti headings and a restrained article-link band ── */
 .site-title {
   font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
