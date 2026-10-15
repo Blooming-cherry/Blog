@@ -1,0 +1,28 @@
+{
+  "name": "鲸鱼娘 Live2D",
+  "license": "CC BY-NC-SA 4.0",
+  "authors": [
+    {
+      "contribution": "角色形象原作：溟月",
+      "url": "https://space.bilibili.com/4456176",
+      "name": "上善无形"
+    },
+    {
+      "contribution": "女仆鲸鱼娘二次设计",
+      "url": "https://space.bilibili.com/4168597",
+      "name": "ZipZipPipe"
+    },
+    {
+      "contribution": "Live2D 模型、绑定、动作、表情",
+      "url": "https://space.bilibili.com/11272072",
+      "name": "氵六青"
+    }
+  ],
+  "source": "https://github.com/Andersen216/dsh-whale-girl-live2d",
+  "sourceCommit": "ea40a34fe8d33576c4db59993e3d50d9962feac9",
+  "provenance": "/assets/companion/whale/v1/licenses/PROVENANCE.md",
+  "authorsNotice": "/assets/companion/whale/v1/licenses/AUTHORS.md",
+  "runtimeLicenses": "/js/companion/vendor/THIRD-PARTY.md",
+  "modifications": "原模型文件保留；博客添加独立控制器、同源加载与静态降级图标。",
+  "voiceNotice": "未提供配套语音，默认静音。"
+}
