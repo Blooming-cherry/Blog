@@ -23,7 +23,7 @@
     }
     createUI() {
       const root = document.createElement('aside'); root.id = 'blog-companion'; root.setAttribute('aria-label', '鲸鱼看板娘');
-      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开鲸鱼看板娘"><img src="${poster}" alt="原创静态鲸鱼图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
+      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开鲸鱼看板娘"><img src="${poster}" alt="原创静态鲸鱼图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><button type="button" data-companion-sound>开启声音</button><button type="button" data-companion-trail>关闭鼠标拖尾</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
       this.root = root; this.avatar = root.querySelector('[data-companion-avatar]'); this.stage = root.querySelector('.companion-stage'); this.status = root.querySelector('.companion-status'); this.menu = root.querySelector('[data-companion-menu]'); this.more = root.querySelector('[data-companion-more]');
       document.body.appendChild(root);
       this.listen(root.querySelector('img'), 'error', event => { const image = event.target; if (!image.src.endsWith(poster)) image.src = poster; });
@@ -38,6 +38,8 @@
       this.listen(this.more, 'click', () => this.setMenu(this.menu.hidden));
       this.listen(this.avatar, 'contextmenu', event => { event.preventDefault(); this.setMenu(true); });
       this.listen(this.root.querySelector('[data-companion-close]'), 'click', () => this.setMenu(false, true));
+      this.listen(this.root.querySelector('[data-companion-trail]'), 'click', () => { global.__blogMouseTrail?.setEnabled(!global.__blogMouseTrail?.isEnabled()); this.syncTrailControl(); });
+      this.listen(global, 'blog:mouse-trail-state', () => this.syncTrailControl());
       this.listen(this.root.querySelector('[data-companion-sound]'), 'click', () => {
         const muted = !this.preferences.value.muted;
         this.preferences.update({ muted }); this.voice.setMuted(muted); this.syncControls();
@@ -112,10 +114,21 @@
     syncControls() {
       if (!this.root) return;
       const muted = this.preferences.value.muted;
+      this.syncTrailControl();
       this.root.querySelector('[data-companion-sound]').textContent = muted ? '开启声音' : '关闭声音';
       this.root.querySelector('[data-companion-sound]').setAttribute('aria-pressed', String(!muted));
       this.root.querySelector('[data-companion-volume]').value = String(this.preferences.value.volume);
       this.root.querySelector('[data-companion-size]').value = String(this.preferences.value.size);
+    }
+    syncTrailControl() {
+      const button = this.root?.querySelector('[data-companion-trail]');
+      const trail = global.__blogMouseTrail;
+      if (!button) return;
+      button.hidden = !trail?.supported();
+      if (button.hidden) return;
+      const enabled = trail.isEnabled();
+      button.textContent = enabled ? '关闭鼠标拖尾' : '开启鼠标拖尾';
+      button.setAttribute('aria-pressed', String(enabled));
     }
     setMenu(open, restore = false) {
       this.menu.hidden = !open; this.more.setAttribute('aria-expanded', String(open));

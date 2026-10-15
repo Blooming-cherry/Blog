@@ -139,29 +139,6 @@
 }
 #mpBtn:hover { border-color: #bbb; color: #666; }
 
-/* ── Back2top vinyl disc ── */
-.back-to-top {
-  position: relative;
-  overflow: visible;
-}
-.b2t-disc {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: conic-gradient(#ddd 0deg 90deg, #eee 90deg 180deg, #ddd 180deg 270deg, #eee 270deg 360deg);
-  opacity: 0;
-  transition: opacity .3s;
-  pointer-events: none;
-}
-.back-to-top.vinyl-on .b2t-disc {
-  opacity: 0.55;
-  animation: mpSpin 4s linear infinite;
-}
-
 /* ── Dark mode ── */
 .darkmode--activated #mpOverlay { background: rgba(0,0,0,0.45); }
 .darkmode--activated #mpPlaylist {

@@ -26,22 +26,26 @@
 <script src="/js/siren-url-loader.js"></script>
 
 <!-- Global Mini Vinyl Player -->
-<div id="mpOverlay" style="display:none"></div>
-<div id="mpPlaylist" style="display:none"></div>
-<div id="miniPlayer">
-  <button class="mp-ctrl" id="mpPrev" title="上一首"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-  <div id="mpDisc" title="展开播放列表"><div id="mpCover"></div></div>
+<link rel="stylesheet" href="/js/music/music.css">
+<div id="mpOverlay" hidden></div>
+<section id="mpPlaylist" aria-label="音乐控制与播放列表" hidden>
+  <div class="music-panel-heading"><span>塞壬唱片</span><button type="button" id="mpClose" aria-label="收起音乐控制">×</button></div>
+  <p id="mpStatus" class="music-status" role="status" aria-live="polite"></p>
+  <button type="button" id="mpRetry" hidden>重试播放</button>
+  <button type="button" id="mpCoverRetry" hidden>重试封面</button>
+  <div class="music-progress-wrap"><span id="mpTimeCur">00:00</span><input id="mpProgress" type="range" min="0" max="0" step="1" value="0" aria-label="播放进度" disabled><span id="mpTimeDur">00:00</span></div>
+  <label class="music-volume">音量 <input id="mpVolume" type="range" min="0" max="100" step="1" value="30" aria-label="音乐音量"></label>
+  <div id="mpTracks"></div>
+</section>
+<div id="miniPlayer" aria-label="迷你音乐播放器">
+  <button class="mp-ctrl" id="mpPrev" type="button" aria-label="上一首">‹</button>
+  <button id="mpExpand" type="button" aria-label="展开音乐控制" aria-expanded="false" aria-controls="mpPlaylist"><span id="mpDisc"><img id="mpCover" width="30" height="30" src="/js/music/placeholder.svg" alt="默认唱片封面"></span></button>
   <span id="mpTitle">—</span>
-  <button id="mpBtn" title="播放/暂停">
-    <span class="mp-icon-play">▶</span>
-    <span class="mp-icon-pause" style="display:none">⏸</span>
-  </button>
-  <button class="mp-ctrl" id="mpNext" title="下一首"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+  <button id="mpBtn" type="button" aria-label="播放"><span data-play>▶</span><span data-pause hidden>Ⅱ</span></button>
+  <button class="mp-ctrl" id="mpNext" type="button" aria-label="下一首">›</button>
 </div>
-
 <script>
-(function(){
-  var PL = [
+window.__vinylPlaylist = [
     {cid:"125042",name:"Sanctuary Inside",artist:"塞壬唱片-MSR",url:"/audio/125042",cover:"https://web.hycdn.cn/siren/pic/20250430/384e007ed1908ce919a3bf704a5b36ff.png",album:"Sanctuary Inside"},
     {cid:"306814",name:"Best Moments of...",artist:"塞壬唱片-MSR",url:"/audio/306814",cover:"https://web.hycdn.cn/siren/pic/20231019/ae52bd635f6a7e89be3c3d481788ce82.png",album:"Best Moments of..."},
     {cid:"953953",name:"Little Wish",artist:"塞壬唱片-MSR",url:"/audio/953953",cover:"https://web.hycdn.cn/siren/pic/20250801/7d4b586dddf00b4e2a43c809f3fe4b45.jpg",album:"Little Wish"},
@@ -51,295 +55,12 @@
     {cid:"232224",name:"Innocence",artist:"塞壬唱片-MSR",url:"/audio/232224",cover:"https://web.hycdn.cn/siren/pic/20260430/87e3010a27c3f0f85422fa6f1f33483e.jpg",album:"Innocence"},
     {cid:"306815",name:"Effervescence",artist:"塞壬唱片-MSR",url:"/audio/306815",cover:"https://web.hycdn.cn/siren/pic/20230809/ecc4c113772a8e8a8cdde6aa303a3ad6.jpg",album:"火山旅梦OST"}
   ];
-
-  // Resolve fresh URL from proxy cache, fallback to hardcoded
-  function resolveUrl(track) {
-    if (window.__sirenUrls && window.__sirenUrls[track.cid]) {
-      return window.__sirenUrls[track.cid];
-    }
-    return track.url;
-  }
-
-  // PJAX guard: body-end.swig re-executes inside #pjax on every navigation.
-  // Rebind new DOM to the existing Audio instead of creating a duplicate.
-  if (window.__vinyl) {
-    var V = window.__vinyl;
-    var mp2 = document.getElementById('miniPlayer');
-    var mpDisc2 = document.getElementById('mpDisc');
-    var mpCover2 = document.getElementById('mpCover');
-    var mpTitle2 = document.getElementById('mpTitle');
-    var mpBtn2 = document.getElementById('mpBtn');
-    var mpPrev2 = document.getElementById('mpPrev');
-    var mpNext2 = document.getElementById('mpNext');
-    var iconPlay2 = mpBtn2.querySelector('.mp-icon-play');
-    var iconPause2 = mpBtn2.querySelector('.mp-icon-pause');
-    var plPanel2 = document.getElementById('mpPlaylist');
-    var overlay2 = document.getElementById('mpOverlay');
-    var plOpen2 = false;
-
-    mpCover2.style.backgroundImage = 'url(' + V.playlist[V.getIdx()].cover + ')';
-    mpTitle2.textContent = V.playlist[V.getIdx()].name;
-    var playing = !V.audio.paused;
-    mpDisc2.classList.toggle('spinning', playing);
-    iconPlay2.style.display = playing ? 'none' : 'block';
-    iconPause2.style.display = playing ? 'block' : 'none';
-
-    function updateHighlight2() {
-      var rows = plPanel2.querySelectorAll('.mpp-row');
-      rows.forEach(function(r, i) { r.classList.toggle('active', i === V.getIdx()); });
-    }
-    plPanel2.innerHTML = '';
-    V.playlist.forEach(function(t, i) {
-      var row = document.createElement('div');
-      row.className = 'mpp-row';
-      row.innerHTML = '<span class="mpp-num">' + (i < 9 ? '0' + (i + 1) : i + 1) + '</span><span class="mpp-name">' + t.name + '</span><span class="mpp-artist">' + t.artist + '</span>';
-      row.addEventListener('click', function() {
-        V.load(i);
-        if (V.audio.paused) V.toggle();
-        plPanel2.style.display = 'none';
-        overlay2.style.display = 'none';
-        mpDisc2.classList.remove('expanded');
-        plOpen2 = false;
-      });
-      plPanel2.appendChild(row);
-    });
-    updateHighlight2();
-
-    function openPanel2() { plOpen2 = true; plPanel2.style.display = 'block'; overlay2.style.display = 'block'; mpDisc2.classList.add('expanded'); }
-    function closePanel2() { plOpen2 = false; plPanel2.style.display = 'none'; overlay2.style.display = 'none'; mpDisc2.classList.remove('expanded'); }
-    mpDisc2.addEventListener('click', function() { if (plOpen2) closePanel2(); else openPanel2(); });
-    overlay2.addEventListener('click', closePanel2);
-    mpBtn2.addEventListener('click', function() { V.toggle(); });
-    mpPrev2.addEventListener('click', function() { V.prev(); });
-    mpNext2.addEventListener('click', function() { V.next(); });
-    var onMusic = window.location.pathname.indexOf('/music') !== -1;
-    mp2.style.display = onMusic ? 'none' : '';
-    if (!V.audio.__syncBound) {
-      V.audio.__syncBound = true;
-      function syncUI() {
-        var d = document.getElementById('mpDisc');
-        var ip = document.querySelector('#mpBtn .mp-icon-play');
-        var ipa = document.querySelector('#mpBtn .mp-icon-pause');
-        var p = !V.audio.paused;
-        if (d) d.classList.toggle('spinning', p);
-        if (ip) ip.style.display = p ? 'none' : 'block';
-        if (ipa) ipa.style.display = p ? 'block' : 'none';
-      }
-      V.audio.addEventListener('play', syncUI);
-      V.audio.addEventListener('pause', syncUI);
-      var origLoad = V.load;
-      V.load = function(i) {
-        origLoad(i);
-        var cov = document.getElementById('mpCover');
-        var tit = document.getElementById('mpTitle');
-        if (cov) cov.style.backgroundImage = 'url(' + V.playlist[i].cover + ')';
-        if (tit) tit.textContent = V.playlist[i].name;
-        var rows = document.querySelectorAll('.mpp-row');
-        rows.forEach(function(r, j) { r.classList.toggle('active', j === i); });
-      };
-      var origCheck = V.checkMusicPage;
-      V.checkMusicPage = function() {
-        origCheck();
-        var m = document.getElementById('miniPlayer');
-        if (m) { var onM = window.location.pathname.indexOf('/music') !== -1; m.style.display = onM ? 'none' : ''; }
-      };
-    }
-    return;
-  }
-
-  var audio = new Audio();
-  audio.preload = 'none';
-  audio.volume = 0.3;
-  var idx = 0;
-  var playing = false;
-  var resumeTime = 0;
-  var sourceGeneration = 0;
-  var mp = document.getElementById('miniPlayer');
-  var mpDisc = document.getElementById('mpDisc');
-  var mpCover = document.getElementById('mpCover');
-  var mpTitle = document.getElementById('mpTitle');
-  var mpBtn = document.getElementById('mpBtn');
-  var mpPrev = document.getElementById('mpPrev');
-  var mpNext = document.getElementById('mpNext');
-  var iconPlay = mpBtn.querySelector('.mp-icon-play');
-  var iconPause = mpBtn.querySelector('.mp-icon-pause');
-  var plPanel = document.getElementById('mpPlaylist');
-  var overlay = document.getElementById('mpOverlay');
-  var plOpen = false;
-
-  // Restore from localStorage
-  try {
-    var s = JSON.parse(localStorage.getItem('vs'));
-    if (s && s.i < PL.length) {
-      idx = s.i;
-      var restoredTime = Number(s.t);
-      resumeTime = isFinite(restoredTime) && restoredTime > 0 ? restoredTime : 0;
-    }
-  } catch(e) {}
-
-  function save() {
-    var sourceMatchesTrack = audio.getAttribute('data-idx') === String(idx);
-    var savedTime = resumeTime || (sourceMatchesTrack ? audio.currentTime : 0);
-    try { localStorage.setItem('vs', JSON.stringify({i:idx, t:savedTime, p:playing})); } catch(e) {}
-  }
-
-  function ensureAudioSource() {
-    if (audio.getAttribute('data-idx') === String(idx) && audio.getAttribute('src')) return;
-
-    var sourceIndex = idx;
-    var generation = ++sourceGeneration;
-    var timeToRestore = resumeTime;
-    audio.src = resolveUrl(PL[idx]);
-    audio.setAttribute('data-idx', idx);
-
-    if (timeToRestore > 0) {
-      var restoreSavedTime = function() {
-        audio.removeEventListener('loadedmetadata', restoreSavedTime);
-        if (generation !== sourceGeneration || audio.getAttribute('data-idx') !== String(sourceIndex)) return;
-        try { audio.currentTime = timeToRestore; } catch(e) {}
-        resumeTime = 0;
-        save();
-      };
-      if (audio.readyState >= 1) restoreSavedTime();
-      else audio.addEventListener('loadedmetadata', restoreSavedTime);
-    }
-  }
-
-  function load(i) {
-    var changed = (idx !== i);
-    idx = i;
-    if (changed) {
-      resumeTime = 0;
-      sourceGeneration += 1;
-    }
-    var t = PL[i];
-    mpCover.style.backgroundImage = 'url(' + t.cover + ')';
-    mpTitle.textContent = t.name;
-    updatePlaylistHighlight();
-    save();
-    if (playing) { ensureAudioSource(); audio.play(); }
-  }
-
-  function setPlaying(p) {
-    playing = p;
-    mpDisc.classList.toggle('spinning', p);
-    iconPlay.style.display = p ? 'none' : 'block';
-    iconPause.style.display = p ? 'block' : 'none';
-    updateB2t();
-    save();
-  }
-
-  function toggle() {
-    if (playing) { audio.pause(); setPlaying(false); }
-    else {
-      audio.preload = 'auto';
-      ensureAudioSource();
-      audio.play().then(function(){ setPlaying(true); }).catch(function(){});
-    }
-  }
-
-  function next() { load((idx + 1) % PL.length); }
-  function prev() { load((idx - 1 + PL.length) % PL.length); }
-
-  function updateB2t() {
-    var b2t = document.querySelector('.back-to-top');
-    if (b2t) {
-      b2t.classList.toggle('vinyl-on', playing);
-      if (!b2t.querySelector('.b2t-disc')) {
-        var disc = document.createElement('div');
-        disc.className = 'b2t-disc';
-        b2t.appendChild(disc);
-      }
-    }
-  }
-
-  function checkMusicPage() {
-    var onMusic = window.location.pathname.indexOf('/music') !== -1;
-    mp.style.display = onMusic ? 'none' : '';
-  }
-
-  // --- Playlist panel ---
-  function buildPlaylist() {
-    plPanel.innerHTML = '';
-    PL.forEach(function(t, i) {
-      var row = document.createElement('div');
-      row.className = 'mpp-row';
-      row.innerHTML = '<span class="mpp-num">' + (i < 9 ? '0' + (i + 1) : i + 1) + '</span><span class="mpp-name">' + t.name + '</span><span class="mpp-artist">' + t.artist + '</span>';
-      row.addEventListener('click', function() {
-        load(i);
-        if (!playing) toggle();
-        closePlaylist();
-      });
-      plPanel.appendChild(row);
-    });
-    updatePlaylistHighlight();
-  }
-
-  function updatePlaylistHighlight() {
-    var rows = plPanel.querySelectorAll('.mpp-row');
-    rows.forEach(function(r, i) { r.classList.toggle('active', i === idx); });
-  }
-
-  function openPlaylist() {
-    plOpen = true;
-    plPanel.style.display = 'block';
-    overlay.style.display = 'block';
-    mpDisc.classList.add('expanded');
-  }
-
-  function closePlaylist() {
-    plOpen = false;
-    plPanel.style.display = 'none';
-    overlay.style.display = 'none';
-    mpDisc.classList.remove('expanded');
-  }
-
-  mpDisc.addEventListener('click', function() {
-    if (plOpen) closePlaylist(); else openPlaylist();
-  });
-  overlay.addEventListener('click', closePlaylist);
-  buildPlaylist();
-
-  // --- Audio events ---
-  audio.addEventListener('loadedmetadata', save);
-  audio.addEventListener('ended', function() {
-    playing = true;
-    next();
-  });
-  audio.addEventListener('play', function(){ setPlaying(true); });
-  audio.addEventListener('pause', function(){ setPlaying(false); });
-  audio.addEventListener('timeupdate', function(){
-    if (audio.currentTime && !(Math.floor(audio.currentTime) % 2)) save();
-  });
-  audio.addEventListener('error', function(){ setPlaying(false); });
-
-  mpBtn.addEventListener('click', toggle);
-  mpPrev.addEventListener('click', prev);
-  mpNext.addEventListener('click', next);
-
-  // PJAX: update UI after page transitions
-  document.addEventListener('pjax:success', function() {
-    checkMusicPage();
-    updateB2t();
-  });
-
-  // Init
-  checkMusicPage();
-  updateB2t();
-
-  // Expose for music page
-  window.__vinyl = {
-    audio: audio, playlist: PL,
-    getIdx: function(){ return idx; },
-    load: load, toggle: toggle, next: next, prev: prev,
-    setPlaying: setPlaying, checkMusicPage: checkMusicPage
-  };
-
-  // Restore the saved track/time without fetching media until a user gesture.
-  load(idx);
-})();
+// Set window.__vinylCoverPaths = { '125042': '/assets/music/125042.webp' } after obtaining local cover assets.
+// External cover URLs remain in the playlist for reference; no external cover fetch is required.
 </script>
-
+<script src="/js/music/player.js"></script>
+<script src="/js/music/cover-loader.js"></script>
+<script src="/js/music/ui.js"></script>
 <!-- Live2D 看板娘：自托管、独立生命周期与语音 -->
 <script>
 window.__blogDesktopEffectsEnabled = Boolean(
@@ -356,72 +77,69 @@ window.__blogDesktopEffectsEnabled = Boolean(
 <!-- 鼠标拖尾粒子 -->
 
 <!-- 鼠标拖尾粒子 -->
-<canvas id="mouseTrail" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999"></canvas>
+<canvas id="mouseTrail" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:998"></canvas>
 <script>
-(function(){
-  var canvas = document.getElementById('mouseTrail');
-  if (!window.__blogDesktopEffectsEnabled) {
-    if (canvas) canvas.remove();
-    return;
+(function(global, document) {
+  'use strict';
+  if (global.__blogMouseTrail) { global.__blogMouseTrail.mount(); return; }
+
+  var canvas, context, particles = [], frame = 0, enabled = true;
+  var desktop = global.matchMedia('(min-width: 769px) and (hover: hover) and (pointer: fine)');
+  var reduced = global.matchMedia('(prefers-reduced-motion: reduce)');
+  var key = 'blog-mouse-trail-enabled';
+  try { enabled = localStorage.getItem(key) !== 'false'; } catch (_) {}
+
+  function supported() { return desktop.matches && !reduced.matches; }
+  function active() { return enabled && supported() && !document.hidden && Boolean(canvas); }
+  function emit() { global.dispatchEvent(new CustomEvent('blog:mouse-trail-state', { detail: { enabled: enabled, supported: supported() } })); }
+  function clear() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0; particles = [];
+    if (context && canvas) context.clearRect(0, 0, canvas.width, canvas.height);
   }
-  if (window.__blogMouseTrailInitialized) return;
-  window.__blogMouseTrailInitialized = true;
-
-  var ctx = canvas.getContext('2d');
-  var particles = [];
-  var maxParticles = 40;
-  var mouse = { x: -100, y: -100 };
-  var raf;
-
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  document.addEventListener('mousemove', function(e) {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    var now = Date.now();
-    for (var i = 0; i < 2; i++) {
-      if (particles.length >= maxParticles) break;
-      particles.push({
-        x: mouse.x,
-        y: mouse.y,
-        r: Math.random() * 3 + 1.5,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2,
-        life: 1,
-        decay: Math.random() * 0.02 + 0.015,
-        hue: Math.random() * 60 + 200
-      });
-    }
-  });
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (var i = particles.length - 1; i >= 0; i--) {
-      var p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= p.decay;
-      if (p.life <= 0) { particles.splice(i, 1); continue; }
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
-      ctx.fillStyle = 'hsla(' + p.hue + ', 80%, 65%, ' + (p.life * 0.6) + ')';
-      ctx.fill();
-    }
-    raf = requestAnimationFrame(draw);
-  }
-  draw();
-
-  // PJAX guard
-  document.addEventListener('pjax:success', function() {
-    canvas = document.getElementById('mouseTrail');
     if (!canvas) return;
-    ctx = canvas.getContext('2d');
-    resize();
-  });
-})();
+    canvas.width = global.innerWidth;
+    canvas.height = global.innerHeight;
+  }
+  function draw() {
+    frame = 0;
+    if (!active()) { clear(); return; }
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var particle = particles[i];
+      particle.x += particle.vx; particle.y += particle.vy; particle.life -= particle.decay;
+      if (particle.life <= 0) { particles.splice(i, 1); continue; }
+      context.beginPath(); context.arc(particle.x, particle.y, particle.radius * particle.life, 0, Math.PI * 2);
+      context.fillStyle = 'hsla(' + particle.hue + ', 75%, 65%, ' + (particle.life * 0.45) + ')'; context.fill();
+    }
+    if (particles.length) frame = requestAnimationFrame(draw);
+  }
+  function schedule() { if (active() && particles.length && !frame) frame = requestAnimationFrame(draw); }
+  function move(event) {
+    if (!active()) return;
+    particles.push({ x:event.clientX, y:event.clientY, radius:2.2, vx:0, vy:0, life:1, decay:0.035, hue:202 });
+    if (particles.length > 20) particles.shift();
+    schedule();
+  }
+  function mount() {
+    var next = document.getElementById('mouseTrail');
+    if (next !== canvas) { canvas = next; context = canvas && canvas.getContext('2d'); resize(); }
+    if (!active()) clear();
+  }
+  function setEnabled(value) {
+    enabled = Boolean(value);
+    try { localStorage.setItem(key, String(enabled)); } catch (_) {}
+    if (!active()) clear();
+    emit();
+  }
+  document.addEventListener('mousemove', move, { passive:true });
+  document.addEventListener('visibilitychange', function() { if (document.hidden) clear(); else mount(); });
+  global.addEventListener('resize', resize);
+  global.addEventListener('pjax:success', mount);
+  desktop.addEventListener('change', mount);
+  reduced.addEventListener('change', function() { if (!supported()) clear(); else mount(); emit(); });
+  global.__blogMouseTrail = { mount:mount, setEnabled:setEnabled, isEnabled:function(){ return enabled && supported(); }, supported:supported };
+  mount(); emit();
+})(window, document);
 </script>
