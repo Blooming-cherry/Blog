@@ -58,6 +58,8 @@ try {
   assert.equal(await evaluate("document.querySelectorAll('#blog-companion').length"), 1, 'PJAX and bootstrap stay single-instance');
   await evaluate("document.querySelector('[data-companion-more]').click()");
   assert.equal(await evaluate("document.activeElement.closest('[data-companion-menu]')!==null"), true, 'Menu gets keyboard focus');
+  assert.equal(await evaluate("document.querySelector('[data-companion-voice-controls]').hidden"), true, 'Unavailable voice controls stay hidden');
+  assert.match(await evaluate("document.querySelector('[data-companion-voice-notice]').textContent"), /语音尚未提供/, 'Menu explains that no companion voice is available');
   await evaluate("document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))");
   assert.equal(await evaluate("document.activeElement.hasAttribute('data-companion-more')"), true, 'Escape restores trigger focus');
   await evaluate("if(!document.querySelector('#search')){const input=document.createElement('input');input.id='search';document.body.append(input);}document.querySelector('[data-companion-more]').click();document.querySelector('#search').focus()");

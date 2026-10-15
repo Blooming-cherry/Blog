@@ -23,8 +23,9 @@
     }
     createUI() {
       const root = document.createElement('aside'); root.id = 'blog-companion'; root.setAttribute('aria-label', '鲸鱼看板娘');
-      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开鲸鱼看板娘"><img src="${poster}" alt="原创静态鲸鱼图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><button type="button" data-companion-sound>开启声音</button><button type="button" data-companion-trail>关闭鼠标拖尾</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
+      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开鲸鱼看板娘"><img src="${poster}" alt="原创静态鲸鱼图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><button type="button" data-companion-trail>关闭鼠标拖尾</button><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
       this.root = root; this.avatar = root.querySelector('[data-companion-avatar]'); this.stage = root.querySelector('.companion-stage'); this.status = root.querySelector('.companion-status'); this.menu = root.querySelector('[data-companion-menu]'); this.more = root.querySelector('[data-companion-more]');
+      this.syncVoiceControls();
       document.body.appendChild(root);
       this.listen(root.querySelector('img'), 'error', event => { const image = event.target; if (!image.src.endsWith(poster)) image.src = poster; });
     }
@@ -58,7 +59,7 @@
       this.listen(this.menu, 'keydown', event => {
         if (event.key === 'Escape') { event.preventDefault(); this.setMenu(false, true); }
         if (event.key === 'Tab') {
-          const items = [...this.menu.querySelectorAll('button,input,select')]; const first = items[0], last = items.at(-1);
+          const items = this.menuItems(); const first = items[0], last = items.at(-1);
           if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
           else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
         }
@@ -120,6 +121,15 @@
       this.root.querySelector('[data-companion-volume]').value = String(this.preferences.value.volume);
       this.root.querySelector('[data-companion-size]').value = String(this.preferences.value.size);
     }
+    menuItems() { return [...this.menu.querySelectorAll('button,input,select')].filter(item => !item.closest('[hidden]')); }
+    syncVoiceControls() {
+      if (!this.root) return;
+      const available = Object.values(this.manifest?.voices || {}).some(voice => typeof voice === 'string' && voice.length > 0);
+      this.root.querySelector('[data-companion-voice-controls]').hidden = !available;
+      const notice = this.root.querySelector('[data-companion-voice-notice]');
+      notice.hidden = available;
+      notice.textContent = this.manifest ? (this.manifest.voiceNotice || '鲸鱼娘语音尚未提供。') : '形象加载后检查语音资源。';
+    }
     syncTrailControl() {
       const button = this.root?.querySelector('[data-companion-trail]');
       const trail = global.__blogMouseTrail;
@@ -132,7 +142,7 @@
     }
     setMenu(open, restore = false) {
       this.menu.hidden = !open; this.more.setAttribute('aria-expanded', String(open));
-      if (open) this.menu.querySelector('button').focus(); else if (restore) this.more.focus();
+      if (open) this.menuItems()[0]?.focus(); else if (restore) this.more.focus();
     }
     message(text, persistent = false) {
       clearTimeout(this.messageTimer); this.status.textContent = text; this.status.hidden = false;
@@ -161,7 +171,7 @@
         if (manifest.poster) api.sameOrigin(manifest.poster);
         await renderer.load(manifest, request.signal);
         if (this.destroyed || request.signal.aborted || serial !== this.serial) { renderer.destroy(); return; }
-        this.renderer?.destroy(); this.renderer = renderer; this.manifest = manifest;
+        this.renderer?.destroy(); this.renderer = renderer; this.manifest = manifest; this.syncVoiceControls();
         this.root.querySelector('img').src = manifest.poster || poster;
         this.state = 'ready'; this.root.classList.add('is-ready'); this.status.hidden = true; this.syncRendering();
       } catch (error) { renderer.destroy(); if (!this.destroyed && serial === this.serial && !request.signal.aborted) this.fail(error); }
