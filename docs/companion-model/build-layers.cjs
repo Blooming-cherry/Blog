@@ -5,6 +5,7 @@ const sharp = require(process.env.BLOG_SHARP_MODULE || 'C:/Users/admin/.cache/co
 const root = __dirname;
 const poly = (...points) => ({ polygon: points });
 const ellipse = (cx,cy,rx,ry) => ({ ellipse: [cx,cy,rx,ry] });
+const pxpoly=(...points)=>poly(...points.map(([x,y])=>[x/1262,y/1246]));
 const definitions = [
   {id:'body',name:'躯干底层',parent:'torso',pivot:[.48,.64],shape:poly([0,0],[1,0],[1,1],[0,1])},
   {id:'tail',name:'鲸尾',parent:'torso',pivot:[.72,.83],shape:poly([.80,.58],[.90,.57],[.98,.65],[.98,.91],[.72,.94],[.65,.85],[.75,.79],[.79,.72])},
@@ -28,6 +29,29 @@ const definitions = [
   {id:'iris-right',name:'右瞳孔',parent:'eyeRightGroup',pivot:[.547,.411],shape:ellipse(.547,.411,.024,.029)},
   {id:'mouth',name:'口型',parent:'headGroup',pivot:[.475,.463],shape:ellipse(.475,.463,.027,.022)}
 ];
+// Source-coordinate contour traces. Keep joints on actual garment / hair boundaries.
+const contours={
+ tail:pxpoly([985,813],[1013,788],[1048,759],[1075,739],[1096,717],[1110,724],[1125,759],[1137,801],[1138,834],[1129,866],[1110,895],[1086,914],[1056,933],[1043,964],[1031,995],[1012,1024],[985,1048],[949,1068],[904,1083],[856,1087],[811,1083],[784,1074],[805,1053],[843,1034],[869,1010],[889,984],[899,966],[926,965],[958,958],[982,949],[1000,935],[1001,927],[983,919],[965,909],[947,896],[937,882],[933,862],[943,841],[960,826]),
+ skirt:pxpoly([493,795],[697,795],[726,820],[755,850],[789,883],[826,918],[855,947],[895,983],[895,1007],[879,1031],[844,1054],[805,1074],[766,1083],[715,1090],[663,1090],[610,1092],[550,1090],[502,1090],[460,1084],[414,1075],[370,1055],[333,1037],[309,1014],[286,983],[290,971],[314,955],[329,934],[351,907],[375,886],[397,861],[424,836],[453,814]),
+ 'leg-left':pxpoly([485,1090],[577,1090],[583,1240],[478,1240]),
+ 'leg-right':pxpoly([615,1090],[710,1090],[714,1240],[609,1240]),
+ head:pxpoly([0,0],[1262,0],[1262,618],[0,618]),
+ 'hair-left':pxpoly([324,505],[350,541],[382,563],[398,580],[414,611],[443,633],[458,657],[450,681],[438,704],[414,719],[395,741],[381,767],[357,789],[345,825],[328,842],[310,852],[276,856],[243,871],[212,864],[193,848],[189,824],[190,800],[176,769],[176,741],[193,712],[231,690],[225,669],[219,651],[230,626],[257,601],[290,576],[310,546]),
+ 'hair-right':pxpoly([865,510],[866,548],[889,578],[920,607],[952,631],[980,645],[1001,668],[993,694],[1017,721],[1032,745],[1023,770],[1002,787],[1006,809],[996,840],[985,857],[963,875],[938,885],[918,873],[891,866],[865,839],[856,809],[836,779],[823,750],[810,726],[787,716],[767,702],[754,681],[752,656],[769,626],[787,608],[809,589],[828,564],[843,539]),
+ 'arm-left':pxpoly([478,640],[482,672],[487,701],[479,733],[464,766],[448,791],[425,816],[399,844],[358,829],[331,812],[343,790],[365,774],[385,753],[398,724],[415,699],[439,687],[446,667],[461,649]),
+ 'arm-right':pxpoly([719,644],[738,663],[752,681],[775,700],[790,731],[805,752],[831,773],[850,795],[855,820],[832,840],[803,848],[775,822],[752,791],[738,756],[724,720],[713,680]),
+ 'hand-left':pxpoly([330,817],[346,824],[361,835],[382,845],[398,853],[389,867],[370,878],[354,889],[342,920],[326,924],[310,918],[310,906],[296,914],[280,914],[280,902],[266,902],[256,895],[264,883],[284,872],[300,865],[313,851]),
+ 'hand-right':pxpoly([823,819],[843,821],[859,842],[868,859],[884,872],[911,882],[925,894],[923,902],[901,899],[904,910],[888,912],[881,903],[877,919],[864,919],[850,904],[840,889],[823,880],[807,865],[799,849]),
+ bangs:pxpoly([490,210],[620,210],[646,255],[665,350],[655,416],[620,463],[643,483],[612,483],[600,493],[560,490],[580,475],[550,450],[525,400],[512,355],[490,370],[475,400],[468,360],[475,300]),
+ 'fin-left':pxpoly([306,400],[313,428],[305,448],[312,480],[333,492],[329,513],[300,519],[285,521],[265,515],[248,521],[230,518],[210,518],[193,513],[193,500],[226,479],[257,452],[287,421]),
+ 'fin-right':pxpoly([870,406],[900,421],[933,440],[980,480],[1046,514],[1038,524],[1016,527],[994,522],[981,530],[961,528],[944,531],[925,526],[906,528],[883,518],[868,507]),
+ ahoge:pxpoly([398,108],[414,80],[455,47],[510,24],[550,20],[581,30],[602,53],[613,82],[610,110],[595,132],[588,128],[591,102],[586,85],[566,65],[538,57],[501,60],[466,72],[430,94],[410,110]),
+ 'eye-left':pxpoly([425,493],[434,474],[447,456],[463,447],[483,445],[501,447],[520,455],[536,468],[547,486],[545,511],[535,529],[520,540],[502,546],[481,545],[462,539],[447,527],[437,511]),
+ 'eye-right':pxpoly([648,483],[654,463],[673,448],[691,443],[711,445],[730,455],[746,468],[763,490],[765,502],[750,513],[740,530],[719,543],[697,548],[676,544],[661,535],[649,517]),
+ 'iris-left':pxpoly([500,465],[517,470],[531,483],[536,503],[535,520],[526,534],[515,541],[499,544],[481,538],[469,524],[466,508],[469,489],[479,475]),
+ 'iris-right':pxpoly([688,465],[705,469],[719,482],[726,500],[725,518],[718,533],[707,541],[691,545],[677,540],[665,530],[661,514],[664,495],[673,478])
+};
+for(const layer of definitions)if(contours[layer.id])layer.shape=contours[layer.id];
 function contains(shape,x,y){
   if(shape.ellipse){const[cx,cy,rx,ry]=shape.ellipse;return ((x-cx)/rx)**2+((y-cy)/ry)**2<=1;}
   const p=shape.polygon;let inside=false;
@@ -43,7 +67,21 @@ function contains(shape,x,y){
   for(let y=0;y<height;y++)for(let x=0;x<width;x++){
     const offset=(y*width+x)*4;if(!data[offset+3])continue;
     let part=0;for(let i=1;i<definitions.length;i++)if(contains(definitions[i].shape,(x+.5)/width,(y+.5)/height))part=i;
-    data.copy(buffers[part],offset,offset,offset+4);assignment[y*width+x]=part;
+    const selected=definitions[part].id,r=data[offset],g=data[offset+1],b=data[offset+2];
+    if((selected.startsWith('hair-')||selected==='bangs')&&r>170&&r>g*1.03&&r>b*1.03)part=definitions.findIndex(l=>l.id==='head');
+    if(selected.startsWith('arm-')&&b>140&&g>80&&b>r*1.5)part=definitions.findIndex(l=>l.id===selected.replace('arm-','hair-'));
+    assignment[y*width+x]=part;
+  }
+  // Assign small contour leftovers to the nearest traced anatomical layer, rather than
+  // leaving disconnected hair/tail pieces in the torso image.
+  const torso=pxpoly([440,610],[755,610],[760,800],[700,824],[492,824],[430,800]);
+  const nearest=Uint8Array.from(assignment),visited=new Uint8Array(width*height),queue=new Int32Array(width*height);let first=0,end=0;
+  for(let i=0;i<nearest.length;i++)if(nearest[i]){visited[i]=1;queue[end++]=i;}
+  while(first<end){const p=queue[first++],x=p%width,y=Math.floor(p/width);for(const n of[x>0?p-1:-1,x<width-1?p+1:-1,y>0?p-width:-1,y<height-1?p+width:-1])if(n>=0&&!visited[n]){visited[n]=1;nearest[n]=nearest[p];queue[end++]=n;}}
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+    const p=y*width+x,offset=p*4;if(!data[offset+3])continue;
+    if(!assignment[p]&&!contains(torso,(x+.5)/width,(y+.5)/height))assignment[p]=nearest[p];
+    const part=assignment[p];data.copy(buffers[part],offset,offset,offset+4);
     const b=bounds[part];b[0]=Math.min(b[0],x);b[1]=Math.min(b[1],y);b[2]=Math.max(b[2],x+1);b[3]=Math.max(b[3],y+1);
   }
   const output=path.join(root,'layers');await fs.mkdir(output,{recursive:true});
@@ -61,7 +99,7 @@ function contains(shape,x,y){
     const edge=Buffer.from(buffers[i]);
     while(first<end){const p=queue[first++];if(distance[p]>=10)continue;const x=p%width,y=Math.floor(p/width);
       for(const n of [x>0?p-1:-1,x<width-1?p+1:-1,y>0?p-width:-1,y<height-1?p+width:-1]){
-        if(n<0||visited[n]||data[n*4+3]!==255)continue;visited[n]=1;distance[n]=distance[p]+1;queue[end++]=n;
+        if(n<0||visited[n]||data[n*4+3]<245)continue;visited[n]=1;distance[n]=distance[p]+1;queue[end++]=n;
         edge.copy(edge,n*4,p*4,p*4+4);edge[n*4+3]=255;edge.copy(repair,n*4,n*4,n*4+4);
         const nx=n%width,ny=Math.floor(n/width);rb[0]=Math.min(rb[0],nx);rb[1]=Math.min(rb[1],ny);rb[2]=Math.max(rb[2],nx+1);rb[3]=Math.max(rb[3],ny+1);
       }
@@ -78,7 +116,9 @@ function contains(shape,x,y){
   for(let i=0;i<width*height;i++)if(data[i*4+3]){opaque++;for(let c=0;c<4;c++)if(rebuilt[i*4+c]!==data[i*4+c])different++;}
   if(different)throw Error('Source reconstruction failed');
   await sharp(rebuilt,{raw:{width,height,channels:4}}).png().toFile(path.join(output,'reconstructed.png'));
-  const rig={version:1,source:'blue-maid-05-corrected-v2.png',width,height,kind:'segmented-2d-puppet',notCubism:true,layers:definitions.map((d,i)=>({...d,file:'layers/'+d.id+'.png',bounds:bounds[i]})),seams:repairs,verification:{visiblePixels:opaque,channelDifferences:different,method:'reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays'}};
+  const groups={root:{parent:null,pivot:[.5,.95]},torso:{parent:'root',pivot:[.48,.65]},headGroup:{parent:'torso',pivot:[.48,.505]},armLeftGroup:{parent:'torso',pivot:[.377,.525]},armRightGroup:{parent:'torso',pivot:[.578,.525]},handLeftGroup:{parent:'armLeftGroup',pivot:[.28,.69]},handRightGroup:{parent:'armRightGroup',pivot:[.68,.70]},eyeLeftGroup:{parent:'headGroup',pivot:[.397,.407]},eyeRightGroup:{parent:'headGroup',pivot:[.547,.407]}};
+  const actions={blink:{seconds:.24},nod:{seconds:1.35},wave:{seconds:1.8},happy:{seconds:1.35},tail:{seconds:1.35}};
+  const rig={version:1,source:'blue-maid-05-corrected-v2.png',width,height,kind:'segmented-2d-puppet',notCubism:true,groups,actions,layers:definitions.map((d,i)=>({...d,file:'layers/'+d.id+'.png',bounds:bounds[i]})),seams:repairs,verification:{visiblePixels:opaque,channelDifferences:different,method:'reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays'}};
   await fs.writeFile(path.join(root,'rig.json'),JSON.stringify(rig,null,2)+'\n');
   await fs.writeFile(path.join(output,'reconstruction-check.json'),JSON.stringify(rig.verification,null,2)+'\n');
   console.log(JSON.stringify({layers:definitions.length,width,height,...rig.verification}));

@@ -1,4 +1,5 @@
 {
+  "private": true,
   "dependencies": {
     "ag-psd": "^31.0.3"
   }
