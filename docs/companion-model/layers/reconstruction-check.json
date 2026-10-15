@@ -1,0 +1,5 @@
+{
+  "visiblePixels": 714312,
+  "channelDifferences": 0,
+  "method": "reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays"
+}

@@ -1,72 +1,84 @@
 (() => {
   'use strict';
-  const canvas = document.querySelector('#model'), status = document.querySelector('#status');
-  const gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false });
-  if (!gl) { status.textContent = '当前浏览器无法创建 WebGL 预览。'; return; }
-  const vertex = `precision mediump float; attribute vec2 point; varying vec2 uv;
-    uniform float time, amount, nod, happy, tail; uniform vec2 look;
-    float region(vec2 p,vec2 c,vec2 r){vec2 d=(p-c)/r;return exp(-dot(d,d)*2.0);}
-    void main(){uv=point;vec2 p=point;float head=1.0-smoothstep(.44,.67,p.y);
-      p.x+=look.x*.009*head;p.y+=look.y*.005*head;
-      p.y-=sin(time*1.6)*.0025*amount*(1.0-smoothstep(.82,.98,p.y));
-      p.x+=sin(time*1.1)*.0025*head*amount;
-      float hair=region(p,vec2(.25,.62),vec2(.17,.22))+region(p,vec2(.73,.62),vec2(.14,.23));
-      p.x+=sin(time*1.8+p.y*8.0)*.004*hair*amount;
-      float fin=region(p,vec2(.85,.73),vec2(.18,.18));
-      p.x+=sin(time*1.5)*(.005*amount+.018*tail)*fin;
-      p.y+=cos(time*1.5)*(.003*amount+.009*tail)*fin;
-      p.y+=nod*.012*head;p.y-=happy*.009*head;p.x+=happy*.006*sin(time*17.0)*head;
-      gl_Position=vec4((p.x-.5)*1.84,(.5-p.y)*1.84,0,1);
-    }`;
-  const fragment = `precision mediump float; varying vec2 uv; uniform sampler2D art; uniform float blink;uniform vec2 look;
-    void main(){vec2 p=uv;vec4 c=texture2D(art,p);
-      for(int i=0;i<2;i++){vec2 center=vec2(i==0?.397:.547,.407);vec2 d=p-center;
-        float inside=(1.0-smoothstep(.037,.048,abs(d.x)))*(1.0-smoothstep(.030,.040,abs(d.y)));
-        if(inside>.0){float opening=max(.07,1.0-blink*.94);vec2 q=center+vec2(d.x-look.x*.002,d.y/opening);
-          vec4 eye=texture2D(art,q);float keep=1.0-smoothstep(.031,.039,abs(d.y/opening));
-          vec4 skin=vec4(.996,.932,.909,1.0);vec4 replacement=mix(skin,eye,keep);
-          float lid=(1.0-smoothstep(.001,.0025,abs(d.y+.002+(.004*(1.0-pow(d.x/.045,2.0))))))*blink;
-          replacement=mix(replacement,vec4(.23,.14,.19,1.0),lid);c=mix(c,replacement,inside*blink);}
-      }gl_FragColor=c;
-    }`;
-  function shader(type, source) { const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s; }
-  let program;
-  try {program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));}catch(error){status.textContent='预览着色器加载失败：'+error.message;return;}
-  gl.useProgram(program);
-  const points=[],indices=[],cols=100,rows=100;
-  for(let y=0;y<=rows;y++)for(let x=0;x<=cols;x++)points.push(x/cols,y/rows);
-  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const a=y*(cols+1)+x;indices.push(a,a+1,a+cols+1,a+1,a+cols+2,a+cols+1);}
-  const positions=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,positions);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(points),gl.STATIC_DRAW);
-  const attribute=gl.getAttribLocation(program,'point');gl.enableVertexAttribArray(attribute);gl.vertexAttribPointer(attribute,2,gl.FLOAT,false,0,0);
-  const elements=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,elements);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(indices),gl.STATIC_DRAW);
-  const uniform=Object.fromEntries(['time','amount','nod','happy','tail','look','blink','art'].map(name=>[name,gl.getUniformLocation(program,name)]));
-  let ready=false,frame=0,last=0,elapsed=0,nextBlink=2.8,blinkStart=-10,action=null,actionAt=0,look=[0,0],target=[0,0];
-  const playing=document.querySelector('#playing'),follow=document.querySelector('#follow'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  function draw(now){frame=0;if(!ready||document.hidden)return;const dt=last?Math.min((now-last)/1000,.05):0;last=now;
-    const active=playing.checked&&!reduced.matches;if(active)elapsed+=dt;
-    if(active&&elapsed>=nextBlink){blinkStart=elapsed;nextBlink=elapsed+3.4+Math.random()*2.2;}
-    look=look.map((value,i)=>value+(target[i]-value)*.12);
-    const since=(now-actionAt)/1000,envelope=Math.max(0,Math.sin(Math.min(1,since/1.1)*Math.PI));
-    if(since>1.1)action=null;
-    const autoBlink=active?Math.max(0,1-Math.abs((elapsed-blinkStart-.11)/.11)):0;
-    const manualBlink=action==='blink'?Math.max(0,1-Math.abs((since-.11)/.11)):0;
-    gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform1f(uniform.time,elapsed);gl.uniform1f(uniform.amount,active?1:0);
-    gl.uniform1f(uniform.nod,action==='nod'?envelope:0);gl.uniform1f(uniform.happy,action==='happy'?envelope:0);gl.uniform1f(uniform.tail,action==='tail'?envelope:0);
-    gl.uniform2f(uniform.look,...(follow.checked&&!reduced.matches?look:[0,0]));gl.uniform1f(uniform.blink,Math.max(autoBlink,manualBlink));
-    gl.drawElements(gl.TRIANGLES,indices.length,gl.UNSIGNED_SHORT,0);
-    if(active||action||(!reduced.matches&&look.some((v,i)=>Math.abs(v-target[i])>.001)))schedule();
+  const canvas=document.querySelector('#model'),ctx=canvas.getContext('2d'),status=document.querySelector('#status');
+  const playing=document.querySelector('#playing'),follow=document.querySelector('#follow'),explode=document.querySelector('#explode');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  let rig,ready=false,frame=0,last=0,time=0,nextBlink=3,blinkAt=-10,action=null,actionAt=0,target=[0,0],look=[0,0],rest=false;
+  const images=new Map(),seams=new Map(),visible=new Set();
+  const names={blink:'独立眼睑眨眼',nod:'头部关节点头',wave:'手臂与手腕挥手',happy:'开心回应',tail:'独立鲸尾摆动'};
+  const order=['tail','hair-left','hair-right','leg-left','leg-right','body','skirt','arm-left','arm-right','hand-left','hand-right','head','bangs','fin-left','fin-right','ahoge','eye-left','eye-right','iris-left','iris-right','mouth'];
+  const load=url=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error('图层载入失败：'+url));image.src=url;});
+  const pivotTransform=(parent,pivot,angle=0,sx=1,sy=1,dx=0,dy=0)=>parent.translate(pivot[0]*rig.width+dx,pivot[1]*rig.height+dy).rotate(angle).scale(sx,sy).translate(-pivot[0]*rig.width,-pivot[1]*rig.height);
+  function schedule(){if(ready&&!frame&&!document.hidden)frame=requestAnimationFrame(draw);}
+  function trigger(name){rest=false;explode.checked=false;if(reduced.matches){status.textContent='已遵循系统减少动态效果设置。';return;}action=name;actionAt=performance.now();status.textContent=names[name];schedule();}
+  function draw(now){
+    frame=0;if(!ready||document.hidden)return;
+    const dt=last?Math.min((now-last)/1000,.05):0;last=now;
+    const active=playing.checked&&!reduced.matches&&!explode.checked&&!rest;
+    if(active)time+=dt;
+    if(active&&time>=nextBlink){blinkAt=time;nextBlink=time+3.2+Math.random()*2.4;}
+    look=look.map((v,i)=>v+(target[i]-v)*.12);
+    const elapsed=(now-actionAt)/1000,duration=action==='blink'?.24:action==='wave'?1.8:1.35;
+    const phase=Math.min(1,elapsed/duration),envelope=action?Math.sin(Math.PI*phase):0;
+    if(elapsed>duration)action=null;
+    const amplitude=active?1:0;
+    let blink=active?Math.max(0,1-Math.abs((time-blinkAt-.10)/.10)):0;
+    if(action==='blink')blink=Math.max(0,1-Math.abs((elapsed-.11)/.11));
+    if(rest||explode.checked||reduced.matches)blink=0;
+    const open=Math.max(.025,1-blink),response=rest||explode.checked?0:envelope;
+    const tracking=follow.checked&&!rest&&!explode.checked&&!reduced.matches?look:[0,0];
+    const root=new DOMMatrix(),torso=root.translate(0,-Math.sin(time*1.7)*1.7*amplitude-(action==='happy'?response*3:0));
+    const headAngle=Math.sin(time*1.1)*.35*amplitude+tracking[0]*.7+(action==='nod'?response*1.8:0);
+    const head=pivotTransform(torso,[.48,.505],headAngle,1,1,tracking[0]*1.4,tracking[1]*.7+(action==='nod'?response*3:0));
+    const armL=pivotTransform(torso,[.37,.55],-.35*Math.sin(time*1.7)*amplitude);
+    const armR=pivotTransform(torso,[.60,.55],.35*Math.sin(time*1.7)*amplitude+(action==='wave'?-6*response:0));
+    const groups={root,torso,headGroup:head,armLeftGroup:armL,armRightGroup:armR,
+      handLeftGroup:pivotTransform(armL,[.28,.69],0),handRightGroup:pivotTransform(armR,[.68,.70],action==='wave'?Math.sin(elapsed*16)*9*response:0),
+      eyeLeftGroup:pivotTransform(head,[.397,.407],0,1,open),eyeRightGroup:pivotTransform(head,[.547,.407],0,1,open)};
+    const transforms=new Map();
+    for(const layer of rig.layers){
+      let angle=0,dx=0,dy=0,sy=1;
+      if(layer.id==='tail')angle=Math.sin(time*1.5)*1.1*amplitude+(action==='tail'?Math.sin(elapsed*8)*3.5*response:0);
+      if(layer.id.startsWith('hair-'))angle=Math.sin(time*1.6+(layer.id==='hair-left'?0:.7))*.55*amplitude;
+      if(layer.id.startsWith('fin-'))angle=Math.sin(time*1.8)*.45*amplitude;
+      if(layer.id==='ahoge')angle=Math.sin(time*2)*1.1*amplitude;
+      if(layer.id==='bangs')angle=Math.sin(time*1.4)*.12*amplitude;
+      if(layer.id==='skirt')angle=Math.sin(time*1.7)*.12*amplitude;
+      if(layer.id.startsWith('iris-')){dx=tracking[0]*2.0;dy=tracking[1]*1.1;}
+      if(layer.id==='mouth'&&action==='happy')sy=1+.08*response;
+      if(rest||explode.checked){angle=0;dx=0;dy=0;sy=1;}
+      let matrix=pivotTransform(groups[layer.parent],layer.pivot,angle,1,sy,dx,dy);
+      if(explode.checked){const b=layer.bounds,cx=(b[0]+b[2])/2/rig.width,cy=(b[1]+b[3])/2/rig.height;matrix=new DOMMatrix().translate((cx-.48)*180,(cy-.5)*180);if(layer.id.startsWith('eye-'))matrix=matrix.translate(layer.id.endsWith('left')?-35:35,0);if(layer.id.startsWith('iris-'))matrix=matrix.translate(layer.id.endsWith('left')?-70:70,-30);}
+      transforms.set(layer.id,matrix);
+    }
+    ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);
+    const scale=Math.min(canvas.width/rig.width,canvas.height/rig.height)*(explode.checked?.72:.91);
+    const base=new DOMMatrix().translate(canvas.width/2,canvas.height/2).scale(scale).translate(-rig.width/2,-rig.height/2);
+    const set=matrix=>{const m=base.multiply(matrix);ctx.setTransform(m.a,m.b,m.c,m.d,m.e,m.f);};
+    function imageAt(image,bounds){ctx.drawImage(image,bounds[0],bounds[1],bounds[2]-bounds[0],bounds[3]-bounds[1]);}
+    if(!explode.checked&&!rest){for(const seam of rig.seams){if(!visible.has(seam.id)||seam.id.startsWith('iris-')||seam.id.startsWith('eye-')||seam.id==='mouth')continue;set(transforms.get(seam.id));imageAt(seams.get(seam.id),seam.bounds);}}
+    if(!explode.checked&&!rest){set(head);for(const[cx,cy,rx,ry]of [[.397,.407,.047,.043],[.547,.407,.047,.043],[.475,.463,.027,.022]]){ctx.beginPath();ctx.ellipse(cx*rig.width,cy*rig.height,rx*rig.width,ry*rig.height,0,0,Math.PI*2);ctx.fillStyle='#ffefea';ctx.fill();}}
+    for(const id of order){if(!visible.has(id))continue;const layer=rig.layers.find(l=>l.id===id);set(transforms.get(id));
+      if(id.startsWith('eye-')&&!explode.checked&&!rest){const iris=rig.layers.find(l=>l.id==='iris-'+id.split('-')[1]),e=iris.shape.ellipse;ctx.fillStyle='#fdfbff';ctx.beginPath();ctx.ellipse(e[0]*rig.width,e[1]*rig.height,e[2]*rig.width,e[3]*rig.height,0,0,Math.PI*2);ctx.fill();}
+      ctx.save();if(id.startsWith('iris-')&&!explode.checked){const e=rig.layers.find(l=>l.id==='eye-'+id.split('-')[1]).shape.ellipse;ctx.beginPath();ctx.ellipse(e[0]*rig.width,e[1]*rig.height,e[2]*rig.width,e[3]*rig.height,0,0,Math.PI*2);ctx.clip();}
+      imageAt(images.get(id),layer.bounds);ctx.restore();
+      if(explode.checked&&document.querySelector('#labels').checked){ctx.font='15px system-ui';ctx.fillStyle='#245886';ctx.fillText(layer.name,layer.bounds[0],Math.max(15,layer.bounds[1]-6));}
+    }
+    if(blink>.8&&!explode.checked){set(head);ctx.strokeStyle='#392c42';ctx.lineWidth=3;ctx.lineCap='round';for(const x of [.397,.547]){ctx.beginPath();ctx.moveTo((x-.033)*rig.width,.407*rig.height);ctx.quadraticCurveTo(x*rig.width,.416*rig.height,(x+.033)*rig.width,.407*rig.height);ctx.stroke();}}
+    if(active||action||(!reduced.matches&&!rest&&look.some((v,i)=>Math.abs(v-target[i])>.001)))schedule();
   }
-  function schedule(){if(!frame&&!document.hidden)frame=requestAnimationFrame(draw);}
-  function trigger(name){if(reduced.matches){status.textContent='系统已开启减少动态效果。';return;}action=name;actionAt=performance.now();status.textContent=({blink:'眨眼',nod:'轻轻点头',happy:'开心回应',tail:'鲸尾轻摆'})[name];schedule();}
-  document.querySelectorAll('[data-motion]').forEach(button=>button.addEventListener('click',()=>trigger(button.dataset.motion)));
-  canvas.addEventListener('click',()=>trigger('happy'));canvas.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();trigger('happy');}});
-  canvas.addEventListener('pointermove',event=>{const r=canvas.getBoundingClientRect();target=[Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1)),Math.max(-1,Math.min(1,(event.clientY-r.top)/r.height*2-1))];schedule();});
-  canvas.addEventListener('pointerleave',()=>{target=[0,0];schedule();});
-  playing.addEventListener('change',()=>{last=0;status.textContent=playing.checked?'待机播放中':'已暂停待机';schedule();});follow.addEventListener('change',schedule);
-  document.querySelector('#dark').addEventListener('change',event=>document.querySelector('#stage').classList.toggle('dark',event.target.checked));
-  document.querySelector('#size').addEventListener('change',event=>canvas.style.maxWidth=event.target.value+'px');
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0;}else schedule();});reduced.addEventListener('change',()=>{last=0;schedule();});
-  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(frame);frame=0;ready=false;status.textContent='图形上下文已中断，请刷新页面。';});
-  const image=new Image();image.onload=()=>{const texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.uniform1i(uniform.art,0);ready=true;status.textContent='待机播放中 · 点击形象可回应';schedule();};image.onerror=()=>status.textContent='校正版图片未能加载。';image.src='blue-maid-05-corrected-v2.png';
+  document.querySelectorAll('[data-motion]').forEach(b=>b.addEventListener('click',()=>trigger(b.dataset.motion)));
+  canvas.addEventListener('click',()=>trigger('happy'));canvas.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();trigger('happy');}});
+  canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect();target=[Math.max(-1,Math.min(1,(e.clientX-r.left)/r.width*2-1)),Math.max(-1,Math.min(1,(e.clientY-r.top)/r.height*2-1))];schedule();});canvas.addEventListener('pointerleave',()=>{target=[0,0];schedule();});
+  playing.addEventListener('change',()=>{rest=false;last=0;status.textContent=playing.checked?'独立图层待机播放中':'待机已暂停';schedule();});follow.addEventListener('change',schedule);
+  explode.addEventListener('change',()=>{action=null;rest=false;status.textContent=explode.checked?'拆层检查：21 个独立 PNG，可逐层关闭':'已恢复关节装配';schedule();});document.querySelector('#labels').addEventListener('change',schedule);
+  document.querySelector('#rest').addEventListener('click',()=>{rest=true;action=null;playing.checked=false;explode.checked=false;look=[0,0];target=[0,0];status.textContent='静态还原：不绘制补缝，不做任何关节变换';schedule();});
+  document.querySelector('#allLayers').addEventListener('click',()=>{rig.layers.forEach(l=>visible.add(l.id));document.querySelectorAll('[data-layer]').forEach(c=>c.checked=true);schedule();});
+  document.querySelector('#dark').addEventListener('change',e=>document.querySelector('#stage').classList.toggle('dark',e.target.checked));document.querySelector('#size').addEventListener('change',e=>canvas.style.maxWidth=e.target.value+'px');
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0;}else schedule();});reduced.addEventListener('change',()=>{action=null;last=0;schedule();});
+  (async()=>{rig=await(await fetch('rig.json')).json();await Promise.all([...rig.layers.map(async l=>{images.set(l.id,await load(l.file));visible.add(l.id);}),...rig.seams.map(async s=>seams.set(s.id,await load(s.file)))]);
+    const list=document.querySelector('#layerList');for(const l of rig.layers){const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=true;input.dataset.layer=l.id;input.addEventListener('change',()=>{if(input.checked)visible.add(l.id);else visible.delete(l.id);schedule();});label.append(input,document.createTextNode(' '+l.name));list.append(label);}
+    document.querySelector('#verification').textContent=`已导出 ${rig.layers.length} 个独立 PNG；重新读回并拼合后，${rig.verification.visiblePixels.toLocaleString()} 个可见像素的 RGBA 通道差异为 ${rig.verification.channelDifferences}。`;
+    ready=true;canvas.dataset.renderer='segmented-canvas2d';canvas.dataset.layerCount=String(rig.layers.length);status.textContent='独立图层已装配 · 点击可回应';schedule();
+  })().catch(error=>{status.textContent=error.message;console.error(error);});
 })();

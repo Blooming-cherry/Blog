@@ -1,0 +1,8 @@
+{
+  "sourceLayers": 21,
+  "seamLayers": 9,
+  "width": 1262,
+  "height": 1246,
+  "channelDifferences": 0,
+  "checkedWith": "ag-psd write/read roundtrip; not Cubism Editor import verification"
+}

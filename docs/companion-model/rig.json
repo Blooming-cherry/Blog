@@ -1,0 +1,959 @@
+{
+  "version": 1,
+  "source": "blue-maid-05-corrected-v2.png",
+  "width": 1262,
+  "height": 1246,
+  "kind": "segmented-2d-puppet",
+  "notCubism": true,
+  "layers": [
+    {
+      "id": "body",
+      "name": "躯干底层",
+      "parent": "torso",
+      "pivot": [
+        0.48,
+        0.64
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "file": "layers/body.png",
+      "bounds": [
+        0,
+        611,
+        1248,
+        1246
+      ]
+    },
+    {
+      "id": "tail",
+      "name": "鲸尾",
+      "parent": "torso",
+      "pivot": [
+        0.72,
+        0.83
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.8,
+            0.58
+          ],
+          [
+            0.9,
+            0.57
+          ],
+          [
+            0.98,
+            0.65
+          ],
+          [
+            0.98,
+            0.91
+          ],
+          [
+            0.72,
+            0.94
+          ],
+          [
+            0.65,
+            0.85
+          ],
+          [
+            0.75,
+            0.79
+          ],
+          [
+            0.79,
+            0.72
+          ]
+        ]
+      },
+      "file": "layers/tail.png",
+      "bounds": [
+        916,
+        719,
+        1216,
+        1161
+      ]
+    },
+    {
+      "id": "skirt",
+      "name": "裙摆与围裙下部",
+      "parent": "torso",
+      "pivot": [
+        0.48,
+        0.65
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.37,
+            0.65
+          ],
+          [
+            0.61,
+            0.65
+          ],
+          [
+            0.75,
+            0.82
+          ],
+          [
+            0.72,
+            0.88
+          ],
+          [
+            0.23,
+            0.88
+          ],
+          [
+            0.19,
+            0.78
+          ]
+        ]
+      },
+      "file": "layers/skirt.png",
+      "bounds": [
+        278,
+        810,
+        946,
+        1096
+      ]
+    },
+    {
+      "id": "leg-left",
+      "name": "左侧短袜与鞋",
+      "parent": "root",
+      "pivot": [
+        0.43,
+        0.86
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.36,
+            0.87
+          ],
+          [
+            0.47,
+            0.87
+          ],
+          [
+            0.48,
+            1
+          ],
+          [
+            0.35,
+            1
+          ]
+        ]
+      },
+      "file": "layers/leg-left.png",
+      "bounds": [
+        459,
+        1084,
+        594,
+        1226
+      ]
+    },
+    {
+      "id": "leg-right",
+      "name": "右侧短袜与鞋",
+      "parent": "root",
+      "pivot": [
+        0.52,
+        0.86
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.48,
+            0.87
+          ],
+          [
+            0.6,
+            0.87
+          ],
+          [
+            0.61,
+            1
+          ],
+          [
+            0.48,
+            1
+          ]
+        ]
+      },
+      "file": "layers/leg-right.png",
+      "bounds": [
+        606,
+        1084,
+        728,
+        1226
+      ]
+    },
+    {
+      "id": "head",
+      "name": "头部与脸底",
+      "parent": "headGroup",
+      "pivot": [
+        0.48,
+        0.49
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            0.49
+          ],
+          [
+            0.65,
+            0.49
+          ],
+          [
+            0.57,
+            0.51
+          ],
+          [
+            0.38,
+            0.51
+          ],
+          [
+            0.3,
+            0.49
+          ],
+          [
+            0,
+            0.49
+          ]
+        ]
+      },
+      "file": "layers/head.png",
+      "bounds": [
+        0,
+        23,
+        1214,
+        635
+      ]
+    },
+    {
+      "id": "hair-left",
+      "name": "左侧后发束",
+      "parent": "headGroup",
+      "pivot": [
+        0.31,
+        0.39
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.17,
+            0.38
+          ],
+          [
+            0.32,
+            0.4
+          ],
+          [
+            0.37,
+            0.48
+          ],
+          [
+            0.33,
+            0.57
+          ],
+          [
+            0.36,
+            0.65
+          ],
+          [
+            0.28,
+            0.71
+          ],
+          [
+            0.1,
+            0.69
+          ],
+          [
+            0.1,
+            0.49
+          ]
+        ]
+      },
+      "file": "layers/hair-left.png",
+      "bounds": [
+        167,
+        493,
+        467,
+        874
+      ]
+    },
+    {
+      "id": "hair-right",
+      "name": "右侧后发束",
+      "parent": "headGroup",
+      "pivot": [
+        0.65,
+        0.38
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.65,
+            0.38
+          ],
+          [
+            0.8,
+            0.4
+          ],
+          [
+            0.85,
+            0.58
+          ],
+          [
+            0.81,
+            0.69
+          ],
+          [
+            0.72,
+            0.72
+          ],
+          [
+            0.64,
+            0.67
+          ],
+          [
+            0.64,
+            0.59
+          ],
+          [
+            0.62,
+            0.49
+          ]
+        ]
+      },
+      "file": "layers/hair-right.png",
+      "bounds": [
+        782,
+        474,
+        1045,
+        884
+      ]
+    },
+    {
+      "id": "arm-left",
+      "name": "左侧长袖上臂",
+      "parent": "armLeftGroup",
+      "pivot": [
+        0.37,
+        0.55
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.35,
+            0.52
+          ],
+          [
+            0.42,
+            0.55
+          ],
+          [
+            0.37,
+            0.65
+          ],
+          [
+            0.3,
+            0.71
+          ],
+          [
+            0.24,
+            0.68
+          ],
+          [
+            0.29,
+            0.59
+          ]
+        ]
+      },
+      "file": "layers/arm-left.png",
+      "bounds": [
+        317,
+        648,
+        530,
+        876
+      ]
+    },
+    {
+      "id": "arm-right",
+      "name": "右侧长袖上臂",
+      "parent": "armRightGroup",
+      "pivot": [
+        0.6,
+        0.55
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.57,
+            0.53
+          ],
+          [
+            0.64,
+            0.52
+          ],
+          [
+            0.7,
+            0.63
+          ],
+          [
+            0.71,
+            0.7
+          ],
+          [
+            0.66,
+            0.73
+          ],
+          [
+            0.59,
+            0.65
+          ]
+        ]
+      },
+      "file": "layers/arm-right.png",
+      "bounds": [
+        719,
+        648,
+        889,
+        905
+      ]
+    },
+    {
+      "id": "hand-left",
+      "name": "左侧袖口与手",
+      "parent": "handLeftGroup",
+      "pivot": [
+        0.28,
+        0.69
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.25,
+            0.66
+          ],
+          [
+            0.31,
+            0.69
+          ],
+          [
+            0.3,
+            0.74
+          ],
+          [
+            0.22,
+            0.76
+          ],
+          [
+            0.18,
+            0.72
+          ]
+        ]
+      },
+      "file": "layers/hand-left.png",
+      "bounds": [
+        253,
+        822,
+        391,
+        937
+      ]
+    },
+    {
+      "id": "hand-right",
+      "name": "右侧袖口与手",
+      "parent": "handRightGroup",
+      "pivot": [
+        0.68,
+        0.7
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.65,
+            0.67
+          ],
+          [
+            0.71,
+            0.66
+          ],
+          [
+            0.76,
+            0.72
+          ],
+          [
+            0.75,
+            0.77
+          ],
+          [
+            0.66,
+            0.75
+          ]
+        ]
+      },
+      "file": "layers/hand-right.png",
+      "bounds": [
+        820,
+        822,
+        959,
+        950
+      ]
+    },
+    {
+      "id": "bangs",
+      "name": "前额刘海",
+      "parent": "headGroup",
+      "pivot": [
+        0.48,
+        0.21
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.34,
+            0.19
+          ],
+          [
+            0.62,
+            0.19
+          ],
+          [
+            0.66,
+            0.29
+          ],
+          [
+            0.64,
+            0.35
+          ],
+          [
+            0.61,
+            0.37
+          ],
+          [
+            0.57,
+            0.36
+          ],
+          [
+            0.54,
+            0.395
+          ],
+          [
+            0.5,
+            0.385
+          ],
+          [
+            0.47,
+            0.4
+          ],
+          [
+            0.43,
+            0.36
+          ],
+          [
+            0.39,
+            0.35
+          ],
+          [
+            0.36,
+            0.39
+          ],
+          [
+            0.33,
+            0.35
+          ],
+          [
+            0.31,
+            0.29
+          ]
+        ]
+      },
+      "file": "layers/bangs.png",
+      "bounds": [
+        391,
+        237,
+        833,
+        498
+      ]
+    },
+    {
+      "id": "fin-left",
+      "name": "左鲸鳍耳",
+      "parent": "headGroup",
+      "pivot": [
+        0.28,
+        0.37
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.24,
+            0.33
+          ],
+          [
+            0.29,
+            0.38
+          ],
+          [
+            0.27,
+            0.44
+          ],
+          [
+            0.13,
+            0.44
+          ],
+          [
+            0.13,
+            0.39
+          ]
+        ]
+      },
+      "file": "layers/fin-left.png",
+      "bounds": [
+        189,
+        411,
+        366,
+        548
+      ]
+    },
+    {
+      "id": "fin-right",
+      "name": "右鲸鳍耳",
+      "parent": "headGroup",
+      "pivot": [
+        0.68,
+        0.36
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.68,
+            0.33
+          ],
+          [
+            0.75,
+            0.36
+          ],
+          [
+            0.85,
+            0.42
+          ],
+          [
+            0.84,
+            0.44
+          ],
+          [
+            0.69,
+            0.44
+          ],
+          [
+            0.66,
+            0.4
+          ]
+        ]
+      },
+      "file": "layers/fin-right.png",
+      "bounds": [
+        833,
+        411,
+        1050,
+        548
+      ]
+    },
+    {
+      "id": "ahoge",
+      "name": "呆毛",
+      "parent": "headGroup",
+      "pivot": [
+        0.46,
+        0.105
+      ],
+      "shape": {
+        "polygon": [
+          [
+            0.27,
+            0
+          ],
+          [
+            0.53,
+            0
+          ],
+          [
+            0.53,
+            0.1
+          ],
+          [
+            0.45,
+            0.115
+          ],
+          [
+            0.39,
+            0.09
+          ],
+          [
+            0.27,
+            0.09
+          ]
+        ]
+      },
+      "file": "layers/ahoge.png",
+      "bounds": [
+        395,
+        16,
+        669,
+        143
+      ]
+    },
+    {
+      "id": "eye-left",
+      "name": "左眼白与眼睑",
+      "parent": "eyeLeftGroup",
+      "pivot": [
+        0.397,
+        0.407
+      ],
+      "shape": {
+        "ellipse": [
+          0.397,
+          0.407,
+          0.047,
+          0.043
+        ]
+      },
+      "file": "layers/eye-left.png",
+      "bounds": [
+        442,
+        454,
+        560,
+        561
+      ]
+    },
+    {
+      "id": "eye-right",
+      "name": "右眼白与眼睑",
+      "parent": "eyeRightGroup",
+      "pivot": [
+        0.547,
+        0.407
+      ],
+      "shape": {
+        "ellipse": [
+          0.547,
+          0.407,
+          0.047,
+          0.043
+        ]
+      },
+      "file": "layers/eye-right.png",
+      "bounds": [
+        631,
+        454,
+        750,
+        561
+      ]
+    },
+    {
+      "id": "iris-left",
+      "name": "左瞳孔",
+      "parent": "eyeLeftGroup",
+      "pivot": [
+        0.397,
+        0.411
+      ],
+      "shape": {
+        "ellipse": [
+          0.397,
+          0.411,
+          0.024,
+          0.029
+        ]
+      },
+      "file": "layers/iris-left.png",
+      "bounds": [
+        471,
+        476,
+        531,
+        548
+      ]
+    },
+    {
+      "id": "iris-right",
+      "name": "右瞳孔",
+      "parent": "eyeRightGroup",
+      "pivot": [
+        0.547,
+        0.411
+      ],
+      "shape": {
+        "ellipse": [
+          0.547,
+          0.411,
+          0.024,
+          0.029
+        ]
+      },
+      "file": "layers/iris-right.png",
+      "bounds": [
+        660,
+        476,
+        721,
+        548
+      ]
+    },
+    {
+      "id": "mouth",
+      "name": "口型",
+      "parent": "headGroup",
+      "pivot": [
+        0.475,
+        0.463
+      ],
+      "shape": {
+        "ellipse": [
+          0.475,
+          0.463,
+          0.027,
+          0.022
+        ]
+      },
+      "file": "layers/mouth.png",
+      "bounds": [
+        565,
+        549,
+        634,
+        604
+      ]
+    }
+  ],
+  "seams": [
+    {
+      "id": "body",
+      "file": "layers/body-seam.png",
+      "bounds": [
+        887,
+        911,
+        956,
+        946
+      ]
+    },
+    {
+      "id": "tail",
+      "file": "layers/tail-seam.png",
+      "bounds": [
+        980,
+        811,
+        1040,
+        925
+      ]
+    },
+    {
+      "id": "skirt",
+      "file": "layers/skirt-seam.png",
+      "bounds": [
+        419,
+        849,
+        488,
+        1086
+      ]
+    },
+    {
+      "id": "leg-left",
+      "file": "layers/leg-left-seam.png",
+      "bounds": [
+        487,
+        1082,
+        488,
+        1084
+      ]
+    },
+    {
+      "id": "hair-left",
+      "file": "layers/hair-left-seam.png",
+      "bounds": [
+        308,
+        547,
+        309,
+        548
+      ]
+    },
+    {
+      "id": "hair-right",
+      "file": "layers/hair-right-seam.png",
+      "bounds": [
+        1040,
+        810,
+        1041,
+        811
+      ]
+    },
+    {
+      "id": "arm-left",
+      "file": "layers/arm-left-seam.png",
+      "bounds": [
+        387,
+        873,
+        388,
+        874
+      ]
+    },
+    {
+      "id": "hand-left",
+      "file": "layers/hand-left-seam.png",
+      "bounds": [
+        390,
+        858,
+        392,
+        859
+      ]
+    },
+    {
+      "id": "fin-left",
+      "file": "layers/fin-left-seam.png",
+      "bounds": [
+        308,
+        548,
+        309,
+        549
+      ]
+    }
+  ],
+  "verification": {
+    "visiblePixels": 714312,
+    "channelDifferences": 0,
+    "method": "reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays"
+  }
+}
