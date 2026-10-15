@@ -1,0 +1,242 @@
+[
+  {
+    "path": "assets/model/c_0120.2048/texture_00.png",
+    "size": 1768051
+  },
+  {
+    "path": "assets/model/c_0120.2048/texture_01.png",
+    "size": 90177
+  },
+  {
+    "path": "assets/model/c_0120.cdi3.json",
+    "size": 28364
+  },
+  {
+    "path": "assets/model/c_0120.moc3",
+    "size": 2119552
+  },
+  {
+    "path": "assets/model/c_0120.model3.json",
+    "size": 2526
+  },
+  {
+    "path": "assets/model/c_0120.physics3.json",
+    "size": 38775
+  },
+  {
+    "path": "assets/model/expressions/love.exp3.json",
+    "size": 161
+  },
+  {
+    "path": "assets/model/expressions/兔兔贴纸.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/单边马尾.exp3.json",
+    "size": 205
+  },
+  {
+    "path": "assets/model/expressions/双手比耶.exp3.json",
+    "size": 163
+  },
+  {
+    "path": "assets/model/expressions/吐舌.exp3.json",
+    "size": 576
+  },
+  {
+    "path": "assets/model/expressions/吐魂.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/呆呆眼.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/哭.exp3.json",
+    "size": 1293
+  },
+  {
+    "path": "assets/model/expressions/喵喵手~喵~动画.exp3.json",
+    "size": 380
+  },
+  {
+    "path": "assets/model/expressions/圆眼镜.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/墨镜.exp3.json",
+    "size": 389
+  },
+  {
+    "path": "assets/model/expressions/头箍.exp3.json",
+    "size": 214
+  },
+  {
+    "path": "assets/model/expressions/巴菲.exp3.json",
+    "size": 164
+  },
+  {
+    "path": "assets/model/expressions/开心兴奋.exp3.json",
+    "size": 1433
+  },
+  {
+    "path": "assets/model/expressions/心跳.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/悲伤.exp3.json",
+    "size": 754
+  },
+  {
+    "path": "assets/model/expressions/情绪花花.exp3.json",
+    "size": 171
+  },
+  {
+    "path": "assets/model/expressions/感叹号.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/手机换色.exp3.json",
+    "size": 163
+  },
+  {
+    "path": "assets/model/expressions/挤.exp3.json",
+    "size": 159
+  },
+  {
+    "path": "assets/model/expressions/撤回.exp3.json",
+    "size": 163
+  },
+  {
+    "path": "assets/model/expressions/方眼镜.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/星星眼.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/晕晕.exp3.json",
+    "size": 823
+  },
+  {
+    "path": "assets/model/expressions/椭圆眼镜.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/橡皮.exp3.json",
+    "size": 159
+  },
+  {
+    "path": "assets/model/expressions/流汗.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/深色桌布.exp3.json",
+    "size": 205
+  },
+  {
+    "path": "assets/model/expressions/点菜按下.exp3.json",
+    "size": 163
+  },
+  {
+    "path": "assets/model/expressions/爱心眼.exp3.json",
+    "size": 1319
+  },
+  {
+    "path": "assets/model/expressions/猫猫贴纸.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/生气.exp3.json",
+    "size": 1200
+  },
+  {
+    "path": "assets/model/expressions/画笔.exp3.json",
+    "size": 159
+  },
+  {
+    "path": "assets/model/expressions/脸红.exp3.json",
+    "size": 165
+  },
+  {
+    "path": "assets/model/expressions/蛋包饭.exp3.json",
+    "size": 313
+  },
+  {
+    "path": "assets/model/expressions/蝴蝶结贴纸.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/调皮.exp3.json",
+    "size": 389
+  },
+  {
+    "path": "assets/model/expressions/闭眼口水.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/问号.exp3.json",
+    "size": 169
+  },
+  {
+    "path": "assets/model/expressions/阴暗.exp3.json",
+    "size": 165
+  },
+  {
+    "path": "assets/model/expressions/魔爪.exp3.json",
+    "size": 163
+  },
+  {
+    "path": "assets/model/expressions/魔爪换色.exp3.json",
+    "size": 164
+  },
+  {
+    "path": "assets/model/expressions/鲸鱼.exp3.json",
+    "size": 208
+  },
+  {
+    "path": "assets/model/expressions/鲸鱼放桌上.exp3.json",
+    "size": 215
+  },
+  {
+    "path": "assets/model/icon.png",
+    "size": 90633
+  },
+  {
+    "path": "assets/model/manifest.json",
+    "size": 20593
+  },
+  {
+    "path": "assets/model/motions/_aidale.motion3.json",
+    "size": 10871
+  },
+  {
+    "path": "assets/model/motions/chuipaopao.motion3.json",
+    "size": 3470
+  },
+  {
+    "path": "assets/model/motions/idle.motion3.json",
+    "size": 45228
+  },
+  {
+    "path": "assets/model/motions/喷水.motion3.json",
+    "size": 404
+  },
+  {
+    "path": "assets/model/motions/开盖.motion3.json",
+    "size": 1181
+  },
+  {
+    "path": "assets/model/motions/番茄酱.motion3.json",
+    "size": 7282
+  },
+  {
+    "path": "assets/model/motions/自拍.motion3.json",
+    "size": 6580
+  },
+  {
+    "path": "assets/model/motions/自拍简单.motion3.json",
+    "size": 550
+  }
+]

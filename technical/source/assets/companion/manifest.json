@@ -1,0 +1,25 @@
+{
+  "id": "whale",
+  "version": "v1-ea40a34",
+  "base": "/assets/companion/whale/v1/",
+  "model": "/assets/companion/whale/v1/model/c_0120.model3.json",
+  "poster": "/assets/companion/whale/v1/poster.svg",
+  "renderer": {
+    "id": "pixi-cubism4",
+    "pixiVersion": "6.5.10",
+    "adapterVersion": "0.4.0",
+    "pixi": "/js/companion/vendor/pixi.min.js",
+    "core": "/js/companion/vendor/live2dcubismcore.min.js",
+    "adapter": "/js/companion/vendor/cubism4.min.js"
+  },
+  "scale": 0.95,
+  "motions": {
+    "idle": { "group": "idle", "index": 0 },
+    "tap": { "group": "bubble", "index": 0 },
+    "listening": { "group": "idle", "index": 0 }
+  },
+  "expressions": {},
+  "voices": {},
+  "credits": "/assets/companion/whale/v1/credits.json",
+  "voiceNotice": "鲸鱼娘语音尚未提供；启用声音后也不会自动播放。"
+}

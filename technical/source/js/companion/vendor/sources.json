@@ -1,0 +1,20 @@
+[
+  {
+    "sha256": "403F2F2EE8145FA17F60C5C89403056EFE2680E5096EC2762036486914ED19C5",
+    "name": "pixi.min.js",
+    "source": "https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js",
+    "bytes": 460333
+  },
+  {
+    "sha256": "AF1267E6D52759B245766C578D905BFA025B532D5C3CC727C370957C4409E21B",
+    "name": "cubism4.min.js",
+    "source": "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js",
+    "bytes": 119922
+  },
+  {
+    "sha256": "25AE938CB4FE282CE189B357BCC97E603D1E1F7EC78BF04150D401C23CDC792F",
+    "name": "live2dcubismcore.min.js",
+    "source": "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js",
+    "bytes": 207155
+  }
+]

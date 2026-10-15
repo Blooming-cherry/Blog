@@ -1,0 +1,302 @@
+[
+  {
+    "bytes": 28364,
+    "sha256": "A04133A70C8676A9E8E6E3773D1BD047333791B1D3B84896E73DC57EB489F1C5",
+    "path": "model/c_0120.cdi3.json"
+  },
+  {
+    "bytes": 2119552,
+    "sha256": "37D62CC7EBE2FE93350C934A2C023AAC44E306833F63D83A130C005E2945CE1C",
+    "path": "model/c_0120.moc3"
+  },
+  {
+    "bytes": 2526,
+    "sha256": "BD651C1D5AAA00EC6993FB6C96AF953CFB4F2F8C4E8439FA4429A08B538FAD0A",
+    "path": "model/c_0120.model3.json"
+  },
+  {
+    "bytes": 38775,
+    "sha256": "36B71D419C8692E8831641D16E7C16699792531309658B4D71A3F49FC6A00A9C",
+    "path": "model/c_0120.physics3.json"
+  },
+  {
+    "bytes": 90633,
+    "sha256": "764FB55B5661EAA06733F47F53FB842B00A349EDAAC7513C4AD4761248F927CB",
+    "path": "model/icon.png"
+  },
+  {
+    "bytes": 20593,
+    "sha256": "05D4F0498A676091C374A46E0F01C5E221750DEB0C6D1FEAE5F69CC0E5C216D8",
+    "path": "model/manifest.json"
+  },
+  {
+    "bytes": 1768051,
+    "sha256": "D74A8B7ED11F17F086AFD22935D27D869B7D6FC19E94486B21445DE19483FC0A",
+    "path": "model/c_0120.2048/texture_00.png"
+  },
+  {
+    "bytes": 90177,
+    "sha256": "39A6DA7736CBAE495494BE1DDE515874A2E4FE72C21F399C47DA33924B3D43B9",
+    "path": "model/c_0120.2048/texture_01.png"
+  },
+  {
+    "bytes": 1319,
+    "sha256": "5BE7ABFA7BE644592C4DD6C5A8EBAEA0462F9CEB96177764D871A47273BEA7AF",
+    "path": "model/expressions/爱心眼.exp3.json"
+  },
+  {
+    "bytes": 164,
+    "sha256": "C392FB0481AAA8262494E19C0C372B25800EE2AAD653593E66E1DB0EE132C51C",
+    "path": "model/expressions/巴菲.exp3.json"
+  },
+  {
+    "bytes": 754,
+    "sha256": "C4214CB079D1E6B392E1F48327B51E902A64BEF3EB6D807B80AD4E8BEF4D641E",
+    "path": "model/expressions/悲伤.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "1F493067C7951029C7F2ABD77C8888831837D4C55828966E8F386F76804799DA",
+    "path": "model/expressions/闭眼口水.exp3.json"
+  },
+  {
+    "bytes": 163,
+    "sha256": "2AC796FC510041D7A05867758E7C1A6107500F6F5B6CFD4CD13EA1B04F392AD0",
+    "path": "model/expressions/撤回.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "FDA8633386AA2592BAEFDC00FF45DDFFC84EA4A64E536CEA78C4E47916B3F253",
+    "path": "model/expressions/呆呆眼.exp3.json"
+  },
+  {
+    "bytes": 205,
+    "sha256": "BFCF09BB982092D16191887F7F165C14B467C84DFF7EED75FEA35C6E5FBE1603",
+    "path": "model/expressions/单边马尾.exp3.json"
+  },
+  {
+    "bytes": 313,
+    "sha256": "342385B553D35E172F535167B505BE28AFA868A1EA41F263D5058341FD55A75E",
+    "path": "model/expressions/蛋包饭.exp3.json"
+  },
+  {
+    "bytes": 163,
+    "sha256": "C4C97A0F12D2D41E186586C1655933D06FDFB7E9B77EA154ABD9AC472365EAB0",
+    "path": "model/expressions/点菜按下.exp3.json"
+  },
+  {
+    "bytes": 389,
+    "sha256": "390E63E1F7ECDBB04D8A10611F06BC14829B98B34FEFE35ED543FC69FB35B737",
+    "path": "model/expressions/调皮.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "111FDC92C2BF916DD982EE2D16D9B005F1ACFBF063AA39E28C5BA365701AD493",
+    "path": "model/expressions/方眼镜.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "0BCFA612595200DCD8AB7894EA31B656ADBB48BC54527E34E21703EAC3548504",
+    "path": "model/expressions/感叹号.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "0D6F795FE4EF71AF10796CB037515A06FD1DF7730415DF29FBC9B6156FF1FC6F",
+    "path": "model/expressions/蝴蝶结贴纸.exp3.json"
+  },
+  {
+    "bytes": 159,
+    "sha256": "24B77F1D343332EC1958D2C33FE0C1E04829E7BC5B1FF925C99D6FBC3155EA14",
+    "path": "model/expressions/画笔.exp3.json"
+  },
+  {
+    "bytes": 159,
+    "sha256": "25AEC63E078DDEA99BE7FE0B4B73DF464170A3A5A61E71DD719F2E9ED02ADBE1",
+    "path": "model/expressions/挤.exp3.json"
+  },
+  {
+    "bytes": 208,
+    "sha256": "3627CF66669EBD75DED276188593F5E645CB4E49216F5F4AAEB5912EFFA29202",
+    "path": "model/expressions/鲸鱼.exp3.json"
+  },
+  {
+    "bytes": 215,
+    "sha256": "4C41DD719D607E564DCC0E0FFF7416F597FA5EF9FDD13B3543907B140164E2B8",
+    "path": "model/expressions/鲸鱼放桌上.exp3.json"
+  },
+  {
+    "bytes": 1433,
+    "sha256": "25FB0E4D803187EEEF9566512C6F96A99E386A5CE1AC1B0EE6BF6773B178D269",
+    "path": "model/expressions/开心兴奋.exp3.json"
+  },
+  {
+    "bytes": 1293,
+    "sha256": "EDF4FF77C26E0CF5D8112BF0D5021738B44D829419314A1A2A97827713120013",
+    "path": "model/expressions/哭.exp3.json"
+  },
+  {
+    "bytes": 165,
+    "sha256": "F9C4B846582DFAA5B2EA6F9B502379BBC2594F8D5DE0DDF377EF37ECF2FAE429",
+    "path": "model/expressions/脸红.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "517E5A0B1CD887C869EDA083020526C4C240FF6913F49F9021EEAC05655F4961",
+    "path": "model/expressions/流汗.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "0F51DE511DFF88AFB09C7B2E80AD262DEDC44014578CE9F4A9A4118F6EC08CC1",
+    "path": "model/expressions/猫猫贴纸.exp3.json"
+  },
+  {
+    "bytes": 380,
+    "sha256": "E0FEB354E9FDA5DF1A4EA973ECBFC8C50569B780011BD442A599A0934DC1C30B",
+    "path": "model/expressions/喵喵手~喵~动画.exp3.json"
+  },
+  {
+    "bytes": 163,
+    "sha256": "39EED17880A986D38F6BA13F44F721705CCF8AD914AA45A0000A832A19974633",
+    "path": "model/expressions/魔爪.exp3.json"
+  },
+  {
+    "bytes": 164,
+    "sha256": "056ACAEF502CC6E20F6DCCBC869CE481EAC2F7F50337B8D252120D380AA5DBC2",
+    "path": "model/expressions/魔爪换色.exp3.json"
+  },
+  {
+    "bytes": 389,
+    "sha256": "BB6D0E30AEAEC829B32FCC41BD9960E6582D5F9029A3A2BDA0908BCD72C07623",
+    "path": "model/expressions/墨镜.exp3.json"
+  },
+  {
+    "bytes": 171,
+    "sha256": "FFDA77F41D5A0C9DF8C53D10BA459022893D2FB237DACB7F5EB41E07CD3E9ED3",
+    "path": "model/expressions/情绪花花.exp3.json"
+  },
+  {
+    "bytes": 205,
+    "sha256": "1255F9837C220D70036C189D272DAFF5DFB164A40E0241188BA7CA356C1ACFFB",
+    "path": "model/expressions/深色桌布.exp3.json"
+  },
+  {
+    "bytes": 1200,
+    "sha256": "EC41AADA5B001E9DE5CB41CBFD108C7DBED3962FC287E90D6A6CE219D49388EC",
+    "path": "model/expressions/生气.exp3.json"
+  },
+  {
+    "bytes": 163,
+    "sha256": "FFE6D4381D62A6350F0DF0227E27BE7D8BBD1ABCF57DA2362DB24EE548F20454",
+    "path": "model/expressions/手机换色.exp3.json"
+  },
+  {
+    "bytes": 163,
+    "sha256": "F85650E953D2F8ACC9BE501270CE7BC512F4D98DFCA877B933C4CFF009067070",
+    "path": "model/expressions/双手比耶.exp3.json"
+  },
+  {
+    "bytes": 214,
+    "sha256": "CD51D9A1771DE3B32F6174F691A691204AE16D7B26B93B45C94040E83889447A",
+    "path": "model/expressions/头箍.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "3968BDBC5EF6701CFC13235FA877E0A4CD378F0F7A7E1E3C271ABB19831B0E70",
+    "path": "model/expressions/吐魂.exp3.json"
+  },
+  {
+    "bytes": 576,
+    "sha256": "2EDCE2E6973ECE82A77E114F60D57D283D30527F9B68A7F082134C0A6BC2B1A0",
+    "path": "model/expressions/吐舌.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "DA65F75A8A64B99AF29D81BBA1D31806B10CCDEB87E746DE1B7EAD37EB3E2105",
+    "path": "model/expressions/兔兔贴纸.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "FFE2B516B9D844D40655AE102DFF22829E99AF4347CB7E48A1B242F9CB18143D",
+    "path": "model/expressions/椭圆眼镜.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "EB50ACE022B7544AE09BFEF7A0EB7CCC9F58371DDC665EA4319D7B0A438A9C56",
+    "path": "model/expressions/问号.exp3.json"
+  },
+  {
+    "bytes": 159,
+    "sha256": "A044BF8CB109C866888FE83FA351A9100AB7D85D9ECCF3378A7DB654197C5E0E",
+    "path": "model/expressions/橡皮.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "21E51341DD14899F67585774B91F59E1928930F29C2F6A95892DD655FCED9512",
+    "path": "model/expressions/心跳.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "D4767E003C156C6D7549354DC8CAF3ED29925E516B360AB7B9D07DA5381EC7F4",
+    "path": "model/expressions/星星眼.exp3.json"
+  },
+  {
+    "bytes": 165,
+    "sha256": "8F71FF1B91C03EC2B7DC3773494D94F30C599EE62767FB4E53C98A49CAE617CB",
+    "path": "model/expressions/阴暗.exp3.json"
+  },
+  {
+    "bytes": 169,
+    "sha256": "2EFBB7759F14448A76EAF383469960FB76FE47B37014D18AC847EEBDA083E6F9",
+    "path": "model/expressions/圆眼镜.exp3.json"
+  },
+  {
+    "bytes": 823,
+    "sha256": "BC0B82F39CB90864E9CDCB8AC33391FE679C097BB049ADAD42766877DA9C1045",
+    "path": "model/expressions/晕晕.exp3.json"
+  },
+  {
+    "bytes": 161,
+    "sha256": "CAA9A2474CF99EA9419D846978E52FFF1173C05B36ADC555CA3879BE06B53694",
+    "path": "model/expressions/love.exp3.json"
+  },
+  {
+    "bytes": 10871,
+    "sha256": "73800FE5D76A6378AEC56E249BB5EF57A538E763DA1566AE5ABABE3E6E8DB998",
+    "path": "model/motions/_aidale.motion3.json"
+  },
+  {
+    "bytes": 7282,
+    "sha256": "A63332B5A9AD5AD9A9980D9ED32C6C09CABB9CF87A35BC2B3DFCEAF3419E342D",
+    "path": "model/motions/番茄酱.motion3.json"
+  },
+  {
+    "bytes": 1181,
+    "sha256": "EF5B088705EB20D7F5A55C3EBED52BD2D7ED64E9FAF8CF502E7D4F8E20C57512",
+    "path": "model/motions/开盖.motion3.json"
+  },
+  {
+    "bytes": 404,
+    "sha256": "98E36262742639074B73FAEFFCD4DA95C5ECA4901FD483F93C7A448B1A1F0EE6",
+    "path": "model/motions/喷水.motion3.json"
+  },
+  {
+    "bytes": 6580,
+    "sha256": "5848A992E0EBC4F3447166EB7E38AC678F32D17198B16C0D56048F13B8C2E110",
+    "path": "model/motions/自拍.motion3.json"
+  },
+  {
+    "bytes": 550,
+    "sha256": "9A93E9AC0AA77C45C2C9DBF33558BC265D3A58C9A73033446483861EC768FCD6",
+    "path": "model/motions/自拍简单.motion3.json"
+  },
+  {
+    "bytes": 3470,
+    "sha256": "C9672AAB4E398F7CA096B47511A6B9AD5AF65FD3FB62D7388CC6AE5BD67FB820",
+    "path": "model/motions/chuipaopao.motion3.json"
+  },
+  {
+    "bytes": 45228,
+    "sha256": "00364B3E9F4502B04A2794B5D2BD455CC50AC0D6876DC3886D04194E37033A38",
+    "path": "model/motions/idle.motion3.json"
+  }
+]
