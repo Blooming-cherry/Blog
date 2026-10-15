@@ -93,6 +93,12 @@ function contains(shape,x,y){
       part=definitions.findIndex(l=>l.id===(y>871-(x-851)*.6?'hand-right':'forearm-right'));
     }
     if(definitions[part].id==='arm-right'&&y>765-(x-780)*.35)part=definitions.findIndex(l=>l.id==='forearm-right');
+    // The new forearm must use the same hair exclusion as the upper sleeve.
+    // Reassign source pixels (do not delete them), preserving exact rest assembly.
+    if(['arm-right','forearm-right','hand-right'].includes(definitions[part].id)){
+      const r=data[offset],g=data[offset+1],b=data[offset+2];
+      if(b>130&&g>80&&b>r*1.42)part=definitions.findIndex(l=>l.id==='hair-right');
+    }
     data.copy(buffers[part],offset,offset,offset+4);
     const b=bounds[part];b[0]=Math.min(b[0],x);b[1]=Math.min(b[1],y);b[2]=Math.max(b[2],x+1);b[3]=Math.max(b[3],y+1);
   }

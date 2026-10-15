@@ -41,8 +41,9 @@
     const open=Math.max(.025,1-blink),response=rest||explode.checked?0:envelope;
     const tracking=follow.checked&&!rest&&!explode.checked&&!reduced.matches?look:[0,0];
     const root=new DOMMatrix(),torso=root.translate(0,-Math.sin(time*1.7)*1.7*amplitude-(action==='happy'?response*3:0));
-    const headAngle=Math.sin(time*1.1)*.35*amplitude+tracking[0]*.7+(action==='nod'?response*1.8:0);
-    const head=pivotTransform(torso,rig.groups.headGroup.pivot,headAngle,1,1,tracking[0]*1.4,tracking[1]*.7+(action==='nod'?response*3:0));
+    const nod=action==='nod'?smooth(phase/.38)*(1-smooth((phase-.48)/.52)):0;
+    const headAngle=Math.sin(time*1.1)*.35*amplitude+tracking[0]*.7+nod*3;
+    const head=pivotTransform(torso,rig.groups.headGroup.pivot,headAngle,1,1-nod*.045,tracking[0]*1.4,tracking[1]*.7+nod*26);
     const armL=pivotTransform(torso,rig.groups.armLeftGroup.pivot,-.35*Math.sin(time*1.7)*amplitude);
     const wave=(!rest&&!explode.checked&&(heldWave||action==='wave'))?waveJoints(heldWave?Number(wavePose.value)/100:phase):{shoulder:0,elbow:0,wrist:0};
     const armR=pivotTransform(torso,rig.groups.armRightGroup.pivot,.35*Math.sin(time*1.7)*amplitude+wave.shoulder+(rest||explode.checked?0:Number(armPose.value)));
@@ -71,10 +72,19 @@
     const base=new DOMMatrix().translate(canvas.width/2,canvas.height/2).scale(scale).translate(-rig.width/2,-rig.height/2);
     const set=matrix=>{const m=base.multiply(matrix);ctx.setTransform(m.a,m.b,m.c,m.d,m.e,m.f);};
     function imageAt(image,bounds){ctx.drawImage(image,bounds[0],bounds[1],bounds[2]-bounds[0],bounds[3]-bounds[1]);}
-    if(!explode.checked&&!rest&&Math.abs(wave.shoulder)>.001){set(torso);ctx.drawImage(waveBacking,0,0,rig.width,rig.height);}
-    if(!explode.checked&&!rest){for(const seam of rig.seams){if(!visible.has(seam.id)||seam.id.startsWith('iris-')||seam.id.startsWith('eye-')||seam.id==='mouth')continue;set(transforms.get(seam.id));imageAt(seams.get(seam.id),seam.bounds);}}
+    if(!explode.checked&&!rest&&Math.abs(wave.shoulder)>.001){set(transforms.get('hair-right'));ctx.drawImage(waveBacking,0,0,rig.width,rig.height);}
     if(!explode.checked&&!rest){set(head);for(const id of['eye-left','eye-right','mouth']){trace(rig.layers.find(l=>l.id===id).shape);ctx.fillStyle='#ffefea';ctx.fill();}}
     for(const id of order){if(!visible.has(id))continue;const layer=rig.layers.find(l=>l.id===id);set(transforms.get(id));
+      if(!explode.checked&&!rest&&!id.startsWith('iris-')&&!id.startsWith('eye-')&&id!=='mouth'){
+        const seam=rig.seams.find(s=>s.id===id);
+        if(seam)imageAt(seams.get(id),seam.bounds);
+      }
+      if(id==='forearm-right'&&!explode.checked&&!rest&&Math.abs(wave.elbow)>.01){
+        // Rounded sleeve overlap shares the elbow pivot. It stays above hair
+        // and below the forearm texture, filling the exposed cut edge.
+        set(armR);ctx.beginPath();ctx.ellipse(780,765,23,25,-.5,0,Math.PI*2);
+        const cloth=ctx.createLinearGradient(760,745,800,785);cloth.addColorStop(0,'#414469');cloth.addColorStop(1,'#303353');ctx.fillStyle=cloth;ctx.fill();set(transforms.get(id));
+      }
       if(id.startsWith('eye-')&&!explode.checked&&!rest){const iris=rig.layers.find(l=>l.id==='iris-'+id.split('-')[1]);ctx.fillStyle='#fdfbff';trace(iris.shape);ctx.fill();}
       ctx.save();if(id.startsWith('iris-')&&!explode.checked){trace(rig.layers.find(l=>l.id==='eye-'+id.split('-')[1]).shape);ctx.clip();}
       imageAt(images.get(id),layer.bounds);ctx.restore();
@@ -83,7 +93,8 @@
     if(blink>.8&&!explode.checked){set(head);ctx.strokeStyle='#392c42';ctx.lineWidth=3;ctx.lineCap='round';for(const x of [.397,.547]){ctx.beginPath();ctx.moveTo((x-.033)*rig.width,.407*rig.height);ctx.quadraticCurveTo(x*rig.width,.416*rig.height,(x+.033)*rig.width,.407*rig.height);ctx.stroke();}}
     if(active||action||(!reduced.matches&&!rest&&look.some((v,i)=>Math.abs(v-target[i])>.001)))schedule();
   }
-  order.splice(order.indexOf('hand-left'),0,'forearm-right');
+  order.splice(order.indexOf('hand-right'),1);
+  order.push('forearm-right','hand-right');
   wavePose.addEventListener('input',()=>{heldWave=true;rest=false;action=null;playing.checked=false;explode.checked=false;target=[0,0];look=[0,0];status.textContent='挥手关节定格 '+wavePose.value+'%';schedule();});
   document.querySelectorAll('[data-motion]').forEach(b=>b.addEventListener('click',()=>{heldWave=false;wavePose.value='0';trigger(b.dataset.motion);}));
   canvas.addEventListener('click',()=>trigger('happy'));canvas.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();trigger('happy');}});
