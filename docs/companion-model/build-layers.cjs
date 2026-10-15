@@ -52,6 +52,13 @@ const contours={
  'iris-right':pxpoly([688,465],[705,469],[719,482],[726,500],[725,518],[718,533],[707,541],[691,545],[677,540],[665,530],[661,514],[664,495],[673,478])
 };
 for(const layer of definitions)if(contours[layer.id])layer.shape=contours[layer.id];
+// Split the long sleeve at its anatomical elbow. The cuff belongs to the
+// forearm; only the skin beyond the cuff belongs to the wrist joint.
+definitions.splice(definitions.findIndex(l=>l.id==='hand-right'),0,{
+  id:'forearm-right',name:'右前臂长袖与袖口',parent:'forearmRightGroup',pivot:[780/1262,765/1246],
+  shape:pxpoly([737,758],[791,737],[811,755],[841,781],[858,813],[858,831],[882,852],[847,881],[816,873],[795,848],[768,823],[749,791])
+});
+definitions.find(l=>l.id==='hand-right').shape=pxpoly([849,867],[866,856],[884,872],[911,882],[925,894],[923,902],[901,899],[904,910],[888,912],[881,903],[877,919],[864,919],[850,904],[840,889],[830,882]);
 function contains(shape,x,y){
   if(shape.ellipse){const[cx,cy,rx,ry]=shape.ellipse;return ((x-cx)/rx)**2+((y-cy)/ry)**2<=1;}
   const p=shape.polygon;let inside=false;
@@ -81,7 +88,12 @@ function contains(shape,x,y){
   for(let y=0;y<height;y++)for(let x=0;x<width;x++){
     const p=y*width+x,offset=p*4;if(!data[offset+3])continue;
     if(!assignment[p]&&!contains(torso,(x+.5)/width,(y+.5)/height))assignment[p]=nearest[p];
-    const part=assignment[p];data.copy(buffers[part],offset,offset,offset+4);
+    let part=assignment[p];
+    if(contains(contours['hand-right'],(x+.5)/width,(y+.5)/height)){
+      part=definitions.findIndex(l=>l.id===(y>871-(x-851)*.6?'hand-right':'forearm-right'));
+    }
+    if(definitions[part].id==='arm-right'&&y>765-(x-780)*.35)part=definitions.findIndex(l=>l.id==='forearm-right');
+    data.copy(buffers[part],offset,offset,offset+4);
     const b=bounds[part];b[0]=Math.min(b[0],x);b[1]=Math.min(b[1],y);b[2]=Math.max(b[2],x+1);b[3]=Math.max(b[3],y+1);
   }
   const output=path.join(root,'layers');await fs.mkdir(output,{recursive:true});
@@ -117,7 +129,9 @@ function contains(shape,x,y){
   if(different)throw Error('Source reconstruction failed');
   await sharp(rebuilt,{raw:{width,height,channels:4}}).png().toFile(path.join(output,'reconstructed.png'));
   const groups={root:{parent:null,pivot:[.5,.95]},torso:{parent:'root',pivot:[.48,.65]},headGroup:{parent:'torso',pivot:[.48,.505]},armLeftGroup:{parent:'torso',pivot:[.377,.525]},armRightGroup:{parent:'torso',pivot:[.578,.525]},handLeftGroup:{parent:'armLeftGroup',pivot:[.28,.69]},handRightGroup:{parent:'armRightGroup',pivot:[.68,.70]},eyeLeftGroup:{parent:'headGroup',pivot:[.397,.407]},eyeRightGroup:{parent:'headGroup',pivot:[.547,.407]}};
-  const actions={blink:{seconds:.24},nod:{seconds:1.35},wave:{seconds:1.8},happy:{seconds:1.35},tail:{seconds:1.35}};
+  groups.forearmRightGroup={parent:'armRightGroup',pivot:[780/1262,765/1246]};
+  groups.handRightGroup={parent:'forearmRightGroup',pivot:[851/1262,871/1246]};
+  const actions={blink:{seconds:.24},nod:{seconds:1.35},wave:{seconds:3.2},happy:{seconds:1.35},tail:{seconds:1.35}};
   const rig={version:1,source:'blue-maid-05-corrected-v2.png',width,height,kind:'segmented-2d-puppet',notCubism:true,groups,actions,layers:definitions.map((d,i)=>({...d,file:'layers/'+d.id+'.png',bounds:bounds[i]})),seams:repairs,verification:{visiblePixels:opaque,channelDifferences:different,method:'reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays'}};
   await fs.writeFile(path.join(root,'rig.json'),JSON.stringify(rig,null,2)+'\n');
   await fs.writeFile(path.join(output,'reconstruction-check.json'),JSON.stringify(rig.verification,null,2)+'\n');

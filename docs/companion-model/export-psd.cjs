@@ -9,8 +9,9 @@ async function bitmap(file){const {data,info}=await sharp(path.join(root,file)).
   const rig=JSON.parse(await fs.readFile(path.join(root,'rig.json'),'utf8'));
   const children=[];
   for(const layer of rig.layers)children.push({name:layer.id+' · '+layer.name,left:layer.bounds[0],top:layer.bounds[1],imageData:await bitmap(layer.file)});
-  const source={name:'原图像素拆层（21层）',opened:true,children};
+  const source={name:'原图像素拆层（22层）',opened:true,children};
   const repairs={name:'接缝补量（非完整遮挡补绘）',hidden:true,opened:false,children:[]};
+  repairs.children.push({name:'wave-occlusion · 抬臂后方发束补绘',left:0,top:0,imageData:await bitmap('layers/wave-backing.png')});
   for(const seam of rig.seams)repairs.children.push({name:seam.id+' seam',left:seam.bounds[0],top:seam.bounds[1],imageData:await bitmap(seam.file)});
   const psd={width:rig.width,height:rig.height,imageData:await bitmap(rig.source),children:[repairs,source]};
   const output=path.join(root,'blue-maid-05-layered-v1.psd');
