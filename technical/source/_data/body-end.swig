@@ -72,7 +72,7 @@ window.__blogDesktopEffectsEnabled = Boolean(
 <script defer src="/js/companion/preferences.js"></script>
 <script defer src="/js/companion/voice.js"></script>
 <script defer src="/js/companion/renderer.js"></script>
-<script defer src="/js/companion/controller.js"></script>
+<script defer src="/js/companion/controller.js?v=20261015-voice-controls"></script>
 <script defer src="/js/companion/bootstrap.js"></script>
 <!-- 鼠标拖尾粒子 -->
 
