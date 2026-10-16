@@ -107,6 +107,12 @@ function contains(shape,x,y){
       const skinOrGold=r>125&&r>g*1.08&&r>b*1.04;
       if(cuff||skinOrGold)part=definitions.findIndex(l=>l.id===(y>871-(x-851)*.6?'hand-right':'forearm-right'));
     }
+    if(definitions[part].id==='hand-right'){
+      const r=data[offset],g=data[offset+1],b=data[offset+2];
+      const blueFabric=b>r*1.15&&b>g*1.10;
+      const whiteCuff=r>200&&g>r*.96&&b>r*.97;
+      if(blueFabric||whiteCuff)part=definitions.findIndex(l=>l.id===(whiteCuff||y<890?'forearm-right':b>130?'hair-right':'skirt'));
+    }
     data.copy(buffers[part],offset,offset,offset+4);
     const b=bounds[part];b[0]=Math.min(b[0],x);b[1]=Math.min(b[1],y);b[2]=Math.max(b[2],x+1);b[3]=Math.max(b[3],y+1);
   }
@@ -145,7 +151,7 @@ function contains(shape,x,y){
   const groups={root:{parent:null,pivot:[.5,.95]},torso:{parent:'root',pivot:[.48,.65]},headGroup:{parent:'torso',pivot:[.48,.505]},armLeftGroup:{parent:'torso',pivot:[.377,.525]},armRightGroup:{parent:'torso',pivot:[.578,.525]},handLeftGroup:{parent:'armLeftGroup',pivot:[.28,.69]},handRightGroup:{parent:'armRightGroup',pivot:[.68,.70]},eyeLeftGroup:{parent:'headGroup',pivot:[.397,.407]},eyeRightGroup:{parent:'headGroup',pivot:[.547,.407]}};
   groups.forearmRightGroup={parent:'armRightGroup',pivot:[780/1262,765/1246]};
   groups.handRightGroup={parent:'forearmRightGroup',pivot:[851/1262,871/1246]};
-  const actions={blink:{seconds:.24},wave:{seconds:3.2},happy:{seconds:1.35},tail:{seconds:1.35}};
+  const actions={blink:{seconds:.24},nod:{seconds:1.7},wave:{seconds:3.2},happy:{seconds:2.8},tail:{seconds:1.35}};
   const rig={version:1,source:'blue-maid-05-corrected-v2.png',width,height,kind:'segmented-2d-puppet',notCubism:true,groups,actions,layers:definitions.map((d,i)=>({...d,file:'layers/'+d.id+'.png',bounds:bounds[i]})),seams:repairs,verification:{visiblePixels:opaque,channelDifferences:different,method:'reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays'}};
   await fs.writeFile(path.join(root,'rig.json'),JSON.stringify(rig,null,2)+'\n');
   await fs.writeFile(path.join(output,'reconstruction-check.json'),JSON.stringify(rig.verification,null,2)+'\n');
