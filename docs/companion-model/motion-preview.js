@@ -10,19 +10,22 @@
     const lift=smooth(p/.24)*(1-smooth((p-.76)/.24));
     const elbow=smooth((p-.05)/.24)*(1-smooth((p-.72)/.24));
     const swing=p>.30&&p<.72?Math.sin((p-.30)/.42*Math.PI*4)*Math.sin((p-.30)/.42*Math.PI):0;
-    return {shoulder:-24*lift,elbow:-112*elbow,wrist:12*elbow+9*swing};
+    const swayEnvelope=smooth(p/.20)*(1-smooth((p-.78)/.22));
+    return {shoulder:-24*lift,elbow:-112*elbow,wrist:12*elbow+9*swing,
+      head:3.2*Math.sin((p-.08)*Math.PI*3)*swayEnvelope,
+      hair:-.65*Math.sin((p-.12)*Math.PI*3)*swayEnvelope};
   }
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   let rig,ready=false,frame=0,last=0,time=0,nextBlink=3,blinkAt=-10,action=null,actionAt=0,target=[0,0],look=[0,0],rest=false;
   const images=new Map(),seams=new Map(),visible=new Set();
   let waveBacking;
-  const names={blink:'独立眼睑眨眼',nod:'头部关节点头',wave:'手臂与手腕挥手',happy:'开心回应',tail:'独立鲸尾摆动'};
+  const names={blink:'独立眼睑眨眼',wave:'挥手与左右偏头',happy:'开心回应',tail:'独立鲸尾摆动'};
   const order=['tail','hair-left','hair-right','leg-left','leg-right','body','skirt','arm-left','arm-right','hand-left','hand-right','head','bangs','fin-left','fin-right','ahoge','eye-left','eye-right','iris-left','iris-right','mouth'];
   const load=url=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error('图层载入失败：'+url));image.src=url;});
   function trace(shape){ctx.beginPath();if(shape.ellipse){const e=shape.ellipse;ctx.ellipse(e[0]*rig.width,e[1]*rig.height,e[2]*rig.width,e[3]*rig.height,0,0,Math.PI*2);}else{shape.polygon.forEach(([x,y],i)=>i?ctx.lineTo(x*rig.width,y*rig.height):ctx.moveTo(x*rig.width,y*rig.height));ctx.closePath();}}
   const pivotTransform=(parent,pivot,angle=0,sx=1,sy=1,dx=0,dy=0)=>parent.translate(pivot[0]*rig.width+dx,pivot[1]*rig.height+dy).rotate(angle).scale(sx,sy).translate(-pivot[0]*rig.width,-pivot[1]*rig.height);
   function schedule(){if(ready&&!frame&&!document.hidden)frame=requestAnimationFrame(draw);}
-  function trigger(name){rest=false;explode.checked=false;blinkPose.value=armPose.value=tailPose.value='0';if(reduced.matches){status.textContent='已遵循系统减少动态效果设置。';return;}action=name;actionAt=performance.now();status.textContent=names[name];schedule();}
+  function trigger(name){heldWave=false;wavePose.value='0';rest=false;explode.checked=false;blinkPose.value=armPose.value=tailPose.value='0';if(reduced.matches){status.textContent='已遵循系统减少动态效果设置。';return;}action=name;actionAt=performance.now();status.textContent=names[name];schedule();}
   function draw(now){
     frame=0;if(!ready||document.hidden)return;
     const dt=last?Math.min((now-last)/1000,.05):0;last=now;
@@ -41,11 +44,12 @@
     const open=Math.max(.025,1-blink),response=rest||explode.checked?0:envelope;
     const tracking=follow.checked&&!rest&&!explode.checked&&!reduced.matches?look:[0,0];
     const root=new DOMMatrix(),torso=root.translate(0,-Math.sin(time*1.7)*1.7*amplitude-(action==='happy'?response*3:0));
-    const nod=action==='nod'?smooth(phase/.38)*(1-smooth((phase-.48)/.52)):0;
-    const headAngle=Math.sin(time*1.1)*.35*amplitude+tracking[0]*.7+nod*3;
-    const head=pivotTransform(torso,rig.groups.headGroup.pivot,headAngle,1,1-nod*.045,tracking[0]*1.4,tracking[1]*.7+nod*26);
+    const waving=!rest&&!explode.checked&&!reduced.matches&&(heldWave||action==='wave');
+    const wave=waving?waveJoints(heldWave?Number(wavePose.value)/100:phase):{shoulder:0,elbow:0,wrist:0,head:0,hair:0};
+    const headAngle=Math.sin(time*1.1)*.35*amplitude+(waving?0:tracking[0]*.7)+wave.head;
+    // Roll around the neck attachment. No nod translation or vertical squash.
+    const head=pivotTransform(torso,rig.groups.headGroup.pivot,headAngle,1,1,waving?0:tracking[0]*1.4,waving?0:tracking[1]*.7);
     const armL=pivotTransform(torso,rig.groups.armLeftGroup.pivot,-.35*Math.sin(time*1.7)*amplitude);
-    const wave=(!rest&&!explode.checked&&(heldWave||action==='wave'))?waveJoints(heldWave?Number(wavePose.value)/100:phase):{shoulder:0,elbow:0,wrist:0};
     const armR=pivotTransform(torso,rig.groups.armRightGroup.pivot,.35*Math.sin(time*1.7)*amplitude+wave.shoulder+(rest||explode.checked?0:Number(armPose.value)));
     const forearmR=pivotTransform(armR,rig.groups.forearmRightGroup.pivot,wave.elbow);
     const groups={root,torso,headGroup:head,armLeftGroup:armL,armRightGroup:armR,
@@ -55,7 +59,7 @@
     for(const layer of rig.layers){
       let angle=0,dx=0,dy=0,sy=1;
       if(layer.id==='tail')angle=Math.sin(time*1.5)*1.1*amplitude+(action==='tail'?Math.sin(elapsed*8)*3.5*response:0)+Number(tailPose.value);
-      if(layer.id.startsWith('hair-'))angle=Math.sin(time*1.6+(layer.id==='hair-left'?0:.7))*.55*amplitude;
+      if(layer.id.startsWith('hair-'))angle=Math.sin(time*1.6+(layer.id==='hair-left'?0:.7))*.55*amplitude+wave.hair;
       if(layer.id.startsWith('fin-'))angle=Math.sin(time*1.8)*.45*amplitude;
       if(layer.id==='ahoge')angle=Math.sin(time*2)*1.1*amplitude;
       if(layer.id==='bangs')angle=Math.sin(time*1.4)*.12*amplitude;
@@ -72,10 +76,16 @@
     const base=new DOMMatrix().translate(canvas.width/2,canvas.height/2).scale(scale).translate(-rig.width/2,-rig.height/2);
     const set=matrix=>{const m=base.multiply(matrix);ctx.setTransform(m.a,m.b,m.c,m.d,m.e,m.f);};
     function imageAt(image,bounds){ctx.drawImage(image,bounds[0],bounds[1],bounds[2]-bounds[0],bounds[3]-bounds[1]);}
-    if(!explode.checked&&!rest&&Math.abs(wave.shoulder)>.001){set(transforms.get('hair-right'));ctx.drawImage(waveBacking,0,0,rig.width,rig.height);}
+    const raised=!explode.checked&&!rest&&Math.abs(wave.shoulder)>.001;
+    if(raised&&visible.has('hair-right')){set(transforms.get('hair-right'));ctx.drawImage(waveBacking,0,0,rig.width,rig.height);}
+    const armParts=['arm-right','forearm-right','hand-right'];
+    if(!explode.checked&&!rest){for(const seam of rig.seams){
+      if((raised&&seam.id==='hair-right')||armParts.includes(seam.id)||!visible.has(seam.id)||seam.id.startsWith('iris-')||seam.id.startsWith('eye-')||seam.id==='mouth')continue;
+      set(transforms.get(seam.id));imageAt(seams.get(seam.id),seam.bounds);
+    }}
     if(!explode.checked&&!rest){set(head);for(const id of['eye-left','eye-right','mouth']){trace(rig.layers.find(l=>l.id===id).shape);ctx.fillStyle='#ffefea';ctx.fill();}}
-    for(const id of order){if(!visible.has(id))continue;const layer=rig.layers.find(l=>l.id===id);set(transforms.get(id));
-      if(!explode.checked&&!rest&&!id.startsWith('iris-')&&!id.startsWith('eye-')&&id!=='mouth'){
+    for(const id of order){if(!visible.has(id)||(raised&&id==='hair-right'))continue;const layer=rig.layers.find(l=>l.id===id);set(transforms.get(id));
+      if(!explode.checked&&!rest&&armParts.includes(id)){
         const seam=rig.seams.find(s=>s.id===id);
         if(seam)imageAt(seams.get(id),seam.bounds);
       }

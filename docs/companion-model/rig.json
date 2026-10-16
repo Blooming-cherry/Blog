@@ -81,9 +81,6 @@
     "blink": {
       "seconds": 0.24
     },
-    "nod": {
-      "seconds": 1.35
-    },
     "wave": {
       "seconds": 3.2
     },
@@ -1286,8 +1283,8 @@
       "file": "layers/hand-right.png",
       "bounds": [
         824,
-        857,
-        938,
+        858,
+        940,
         943
       ]
     },
@@ -2114,7 +2111,7 @@
       "file": "layers/hand-right-seam.png",
       "bounds": [
         814,
-        847,
+        848,
         908,
         952
       ]
