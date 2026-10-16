@@ -52,10 +52,14 @@
     const amplitude=active?1:0;
     let blink=active?Math.max(0,1-Math.abs((time-blinkAt-.10)/.10)):0;
     if(action==='blink')blink=Math.max(0,1-Math.abs((elapsed-.11)/.11));
-    if(motion==='happy')blink=Math.max(blink,Math.max(0,1-Math.abs((phase-.28)/.065)));
     blink=Math.max(blink,Number(blinkPose.value)/100);
     if(rest||explode.checked||reduced.matches)blink=0;
-    const open=Math.max(.025,1-blink),response=rest||explode.checked?0:envelope;
+    let blinkLeft=blink,blinkRight=blink;
+    if(motion==='happy'&&!rest&&!explode.checked&&!reduced.matches){
+      const wink=smooth((phase-.12)/.12)*(1-smooth((phase-.68)/.16));
+      blinkLeft=.5*wink;blinkRight=wink;
+    }
+    const openLeft=Math.max(.025,1-blinkLeft),openRight=Math.max(.025,1-blinkRight),response=rest||explode.checked?0:envelope;
     const tracking=follow.checked&&!rest&&!explode.checked&&!reduced.matches?look:[0,0];
     const root=new DOMMatrix(),torso=root.translate(0,-Math.sin(time*1.7)*1.7*amplitude);
     const gesturing=!rest&&!explode.checked&&!reduced.matches;
@@ -70,7 +74,7 @@
     const forearmR=pivotTransform(armR,rig.groups.forearmRightGroup.pivot,wave.elbow);
     const groups={root,torso,headGroup:head,armLeftGroup:armL,armRightGroup:armR,
       forearmRightGroup:forearmR,handLeftGroup:pivotTransform(armL,rig.groups.handLeftGroup.pivot,0),handRightGroup:pivotTransform(forearmR,rig.groups.handRightGroup.pivot,wave.wrist),
-      eyeLeftGroup:pivotTransform(head,rig.groups.eyeLeftGroup.pivot,0,1,open),eyeRightGroup:pivotTransform(head,rig.groups.eyeRightGroup.pivot,0,1,open)};
+      eyeLeftGroup:pivotTransform(head,rig.groups.eyeLeftGroup.pivot,0,1,openLeft),eyeRightGroup:pivotTransform(head,rig.groups.eyeRightGroup.pivot,0,1,openRight)};
     const transforms=new Map();
     for(const layer of rig.layers){
       let angle=0,dx=0,dy=0,sy=1;
@@ -94,7 +98,7 @@
     const neck=rig.groups.headGroup.pivot.map((v,i)=>v*(i?rig.height:rig.width));
     let backFlushed=false,frontFlushed=false;
     const flushBack=()=>{if(!pitch||backFlushed)return;CompanionHeadProjection.paint(mainCtx,headBack,pitch,base.multiply(torso),neck);backFlushed=true;};
-    const lids=()=>{if(blink<=.8||explode.checked)return;set(head,'head');ctx.strokeStyle='#392c42';ctx.lineWidth=3;ctx.lineCap='round';for(const x of[.397,.547]){ctx.beginPath();ctx.moveTo((x-.033)*rig.width,.407*rig.height);ctx.quadraticCurveTo(x*rig.width,.416*rig.height,(x+.033)*rig.width,.407*rig.height);ctx.stroke();}};
+    const lids=()=>{if(explode.checked)return;set(head,'head');ctx.strokeStyle='#392c42';ctx.lineWidth=3;ctx.lineCap='round';for(const [x,amount]of[[.397,blinkLeft],[.547,blinkRight]]){if(amount<=.8)continue;ctx.beginPath();ctx.moveTo((x-.033)*rig.width,.407*rig.height);ctx.quadraticCurveTo(x*rig.width,.416*rig.height,(x+.033)*rig.width,.407*rig.height);ctx.stroke();}};
     const flushFront=()=>{if(!pitch||frontFlushed)return;lids();CompanionHeadProjection.paint(mainCtx,headFront,pitch,base.multiply(torso),neck);frontFlushed=true;};
     function imageAt(image,bounds){ctx.drawImage(image,bounds[0],bounds[1],bounds[2]-bounds[0],bounds[3]-bounds[1]);}
     const completedHair=!explode.checked;
@@ -121,7 +125,7 @@
       if(id.startsWith('eye-')&&!explode.checked){const iris=rig.layers.find(l=>l.id==='iris-'+id.split('-')[1]);ctx.fillStyle='#fdfbff';trace(iris.shape);ctx.fill();}
       ctx.save();if(id.startsWith('iris-')&&!explode.checked){trace(rig.layers.find(l=>l.id==='eye-'+id.split('-')[1]).shape);ctx.clip();}
       if(id==='hand-right'&&motion==='happy'&&phase>.20&&phase<.85&&!explode.checked){
-        ctx.translate(851,871);ctx.rotate(135*Math.PI/180);ctx.drawImage(peaceHand,-29,-66,58,70);
+        ctx.translate(851,871);ctx.rotate(135*Math.PI/180);ctx.scale(-1,1);ctx.drawImage(peaceHand,-29,-66,58,70);
       }else imageAt(images.get(id),layer.bounds);ctx.restore();
       if(explode.checked&&document.querySelector('#labels').checked){ctx.font='15px system-ui';ctx.fillStyle='#245886';ctx.fillText(layer.name,layer.bounds[0],Math.max(15,layer.bounds[1]-6));}
     }

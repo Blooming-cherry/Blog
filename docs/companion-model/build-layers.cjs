@@ -113,6 +113,42 @@ function contains(shape,x,y){
       const whiteCuff=r>200&&g>r*.96&&b>r*.97;
       if(blueFabric||whiteCuff)part=definitions.findIndex(l=>l.id===(whiteCuff||y<890?'forearm-right':b>130?'hair-right':'skirt'));
     }
+    assignment[p]=part;
+  }
+  // Review every component, including the non-gesturing arm, face features,
+  // fins and tail. Tiny disconnected cutout fragments belong to the adjacent
+  // solid component, not to a moving part several pixels away. Preserve the
+  // original RGBA; reassign ownership instead of erasing source pixels.
+  const cleanup=[];
+  for(let pass=0;pass<3;pass++){
+    const seen=new Uint8Array(width*height),cores=new Uint8Array(width*height),fragments=[];
+    for(let part=0;part<definitions.length;part++){
+      const components=[];
+      for(let p=0;p<assignment.length;p++){
+        if(seen[p]||!data[p*4+3]||assignment[p]!==part)continue;
+        const component=[p];seen[p]=1;
+        for(let at=0;at<component.length;at++){
+          const q=component[at],x=q%width,y=Math.floor(q/width);
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+            if(x+dx<0||x+dx>=width||y+dy<0||y+dy>=height)continue;
+            const n=q+dy*width+dx;
+            if(!seen[n]&&data[n*4+3]&&assignment[n]===part){seen[n]=1;component.push(n);}
+          }
+        }
+        components.push(component);
+      }
+      const largest=Math.max(...components.map(c=>c.length)),threshold=Math.max(24,largest*.002);
+      for(const c of components){if(c.length>=threshold||c.length===largest)c.forEach(p=>cores[p]=1);else fragments.push(...c);}
+      if(pass===0)cleanup.push({id:definitions[part].id,componentsBefore:components.length,fragmentPixels:components.filter(c=>c.length<threshold&&c.length!==largest).reduce((s,c)=>s+c.length,0)});
+    }
+    if(!fragments.length)break;
+    const owner=Uint8Array.from(assignment),dist=new Uint8Array(width*height),q=new Int32Array(width*height);let start=0,end=0;
+    for(let p=0;p<cores.length;p++)if(cores[p]){dist[p]=1;q[end++]=p;}
+    while(start<end){const p=q[start++],x=p%width,y=Math.floor(p/width);for(const n of[x?p-1:-1,x<width-1?p+1:-1,y?p-width:-1,y<height-1?p+width:-1])if(n>=0&&!dist[n]){dist[n]=1;owner[n]=owner[p];q[end++]=n;}}
+    for(const p of fragments)assignment[p]=owner[p];
+  }
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+    const offset=(y*width+x)*4;if(!data[offset+3])continue;const part=assignment[y*width+x];
     data.copy(buffers[part],offset,offset,offset+4);
     const b=bounds[part];b[0]=Math.min(b[0],x);b[1]=Math.min(b[1],y);b[2]=Math.max(b[2],x+1);b[3]=Math.max(b[3],y+1);
   }
@@ -124,12 +160,12 @@ function contains(shape,x,y){
   }
   for(let i=0;i<definitions.length;i++){
     await save(buffers[i],bounds[i],definitions[i].id);
-    // Small hidden seam allowances. These do not reconstruct large occluded anatomy.
+    // Narrow attachment allowances. Broad 10 px dilation leaked colored edges.
     const visited=new Uint8Array(width*height),distance=new Uint8Array(width*height),repair=Buffer.alloc(width*height*4),queue=new Int32Array(width*height);
     let first=0,end=0;const b=bounds[i],rb=[width,height,0,0];
     for(let y=b[1];y<b[3];y++)for(let x=b[0];x<b[2];x++){const p=y*width+x;if(buffers[i][p*4+3]){visited[p]=1;queue[end++]=p;}}
     const edge=Buffer.from(buffers[i]);
-    while(first<end){const p=queue[first++];if(distance[p]>=10)continue;const x=p%width,y=Math.floor(p/width);
+    while(first<end){const p=queue[first++];if(distance[p]>=2)continue;const x=p%width,y=Math.floor(p/width);
       for(const n of [x>0?p-1:-1,x<width-1?p+1:-1,y>0?p-width:-1,y<height-1?p+width:-1]){
         if(n<0||visited[n]||data[n*4+3]<245)continue;visited[n]=1;distance[n]=distance[p]+1;queue[end++]=n;
         edge.copy(edge,n*4,p*4,p*4+4);edge[n*4+3]=255;edge.copy(repair,n*4,n*4,n*4+4);
@@ -151,9 +187,16 @@ function contains(shape,x,y){
   const groups={root:{parent:null,pivot:[.5,.95]},torso:{parent:'root',pivot:[.48,.65]},headGroup:{parent:'torso',pivot:[.48,.505]},armLeftGroup:{parent:'torso',pivot:[.377,.525]},armRightGroup:{parent:'torso',pivot:[.578,.525]},handLeftGroup:{parent:'armLeftGroup',pivot:[.28,.69]},handRightGroup:{parent:'armRightGroup',pivot:[.68,.70]},eyeLeftGroup:{parent:'headGroup',pivot:[.397,.407]},eyeRightGroup:{parent:'headGroup',pivot:[.547,.407]}};
   groups.forearmRightGroup={parent:'armRightGroup',pivot:[780/1262,765/1246]};
   groups.handRightGroup={parent:'forearmRightGroup',pivot:[851/1262,871/1246]};
+  // Legacy IDs encode image coordinates. User-facing anatomy always uses the
+  // character's point of view; never infer anatomy from these legacy suffixes.
+  for(const d of definitions){
+    if(d.id.endsWith('-left')){d.characterSide='right';d.name='角色右侧 · '+d.name.replace(/左侧|左眼|左瞳孔|左鲸/g,'').replace(/^与/,'');}
+    if(d.id.endsWith('-right')){d.characterSide='left';d.name='角色左侧 · '+d.name.replace(/右侧|右前臂|右眼|右瞳孔|右鲸/g,'').replace(/^与/,'');}
+  }
   const actions={blink:{seconds:.24},nod:{seconds:1.7},wave:{seconds:3.2},happy:{seconds:2.8},tail:{seconds:1.35}};
   const rig={version:1,source:'blue-maid-05-corrected-v2.png',width,height,kind:'segmented-2d-puppet',notCubism:true,groups,actions,layers:definitions.map((d,i)=>({...d,file:'layers/'+d.id+'.png',bounds:bounds[i]})),seams:repairs,verification:{visiblePixels:opaque,channelDifferences:different,method:'reopened all exported PNGs, reconstructed at source coordinates and compared visible RGBA; excludes seam underlays'}};
   await fs.writeFile(path.join(root,'rig.json'),JSON.stringify(rig,null,2)+'\n');
   await fs.writeFile(path.join(output,'reconstruction-check.json'),JSON.stringify(rig.verification,null,2)+'\n');
+  await fs.writeFile(path.join(root,'layer-cleanup-audit.json'),JSON.stringify({source:rig.source,characterCoordinates:'right = image left; left = image right',method:'8-neighbour connected component ownership audit; original RGBA retained',layers:cleanup},null,2)+'\n');
   console.log(JSON.stringify({layers:definitions.length,width,height,...rig.verification}));
 })().catch(error=>{console.error(error);process.exitCode=1;});

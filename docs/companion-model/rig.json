@@ -302,8 +302,8 @@
       "file": "layers/tail.png",
       "bounds": [
         796,
-        696,
-        1230,
+        594,
+        1248,
         1246
       ]
     },
@@ -451,13 +451,13 @@
       "bounds": [
         0,
         795,
-        925,
-        1163
+        895,
+        1224
       ]
     },
     {
       "id": "leg-left",
-      "name": "左侧短袜与鞋",
+      "name": "角色右侧 · 短袜与鞋",
       "parent": "root",
       "pivot": [
         0.43,
@@ -483,9 +483,10 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/leg-left.png",
       "bounds": [
-        250,
+        409,
         1089,
         586,
         1226
@@ -493,7 +494,7 @@
     },
     {
       "id": "leg-right",
-      "name": "右侧短袜与鞋",
+      "name": "角色左侧 · 短袜与鞋",
       "parent": "root",
       "pivot": [
         0.52,
@@ -519,6 +520,7 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/leg-right.png",
       "bounds": [
         600,
@@ -557,15 +559,15 @@
       },
       "file": "layers/head.png",
       "bounds": [
-        0,
+        54,
         16,
-        1248,
-        850
+        1214,
+        634
       ]
     },
     {
       "id": "hair-left",
-      "name": "左侧后发束",
+      "name": "角色右侧 · 后发束",
       "parent": "headGroup",
       "pivot": [
         0.31,
@@ -703,17 +705,18 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/hair-left.png",
       "bounds": [
-        49,
+        0,
         513,
-        474,
-        957
+        462,
+        959
       ]
     },
     {
       "id": "hair-right",
-      "name": "右侧后发束",
+      "name": "角色左侧 · 后发束",
       "parent": "headGroup",
       "pivot": [
         0.65,
@@ -855,17 +858,18 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/hair-right.png",
       "bounds": [
-        722,
+        751,
         511,
         1034,
-        941
+        899
       ]
     },
     {
       "id": "arm-left",
-      "name": "左侧长袖上臂",
+      "name": "角色右侧 · 长袖上臂",
       "parent": "armLeftGroup",
       "pivot": [
         0.37,
@@ -947,6 +951,7 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/arm-left.png",
       "bounds": [
         336,
@@ -957,7 +962,7 @@
     },
     {
       "id": "arm-right",
-      "name": "右侧长袖上臂",
+      "name": "角色左侧 · 长袖上臂",
       "parent": "armRightGroup",
       "pivot": [
         0.6,
@@ -1031,6 +1036,7 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/arm-right.png",
       "bounds": [
         713,
@@ -1041,7 +1047,7 @@
     },
     {
       "id": "hand-left",
-      "name": "左侧袖口与手",
+      "name": "角色右侧 · 袖口与手",
       "parent": "handLeftGroup",
       "pivot": [
         0.28,
@@ -1135,6 +1141,7 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/hand-left.png",
       "bounds": [
         254,
@@ -1145,7 +1152,7 @@
     },
     {
       "id": "forearm-right",
-      "name": "右前臂长袖与袖口",
+      "name": "角色左侧 · 长袖与袖口",
       "parent": "forearmRightGroup",
       "pivot": [
         0.618066561014263,
@@ -1203,17 +1210,18 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/forearm-right.png",
       "bounds": [
         737,
         737,
-        940,
-        942
+        919,
+        907
       ]
     },
     {
       "id": "hand-right",
-      "name": "右侧袖口与手",
+      "name": "角色左侧 · 袖口与手",
       "parent": "handRightGroup",
       "pivot": [
         0.68,
@@ -1283,12 +1291,13 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/hand-right.png",
       "bounds": [
-        824,
+        827,
         858,
         938,
-        942
+        934
       ]
     },
     {
@@ -1385,7 +1394,7 @@
     },
     {
       "id": "fin-left",
-      "name": "左鲸鳍耳",
+      "name": "角色右侧 · 鳍耳",
       "parent": "headGroup",
       "pivot": [
         0.28,
@@ -1463,17 +1472,18 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/fin-left.png",
       "bounds": [
-        193,
+        37,
         401,
         333,
-        521
+        536
       ]
     },
     {
       "id": "fin-right",
-      "name": "右鲸鳍耳",
+      "name": "角色左侧 · 鳍耳",
       "parent": "headGroup",
       "pivot": [
         0.68,
@@ -1543,6 +1553,7 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/fin-right.png",
       "bounds": [
         868,
@@ -1649,7 +1660,7 @@
     },
     {
       "id": "eye-left",
-      "name": "左眼白与眼睑",
+      "name": "角色右侧 · 白与眼睑",
       "parent": "eyeLeftGroup",
       "pivot": [
         0.397,
@@ -1727,6 +1738,7 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/eye-left.png",
       "bounds": [
         425,
@@ -1737,7 +1749,7 @@
     },
     {
       "id": "eye-right",
-      "name": "右眼白与眼睑",
+      "name": "角色左侧 · 白与眼睑",
       "parent": "eyeRightGroup",
       "pivot": [
         0.547,
@@ -1811,6 +1823,7 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/eye-right.png",
       "bounds": [
         648,
@@ -1821,7 +1834,7 @@
     },
     {
       "id": "iris-left",
-      "name": "左瞳孔",
+      "name": "角色右侧 · ",
       "parent": "eyeLeftGroup",
       "pivot": [
         0.397,
@@ -1883,6 +1896,7 @@
           ]
         ]
       },
+      "characterSide": "right",
       "file": "layers/iris-left.png",
       "bounds": [
         466,
@@ -1893,7 +1907,7 @@
     },
     {
       "id": "iris-right",
-      "name": "右瞳孔",
+      "name": "角色左侧 · ",
       "parent": "eyeRightGroup",
       "pivot": [
         0.547,
@@ -1955,6 +1969,7 @@
           ]
         ]
       },
+      "characterSide": "left",
       "file": "layers/iris-right.png",
       "bounds": [
         661,
@@ -1993,19 +2008,19 @@
       "id": "body",
       "file": "layers/body-seam.png",
       "bounds": [
-        427,
-        608,
-        766,
-        825
+        435,
+        616,
+        758,
+        817
       ]
     },
     {
       "id": "tail",
       "file": "layers/tail-seam.png",
       "bounds": [
-        795,
-        773,
-        1017,
+        801,
+        781,
+        1013,
         1075
       ]
     },
@@ -2014,18 +2029,18 @@
       "file": "layers/skirt-seam.png",
       "bounds": [
         334,
-        785,
-        919,
-        1100
+        793,
+        897,
+        1092
       ]
     },
     {
       "id": "leg-left",
       "file": "layers/leg-left-seam.png",
       "bounds": [
-        486,
-        1079,
-        576,
+        488,
+        1087,
+        570,
         1090
       ]
     },
@@ -2033,9 +2048,9 @@
       "id": "leg-right",
       "file": "layers/leg-right-seam.png",
       "bounds": [
-        620,
-        1080,
-        709,
+        624,
+        1088,
+        707,
         1090
       ]
     },
@@ -2043,50 +2058,50 @@
       "id": "head",
       "file": "layers/head-seam.png",
       "bounds": [
-        210,
+        284,
         21,
         1044,
-        860
+        636
       ]
     },
     {
       "id": "hair-left",
       "file": "layers/hair-left-seam.png",
       "bounds": [
-        284,
-        503,
-        484,
-        873
+        287,
+        511,
+        464,
+        865
       ]
     },
     {
       "id": "hair-right",
       "file": "layers/hair-right-seam.png",
       "bounds": [
-        712,
-        501,
-        1008,
-        947
+        749,
+        509,
+        1001,
+        901
       ]
     },
     {
       "id": "arm-left",
       "file": "layers/arm-left-seam.png",
       "bounds": [
-        326,
-        630,
-        497,
-        858
+        334,
+        638,
+        489,
+        851
       ]
     },
     {
       "id": "arm-right",
       "file": "layers/arm-right-seam.png",
       "bounds": [
-        703,
-        635,
-        812,
-        767
+        711,
+        643,
+        804,
+        759
       ]
     },
     {
@@ -2094,59 +2109,59 @@
       "file": "layers/hand-left-seam.png",
       "bounds": [
         288,
-        807,
-        411,
-        937
+        815,
+        404,
+        929
       ]
     },
     {
       "id": "forearm-right",
       "file": "layers/forearm-right-seam.png",
       "bounds": [
-        727,
-        727,
-        919,
-        916
+        735,
+        735,
+        915,
+        909
       ]
     },
     {
       "id": "hand-right",
       "file": "layers/hand-right-seam.png",
       "bounds": [
-        814,
-        848,
-        918,
-        940
+        825,
+        856,
+        914,
+        911
       ]
     },
     {
       "id": "bangs",
       "file": "layers/bangs-seam.png",
       "bounds": [
-        458,
-        200,
-        675,
-        503
+        466,
+        208,
+        667,
+        495
       ]
     },
     {
       "id": "fin-left",
       "file": "layers/fin-left-seam.png",
       "bounds": [
-        249,
-        394,
-        343,
-        526
+        305,
+        400,
+        335,
+        522
       ]
     },
     {
       "id": "fin-right",
       "file": "layers/fin-right-seam.png",
       "bounds": [
-        858,
-        396,
+        866,
+        404,
         1044,
-        538
+        530
       ]
     },
     {
@@ -2155,58 +2170,58 @@
       "bounds": [
         424,
         21,
-        621,
-        142
+        613,
+        134
       ]
     },
     {
       "id": "eye-left",
       "file": "layers/eye-left-seam.png",
       "bounds": [
-        415,
-        435,
-        557,
-        556
+        423,
+        443,
+        549,
+        548
       ]
     },
     {
       "id": "eye-right",
       "file": "layers/eye-right-seam.png",
       "bounds": [
-        638,
-        433,
-        775,
-        558
+        646,
+        441,
+        767,
+        550
       ]
     },
     {
       "id": "iris-left",
       "file": "layers/iris-left-seam.png",
       "bounds": [
-        456,
-        455,
-        546,
-        554
+        464,
+        463,
+        538,
+        546
       ]
     },
     {
       "id": "iris-right",
       "file": "layers/iris-right-seam.png",
       "bounds": [
-        651,
-        455,
-        736,
-        555
+        659,
+        463,
+        728,
+        547
       ]
     },
     {
       "id": "mouth",
       "file": "layers/mouth-seam.png",
       "bounds": [
-        555,
-        539,
-        644,
-        614
+        563,
+        547,
+        636,
+        606
       ]
     }
   ],

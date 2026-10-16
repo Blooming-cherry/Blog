@@ -1,0 +1,117 @@
+{
+  "source": "blue-maid-05-corrected-v2.png",
+  "characterCoordinates": "right = image left; left = image right",
+  "method": "8-neighbour connected component ownership audit; original RGBA retained",
+  "layers": [
+    {
+      "id": "body",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "tail",
+      "componentsBefore": 236,
+      "fragmentPixels": 707
+    },
+    {
+      "id": "skirt",
+      "componentsBefore": 73,
+      "fragmentPixels": 173
+    },
+    {
+      "id": "leg-left",
+      "componentsBefore": 37,
+      "fragmentPixels": 46
+    },
+    {
+      "id": "leg-right",
+      "componentsBefore": 10,
+      "fragmentPixels": 10
+    },
+    {
+      "id": "head",
+      "componentsBefore": 182,
+      "fragmentPixels": 1639
+    },
+    {
+      "id": "hair-left",
+      "componentsBefore": 42,
+      "fragmentPixels": 115
+    },
+    {
+      "id": "hair-right",
+      "componentsBefore": 36,
+      "fragmentPixels": 170
+    },
+    {
+      "id": "arm-left",
+      "componentsBefore": 4,
+      "fragmentPixels": 4
+    },
+    {
+      "id": "arm-right",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "hand-left",
+      "componentsBefore": 2,
+      "fragmentPixels": 1
+    },
+    {
+      "id": "forearm-right",
+      "componentsBefore": 40,
+      "fragmentPixels": 139
+    },
+    {
+      "id": "hand-right",
+      "componentsBefore": 15,
+      "fragmentPixels": 62
+    },
+    {
+      "id": "bangs",
+      "componentsBefore": 8,
+      "fragmentPixels": 20
+    },
+    {
+      "id": "fin-left",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "fin-right",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "ahoge",
+      "componentsBefore": 4,
+      "fragmentPixels": 3
+    },
+    {
+      "id": "eye-left",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "eye-right",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "iris-left",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "iris-right",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    },
+    {
+      "id": "mouth",
+      "componentsBefore": 1,
+      "fragmentPixels": 0
+    }
+  ]
+}
