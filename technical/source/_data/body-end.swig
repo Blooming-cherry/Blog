@@ -71,8 +71,9 @@ window.__blogDesktopEffectsEnabled = Boolean(
 <link rel="stylesheet" href="/js/companion/companion.css">
 <script defer src="/js/companion/preferences.js"></script>
 <script defer src="/js/companion/voice.js"></script>
-<script defer src="/js/companion/renderer.js"></script>
-<script defer src="/js/companion/controller.js?v=20261015-voice-controls"></script>
+<script defer src="/js/companion/rig-renderer.js?v=20261017-blue-maid"></script>
+<script defer src="/js/companion/renderer.js?v=20261017-blue-maid"></script>
+<script defer src="/js/companion/controller.js?v=20261017-blue-maid"></script>
 <script defer src="/js/companion/bootstrap.js"></script>
 <!-- 鼠标拖尾粒子 -->
 

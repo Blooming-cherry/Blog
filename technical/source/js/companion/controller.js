@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
   const api = global.BlogCompanion = global.BlogCompanion || {};
-  const poster = '/assets/companion/whale/v1/poster.svg';
+  const poster = '/assets/companion/blue-maid/v1/poster.png';
   api.Controller = class {
     constructor(options = {}) {
       this.manifestURL = options.manifest || '/assets/companion/manifest.json';
@@ -22,8 +22,8 @@
       target.addEventListener(name, callback, options); this.disposers.push(() => target.removeEventListener(name, callback, options));
     }
     createUI() {
-      const root = document.createElement('aside'); root.id = 'blog-companion'; root.setAttribute('aria-label', '鲸鱼看板娘');
-      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开鲸鱼看板娘"><img src="${poster}" alt="原创静态鲸鱼图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><button type="button" data-companion-trail>关闭鼠标拖尾</button><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
+      const root = document.createElement('aside'); root.id = 'blog-companion'; root.setAttribute('aria-label', '蓝女仆看板娘');
+      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开蓝女仆看板娘"><img src="${poster}" alt="原创静态看板娘图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><button type="button" data-companion-trail>关闭鼠标拖尾</button><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
       this.root = root; this.avatar = root.querySelector('[data-companion-avatar]'); this.stage = root.querySelector('.companion-stage'); this.status = root.querySelector('.companion-status'); this.menu = root.querySelector('[data-companion-menu]'); this.more = root.querySelector('[data-companion-more]');
       this.syncVoiceControls();
       document.body.appendChild(root);
@@ -44,7 +44,7 @@
       this.listen(this.root.querySelector('[data-companion-sound]'), 'click', () => {
         const muted = !this.preferences.value.muted;
         this.preferences.update({ muted }); this.voice.setMuted(muted); this.syncControls();
-        if (!muted) { const voice = this.manifest?.voices?.tap; if (voice) this.voice.play('tap', voice); else this.message(this.manifest?.voiceNotice || '鲸鱼娘语音尚未提供。'); }
+        if (!muted) { const voice = this.manifest?.voices?.tap; if (voice) this.voice.play('tap', voice); else this.message(this.manifest?.voiceNotice || '看板娘语音尚未提供。'); }
       });
       this.listen(this.root.querySelector('[data-companion-volume]'), 'input', event => { const volume = Number(event.target.value); this.preferences.update({ volume }); this.voice.setVolume(volume); });
       this.listen(this.root.querySelector('[data-companion-size]'), 'change', event => { this.preferences.update({ size: Number(event.target.value) }); this.apply(); this.renderer?.fit(); });
@@ -53,7 +53,7 @@
       this.listen(this.root.querySelector('[data-companion-position]'), 'click', () => { this.preferences.update({ position: null }); this.apply(); });
       this.listen(this.root.querySelector('[data-companion-disable]'), 'click', () => { this.disable(); this.avatar.focus(); });
       this.listen(this.root.querySelector('[data-companion-credits]'), 'click', () => {
-        this.message('鲸鱼娘模型：CC BY-NC-SA 4.0；作者与运行依赖许可见资源说明。', true);
+        this.message('蓝女仆：Canvas2D 分层实现；作者与授权见资源说明。', true);
         if (this.manifest?.credits) { const link = document.createElement('a'); link.href = api.sameOrigin(this.manifest.credits); link.textContent = '查看作者与授权'; link.target = '_blank'; link.rel = 'noopener'; this.status.appendChild(link); }
       });
       this.listen(this.menu, 'keydown', event => {
@@ -107,7 +107,7 @@
     apply() {
       const collapsed = this.isCollapsed(); this.root.classList.toggle('is-collapsed', collapsed); this.root.classList.toggle('is-disabled', this.preferences.value.disabled);
       this.root.style.setProperty('--companion-size', (this.mobileQuery.matches ? Math.min(this.preferences.value.size, 230) : this.preferences.value.size) + 'px');
-      this.avatar.setAttribute('aria-label', this.preferences.value.disabled ? '重新启用鲸鱼看板娘' : collapsed ? '打开鲸鱼看板娘' : '与鲸鱼看板娘互动');
+      this.avatar.setAttribute('aria-label', this.preferences.value.disabled ? '重新启用蓝女仆看板娘' : collapsed ? '打开蓝女仆看板娘' : '与蓝女仆看板娘互动');
       if (!this.mobileQuery.matches && this.preferences.value.position) this.place(this.preferences.value.position.x, this.preferences.value.position.y);
       else { this.root.style.left = ''; this.root.style.top = ''; this.root.style.bottom = ''; }
       this.syncControls();
@@ -128,7 +128,7 @@
       this.root.querySelector('[data-companion-voice-controls]').hidden = !available;
       const notice = this.root.querySelector('[data-companion-voice-notice]');
       notice.hidden = available;
-      notice.textContent = this.manifest ? (this.manifest.voiceNotice || '鲸鱼娘语音尚未提供。') : '形象加载后检查语音资源。';
+      notice.textContent = this.manifest ? (this.manifest.voiceNotice || '看板娘语音尚未提供。') : '形象加载后检查语音资源。';
     }
     syncTrailControl() {
       const button = this.root?.querySelector('[data-companion-trail]');
@@ -179,7 +179,7 @@
     }
     fail(error) {
       this.lastError = error; this.state = 'error'; this.root.classList.remove('is-ready'); this.renderer?.destroy(); this.renderer = null; this.voice.stop();
-      this.message('形象未加载，可打开设置重试。当前显示静态鲸鱼图标。', true);
+      this.message('形象未加载，可打开设置重试。当前显示静态看板娘图标。', true);
       console.warn('[Companion]', error.message);
     }
     syncRendering() { if (!this.renderer) return; if (document.hidden || this.inNavigation || this.isCollapsed()) this.renderer.pause(); else this.renderer.resume(this.motionQuery.matches); }

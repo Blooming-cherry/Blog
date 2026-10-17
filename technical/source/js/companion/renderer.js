@@ -25,10 +25,20 @@
     }
   }
   api.Renderer = class {
-    constructor(host, onFailure) { this.host = host; this.onFailure = onFailure; this.serial = 0; this.app = null; this.model = null; this.paused = true; this.reducedMotion = false; this.userUntil = 0; }
+    constructor(host, onFailure) { this.host = host; this.onFailure = onFailure; this.serial = 0; this.app = null; this.model = null; this.rig = null; this.paused = true; this.reducedMotion = false; this.userUntil = 0; }
     async load(manifest, signal) {
       const serial = ++this.serial;
       const valid = () => serial === this.serial && !signal.aborted;
+      if (manifest.renderer?.id === 'canvas-rig') {
+        if (!api.RigRenderer) throw new Error('Rig renderer unavailable');
+        if (!valid()) throw new Error('Cancelled');
+        const rig = new api.RigRenderer(this.host, this.onFailure);
+        try { await rig.load(manifest, signal); }
+        catch (error) { rig.destroy(); throw error; }
+        if (!valid()) { rig.destroy(); throw new Error('Cancelled'); }
+        this.rig = rig;
+        return;
+      }
       const engine = manifest.renderer;
       if (!engine || engine.id !== 'pixi-cubism4' || engine.pixiVersion !== '6.5.10' || engine.adapterVersion !== '0.4.0') throw new Error('Unsupported companion renderer');
       for (const path of [engine.pixi, engine.core, engine.adapter]) { if (!valid()) throw new Error('Cancelled'); await loadScript(path); }
@@ -58,6 +68,7 @@
       } catch (error) { if (model) model.destroy(); app.destroy(true, { children: true }); throw error; }
     }
     fit() {
+      if (this.rig) { this.rig.fit(); return; }
       if (!this.app || !this.model) return;
       const size = this.host.clientHeight || 270;
       this.app.renderer.resize(size, size);
@@ -67,6 +78,7 @@
       this.app.renderer.render(this.app.stage);
     }
     motion(id, user = false) {
+      if (this.rig) { this.rig.motion(id, user); return; }
       if (!this.model || this.paused || this.reducedMotion || (!user && Date.now() < this.userUntil)) return;
       const motion = this.manifest.motions?.[id] || this.manifest.motions?.idle;
       if (!motion) return;
@@ -74,13 +86,15 @@
       Promise.resolve(this.model.motion(motion.group, motion.index || 0, user ? 3 : 1)).catch(error => { if (this.onFailure) this.onFailure(error); });
     }
     expression(id) {
+      if (this.rig) { this.rig.expression(id); return; }
       if (!this.model || this.reducedMotion) return;
       const expression = this.manifest.expressions?.[id];
       if (expression) Promise.resolve(this.model.expression(expression)).catch(() => {});
     }
-    focus(x, y) { if (this.model && !this.paused && !this.reducedMotion) this.model.focus(x, y); }
-    pause() { this.paused = true; if (this.app) this.app.stop(); }
+    focus(x, y) { if (this.rig) { this.rig.focus(x, y); return; } if (this.model && !this.paused && !this.reducedMotion) this.model.focus(x, y); }
+    pause() { if (this.rig) { this.rig.pause(); return; } this.paused = true; if (this.app) this.app.stop(); }
     resume(reducedMotion = false) {
+      if (this.rig) { this.rig.resume(reducedMotion); return; }
       this.reducedMotion = reducedMotion; this.paused = false;
       if (!this.app) return;
       if (reducedMotion) { this.app.stop(); this.app.renderer.render(this.app.stage); }
@@ -88,6 +102,7 @@
     }
     destroy() {
       this.serial++; this.pause();
+      if (this.rig) { this.rig.destroy(); this.rig = null; }
       if (this.app) {
         this.app.view.removeEventListener('webglcontextlost', this.contextLost);
         this.app.destroy(true, { children: true, texture: true, baseTexture: true });
