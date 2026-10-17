@@ -146,6 +146,8 @@
       if (open && !wasOpen) {
         this.syncSizeIndicator();
         global.__ctlMotion?.bloom(this.more, this.menu, { zIndex: 0 });
+      } else if (!open) {
+        global.__ctlMotion?.cancel(this.menu);
       }
       if (open) this.menuItems()[0]?.focus(); else if (restore) this.more.focus();
     }

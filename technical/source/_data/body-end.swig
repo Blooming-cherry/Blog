@@ -26,7 +26,7 @@
 <script src="/js/siren-url-loader.js"></script>
 
 <!-- Global Mini Vinyl Player -->
-<link rel="stylesheet" href="/js/music/music.css?v=20261017-ui2">
+<link rel="stylesheet" href="/js/music/music.css?v=20261018-bloom">
 <div id="mpOverlay" hidden></div>
 <section id="mpPlaylist" aria-label="音乐控制与播放列表" hidden>
   <div class="music-panel-heading"><span>塞壬唱片</span><button type="button" id="mpClose" aria-label="收起音乐控制">×</button></div>
@@ -59,10 +59,10 @@ window.__vinylPlaylist = [
 <script src="/js/music/player.js"></script>
 <script src="/js/music/covers-inline.js?v=20261017-ui2"></script>
 <script src="/js/music/cover-loader.js?v=20261017-ui2"></script>
-<script src="/js/music/ui.js?v=20261017-ui2"></script>
-<script defer src="/js/controls-motion.js?v=20261017-ui2"></script>
+<script src="/js/music/ui.js?v=20261018-bloom"></script>
+<script defer src="/js/controls-motion.js?v=20261018-bloom"></script>
 <!-- 蓝女仆看板娘：Canvas2D 分层、独立生命周期 -->
-<link rel="stylesheet" href="/js/companion/companion.css?v=20261017-ui2">
+<link rel="stylesheet" href="/js/companion/companion.css?v=20261018-bloom">
 <script defer src="/js/companion/preferences.js"></script>
 <script defer src="/js/companion/voice.js"></script>
 <script defer src="/js/companion/head-projection.js?v=20261017-ui2"></script>

@@ -170,12 +170,16 @@
       var expand = document.getElementById('mpExpand'), panel = document.getElementById('mpPlaylist'), overlay = document.getElementById('mpOverlay');
       function close(returnFocus) {
         panel.hidden = true; overlay.hidden = true; expand.setAttribute('aria-expanded', 'false');
+        expand.classList.remove('is-active');
+        if (window.__ctlMotion) window.__ctlMotion.cancel(panel);
         if (returnFocus) expand.focus();
       }
       close(false);
       listen(expand, 'click', function () {
         var open = panel.hidden; panel.hidden = !open; overlay.hidden = !open;
         expand.setAttribute('aria-expanded', String(open));
+        expand.classList.toggle('is-active', open);
+        if (!open && window.__ctlMotion) window.__ctlMotion.cancel(panel);
         if (open) {
           if (window.__ctlMotion) window.__ctlMotion.bloom(expand, panel, { zIndex: 1040 });
           if (wheelRefresh) wheelRefresh();

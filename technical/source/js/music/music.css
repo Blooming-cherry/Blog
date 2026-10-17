@@ -30,6 +30,10 @@
   background: transparent;
   cursor: pointer;
 }
+#mpExpand.is-active {
+  background: var(--ctl-ink);
+  color: var(--ctl-surface);
+}
 #mpDisc {
   position: relative;
   display: block;
