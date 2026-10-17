@@ -23,7 +23,7 @@
     }
     createUI() {
       const root = document.createElement('aside'); root.id = 'blog-companion'; root.setAttribute('aria-label', '蓝女仆看板娘');
-      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开蓝女仆看板娘"><img src="${poster}" alt="原创静态看板娘图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><button type="button" data-companion-trail>关闭鼠标拖尾</button><label>形象大小<select data-companion-size aria-label="看板娘大小"><option value="220">小</option><option value="270">中</option><option value="310">大</option></select></label><button type="button" data-companion-retry>重新加载形象</button><button type="button" data-companion-collapse>收起形象</button><button type="button" data-companion-position>恢复默认位置</button><button type="button" data-companion-credits>作者与授权</button><button type="button" data-companion-disable>关闭看板娘</button><button type="button" data-companion-close>关闭设置</button></section>`;
+      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开蓝女仆看板娘"><img src="${poster}" alt="原创静态看板娘图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div class="companion-menu-head"><span>看板娘</span><button type="button" data-companion-close aria-label="关闭设置">×</button></div><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><div class="companion-size"><span>大小</span><div class="companion-segments" data-companion-size role="group" aria-label="看板娘大小"><button type="button" data-size="220" aria-pressed="false">小</button><button type="button" data-size="270" aria-pressed="true">中</button><button type="button" data-size="310" aria-pressed="false">大</button></div></div><div class="companion-actions"><button type="button" data-companion-retry>重新加载</button><button type="button" data-companion-position>归位</button><button type="button" data-companion-collapse>收起</button><button type="button" data-companion-credits>授权</button><button type="button" data-companion-disable>关闭看板娘</button></div></section>`;
       this.root = root; this.avatar = root.querySelector('[data-companion-avatar]'); this.stage = root.querySelector('.companion-stage'); this.status = root.querySelector('.companion-status'); this.menu = root.querySelector('[data-companion-menu]'); this.more = root.querySelector('[data-companion-more]');
       this.syncVoiceControls();
       document.body.appendChild(root);
@@ -39,16 +39,14 @@
       this.listen(this.more, 'click', () => this.setMenu(this.menu.hidden));
       this.listen(this.avatar, 'contextmenu', event => { event.preventDefault(); this.setMenu(true); });
       this.listen(this.root.querySelector('[data-companion-close]'), 'click', () => this.setMenu(false, true));
-      this.listen(this.root.querySelector('[data-companion-trail]'), 'click', () => { global.__blogMouseTrail?.setEnabled(!global.__blogMouseTrail?.isEnabled()); this.syncTrailControl(); });
-      this.listen(global, 'blog:mouse-trail-state', () => this.syncTrailControl());
+      const sizeGroup = this.root.querySelector('[data-companion-size]');
+      for (const button of sizeGroup.querySelectorAll('[data-size]')) this.listen(button, 'click', () => { this.preferences.update({ size: Number(button.dataset.size) }); this.apply(); this.renderer?.fit(); });
       this.listen(this.root.querySelector('[data-companion-sound]'), 'click', () => {
         const muted = !this.preferences.value.muted;
         this.preferences.update({ muted }); this.voice.setMuted(muted); this.syncControls();
         if (!muted) { const voice = this.manifest?.voices?.tap; if (voice) this.voice.play('tap', voice); else this.message(this.manifest?.voiceNotice || '看板娘语音尚未提供。'); }
       });
-      this.listen(this.root.querySelector('[data-companion-volume]'), 'input', event => { const volume = Number(event.target.value); this.preferences.update({ volume }); this.voice.setVolume(volume); });
-      this.listen(this.root.querySelector('[data-companion-size]'), 'change', event => { this.preferences.update({ size: Number(event.target.value) }); this.apply(); this.renderer?.fit(); });
-      this.listen(this.root.querySelector('[data-companion-retry]'), 'click', () => { this.setMenu(false, true); this.expand(true); });
+      this.listen(this.root.querySelector('[data-companion-volume]'), 'input', event => { const volume = Number(event.target.value); this.preferences.update({ volume }); this.voice.setVolume(volume); });      this.listen(this.root.querySelector('[data-companion-retry]'), 'click', () => { this.setMenu(false, true); this.expand(true); });
       this.listen(this.root.querySelector('[data-companion-collapse]'), 'click', () => { this.collapse(); this.avatar.focus(); });
       this.listen(this.root.querySelector('[data-companion-position]'), 'click', () => { this.preferences.update({ position: null }); this.apply(); });
       this.listen(this.root.querySelector('[data-companion-disable]'), 'click', () => { this.disable(); this.avatar.focus(); });
@@ -115,11 +113,10 @@
     syncControls() {
       if (!this.root) return;
       const muted = this.preferences.value.muted;
-      this.syncTrailControl();
       this.root.querySelector('[data-companion-sound]').textContent = muted ? '开启声音' : '关闭声音';
       this.root.querySelector('[data-companion-sound]').setAttribute('aria-pressed', String(!muted));
       this.root.querySelector('[data-companion-volume]').value = String(this.preferences.value.volume);
-      this.root.querySelector('[data-companion-size]').value = String(this.preferences.value.size);
+      this.root.querySelectorAll('[data-size]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.size) === this.preferences.value.size)));
     }
     menuItems() { return [...this.menu.querySelectorAll('button,input,select')].filter(item => !item.closest('[hidden]')); }
     syncVoiceControls() {
@@ -129,16 +126,6 @@
       const notice = this.root.querySelector('[data-companion-voice-notice]');
       notice.hidden = available;
       notice.textContent = this.manifest ? (this.manifest.voiceNotice || '看板娘语音尚未提供。') : '形象加载后检查语音资源。';
-    }
-    syncTrailControl() {
-      const button = this.root?.querySelector('[data-companion-trail]');
-      const trail = global.__blogMouseTrail;
-      if (!button) return;
-      button.hidden = !trail?.supported();
-      if (button.hidden) return;
-      const enabled = trail.isEnabled();
-      button.textContent = enabled ? '关闭鼠标拖尾' : '开启鼠标拖尾';
-      button.setAttribute('aria-pressed', String(enabled));
     }
     setMenu(open, restore = false) {
       this.menu.hidden = !open; this.more.setAttribute('aria-expanded', String(open));

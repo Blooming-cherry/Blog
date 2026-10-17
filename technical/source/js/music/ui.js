@@ -62,7 +62,8 @@
       updateCover(snapshot); Covers.prefetch(snapshot, V.playlist);
       // Never remove the animation: pausing its timeline keeps the current angle.
       disc.classList.toggle('music-playing', snapshot.playing);
-      if (!mini) find('vinylTonearm').classList.toggle('playing', snapshot.playing);
+      var tonearm = find('vinylTonearm');
+      if (!mini && tonearm) tonearm.classList.toggle('playing', snapshot.playing);
       playButton.setAttribute('aria-label', snapshot.playing || snapshot.status === 'loading' || snapshot.status === 'buffering' ? '暂停' : '播放');
       playButton.setAttribute('aria-pressed', String(snapshot.playing));
       playButton.querySelector('[data-play]').hidden = snapshot.playing;

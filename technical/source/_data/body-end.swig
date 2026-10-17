@@ -26,7 +26,7 @@
 <script src="/js/siren-url-loader.js"></script>
 
 <!-- Global Mini Vinyl Player -->
-<link rel="stylesheet" href="/js/music/music.css">
+<link rel="stylesheet" href="/js/music/music.css?v=20261017-ui">
 <div id="mpOverlay" hidden></div>
 <section id="mpPlaylist" aria-label="音乐控制与播放列表" hidden>
   <div class="music-panel-heading"><span>塞壬唱片</span><button type="button" id="mpClose" aria-label="收起音乐控制">×</button></div>
@@ -38,11 +38,9 @@
   <div id="mpTracks"></div>
 </section>
 <div id="miniPlayer" aria-label="迷你音乐播放器">
-  <button class="mp-ctrl" id="mpPrev" type="button" aria-label="上一首">‹</button>
   <button id="mpExpand" type="button" aria-label="展开音乐控制" aria-expanded="false" aria-controls="mpPlaylist"><span id="mpDisc"><img id="mpCover" width="30" height="30" src="/js/music/placeholder.svg" alt="默认唱片封面"></span></button>
   <span id="mpTitle">—</span>
-  <button id="mpBtn" type="button" aria-label="播放"><span data-play>▶</span><span data-pause hidden>Ⅱ</span></button>
-  <button class="mp-ctrl" id="mpNext" type="button" aria-label="下一首">›</button>
+  <button id="mpBtn" type="button" aria-label="播放"><span data-play><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><span data-pause hidden><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></span></button>
 </div>
 <script>
 window.__vinylPlaylist = [
@@ -60,87 +58,13 @@ window.__vinylPlaylist = [
 </script>
 <script src="/js/music/player.js"></script>
 <script src="/js/music/cover-loader.js"></script>
-<script src="/js/music/ui.js"></script>
-<!-- Live2D 看板娘：自托管、独立生命周期与语音 -->
-<script>
-window.__blogDesktopEffectsEnabled = Boolean(
-  window.matchMedia &&
-  window.matchMedia('(min-width: 769px) and (hover: hover) and (pointer: fine)').matches
-);
-</script>
-<link rel="stylesheet" href="/js/companion/companion.css">
+<script src="/js/music/ui.js?v=20261017-ui"></script>
+<!-- 蓝女仆看板娘：Canvas2D 分层、独立生命周期 -->
+<link rel="stylesheet" href="/js/companion/companion.css?v=20261017-ui">
 <script defer src="/js/companion/preferences.js"></script>
 <script defer src="/js/companion/voice.js"></script>
-<script defer src="/js/companion/rig-renderer.js?v=20261017-blue-maid"></script>
-<script defer src="/js/companion/renderer.js?v=20261017-blue-maid"></script>
-<script defer src="/js/companion/controller.js?v=20261017-blue-maid"></script>
+<script defer src="/js/companion/head-projection.js?v=20261017-blue-maid"></script>
+<script defer src="/js/companion/rig-renderer.js?v=20261017-blue-maid-r2"></script>
+<script defer src="/js/companion/renderer.js?v=20261017-blue-maid-r2"></script>
+<script defer src="/js/companion/controller.js?v=20261017-blue-maid-r2"></script>
 <script defer src="/js/companion/bootstrap.js"></script>
-<!-- 鼠标拖尾粒子 -->
-
-<!-- 鼠标拖尾粒子 -->
-<canvas id="mouseTrail" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:998"></canvas>
-<script>
-(function(global, document) {
-  'use strict';
-  if (global.__blogMouseTrail) { global.__blogMouseTrail.mount(); return; }
-
-  var canvas, context, particles = [], frame = 0, enabled = true;
-  var desktop = global.matchMedia('(min-width: 769px) and (hover: hover) and (pointer: fine)');
-  var reduced = global.matchMedia('(prefers-reduced-motion: reduce)');
-  var key = 'blog-mouse-trail-enabled';
-  try { enabled = localStorage.getItem(key) !== 'false'; } catch (_) {}
-
-  function supported() { return desktop.matches && !reduced.matches; }
-  function active() { return enabled && supported() && !document.hidden && Boolean(canvas); }
-  function emit() { global.dispatchEvent(new CustomEvent('blog:mouse-trail-state', { detail: { enabled: enabled, supported: supported() } })); }
-  function clear() {
-    if (frame) cancelAnimationFrame(frame);
-    frame = 0; particles = [];
-    if (context && canvas) context.clearRect(0, 0, canvas.width, canvas.height);
-  }
-  function resize() {
-    if (!canvas) return;
-    canvas.width = global.innerWidth;
-    canvas.height = global.innerHeight;
-  }
-  function draw() {
-    frame = 0;
-    if (!active()) { clear(); return; }
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    for (var i = particles.length - 1; i >= 0; i--) {
-      var particle = particles[i];
-      particle.x += particle.vx; particle.y += particle.vy; particle.life -= particle.decay;
-      if (particle.life <= 0) { particles.splice(i, 1); continue; }
-      context.beginPath(); context.arc(particle.x, particle.y, particle.radius * particle.life, 0, Math.PI * 2);
-      context.fillStyle = 'hsla(' + particle.hue + ', 75%, 65%, ' + (particle.life * 0.45) + ')'; context.fill();
-    }
-    if (particles.length) frame = requestAnimationFrame(draw);
-  }
-  function schedule() { if (active() && particles.length && !frame) frame = requestAnimationFrame(draw); }
-  function move(event) {
-    if (!active()) return;
-    particles.push({ x:event.clientX, y:event.clientY, radius:2.2, vx:0, vy:0, life:1, decay:0.035, hue:202 });
-    if (particles.length > 20) particles.shift();
-    schedule();
-  }
-  function mount() {
-    var next = document.getElementById('mouseTrail');
-    if (next !== canvas) { canvas = next; context = canvas && canvas.getContext('2d'); resize(); }
-    if (!active()) clear();
-  }
-  function setEnabled(value) {
-    enabled = Boolean(value);
-    try { localStorage.setItem(key, String(enabled)); } catch (_) {}
-    if (!active()) clear();
-    emit();
-  }
-  document.addEventListener('mousemove', move, { passive:true });
-  document.addEventListener('visibilitychange', function() { if (document.hidden) clear(); else mount(); });
-  global.addEventListener('resize', resize);
-  global.addEventListener('pjax:success', mount);
-  desktop.addEventListener('change', mount);
-  reduced.addEventListener('change', function() { if (!supported()) clear(); else mount(); emit(); });
-  global.__blogMouseTrail = { mount:mount, setEnabled:setEnabled, isEnabled:function(){ return enabled && supported(); }, supported:supported };
-  mount(); emit();
-})(window, document);
-</script>
