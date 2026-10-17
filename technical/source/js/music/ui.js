@@ -5,7 +5,7 @@
   if (!V) return;
   var Covers = window.__vinylCoverLoader;
   if (!Covers) return;
-  var placeholder = Covers.placeholder, cleanups = [];
+  var placeholder = Covers.placeholder, cleanups = [], wheelRefresh = null;
   function fmt(time) {
     time = Number.isFinite(time) && time > 0 ? time : 0;
     return String(Math.floor(time / 60)).padStart(2, '0') + ':' + String(Math.floor(time % 60)).padStart(2, '0');
@@ -34,9 +34,66 @@
       var number = document.createElement('span'); number.className = mini ? 'mpp-num' : 'pl-num'; number.textContent = String(i + 1).padStart(2, '0');
       var name = document.createElement('span'); name.className = mini ? 'mpp-name' : 'pl-title'; name.textContent = track.name;
       row.append(number, name);
-      row.addEventListener('click', function () { V.load(i); V.play(); });
+      row.addEventListener('click', function () {
+        if (!mini) { V.load(i); V.play(); return; }
+        if (i === wheelNearest()) { V.play(); return; }
+        centerWheel(i, true);
+      });
       list.appendChild(row); rows.push(row);
     });
+    var wheelReady = false, wheelIndex = -1, lastLoaded = -1, wheelRaf = 0, wheelTimer = 0;
+    function rowHeight() { return (rows[0] && rows[0].offsetHeight) || 38; }
+    function wheelNearest() { var h = rowHeight(); return Math.max(0, Math.min(rows.length - 1, Math.round(list.scrollTop / h))); }
+    function wheelLayout() {
+      if (!list.clientHeight) return;
+      var h = rowHeight(), center = list.scrollTop + list.clientHeight / 2;
+      rows.forEach(function (row) {
+        var rowCenter = row.offsetTop + row.offsetHeight / 2;
+        var distance = Math.abs(rowCenter - center) / h;
+        row.style.transform = 'scale(' + (1 - Math.min(.09, .045 * Math.min(distance, 3))) + ')';
+        row.style.opacity = String(Math.max(.25, 1 - .32 * Math.min(distance, 3)));
+      });
+    }
+    function wheelPulse() {
+      var focus = root.querySelector('.mp-wheel-focus');
+      if (!focus) return;
+      focus.classList.remove('tick'); void focus.offsetWidth; focus.classList.add('tick');
+    }
+    function wheelMark() {
+      var nearest = wheelNearest();
+      rows.forEach(function (row, i) { row.classList.toggle('is-center', i === nearest); row.setAttribute('aria-selected', String(i === nearest)); });
+      if (nearest !== wheelIndex) { wheelIndex = nearest; wheelPulse(); }
+      return nearest;
+    }
+    function wheelSettle() {
+      if (!list.clientHeight) return;
+      var nearest = wheelMark();
+      if (nearest !== lastLoaded) { lastLoaded = nearest; V.load(nearest); }
+    }
+    function centerWheel(index, smooth) {
+      var h = rowHeight(), target = Math.max(0, Math.min(rows.length - 1, index));
+      list.scrollTo({ top: target * h, behavior: smooth ? 'smooth' : 'auto' });
+    }
+    if (mini) {
+      rows.forEach(function (row) { row.setAttribute('role', 'option'); });
+      listen(list, 'scroll', function () {
+        if (!wheelRaf) wheelRaf = requestAnimationFrame(function () { wheelRaf = 0; wheelLayout(); });
+        clearTimeout(wheelTimer); wheelTimer = setTimeout(wheelSettle, 140);
+      });
+      listen(list, 'scrollend', wheelSettle);
+      listen(list, 'keydown', function (event) {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); centerWheel(wheelNearest() + (event.key === 'ArrowDown' ? 1 : -1), true); }
+        else if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); centerWheel(event.key === 'Home' ? 0 : rows.length - 1, true); }
+        else if (event.key === 'Enter') { event.preventDefault(); V.play(); }
+      });
+      var initial = V.getState().idx;
+      wheelIndex = lastLoaded = initial;
+      list.scrollTop = initial * rowHeight();
+      wheelMark(); wheelLayout();
+      wheelReady = true;
+      wheelRefresh = function () { wheelLayout(); wheelMark(); };
+      cleanups.push(function () { clearTimeout(wheelTimer); if (wheelRaf) cancelAnimationFrame(wheelRaf); });
+    }
     function updateCover(snapshot, force) {
       var path = Covers.path(snapshot.track), key = snapshot.trackId + ':' + path;
       if (!force && coverId === key) return;
@@ -82,6 +139,11 @@
         row.classList.toggle('active', i === snapshot.idx);
         if (i === snapshot.idx) row.setAttribute('aria-current', 'true'); else row.removeAttribute('aria-current');
       });
+      if (mini && wheelReady && snapshot.idx !== wheelIndex) {
+        wheelIndex = lastLoaded = snapshot.idx;
+        list.scrollTop = snapshot.idx * rowHeight();
+        wheelMark(); wheelLayout();
+      }
     }
     cleanups.push(V.subscribe(sync));
     cleanups.push(function () { disposed = true; ++coverGeneration; });
@@ -114,6 +176,10 @@
       listen(expand, 'click', function () {
         var open = panel.hidden; panel.hidden = !open; overlay.hidden = !open;
         expand.setAttribute('aria-expanded', String(open));
+        if (open) {
+          if (window.__ctlMotion) window.__ctlMotion.bloom(expand, panel, { zIndex: 1040 });
+          if (wheelRefresh) wheelRefresh();
+        }
       });
       listen(document.getElementById('mpClose'), 'click', function () { close(true); });
       listen(overlay, 'click', function () { close(true); });

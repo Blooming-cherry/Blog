@@ -23,7 +23,7 @@
     }
     createUI() {
       const root = document.createElement('aside'); root.id = 'blog-companion'; root.setAttribute('aria-label', '蓝女仆看板娘');
-      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开蓝女仆看板娘"><img src="${poster}" alt="原创静态看板娘图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div class="companion-menu-head"><span>看板娘</span><button type="button" data-companion-close aria-label="关闭设置">×</button></div><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><div class="companion-size"><span>大小</span><div class="companion-segments" data-companion-size role="group" aria-label="看板娘大小"><button type="button" data-size="220" aria-pressed="false">小</button><button type="button" data-size="270" aria-pressed="true">中</button><button type="button" data-size="310" aria-pressed="false">大</button></div></div><div class="companion-actions"><button type="button" data-companion-retry>重新加载</button><button type="button" data-companion-position>归位</button><button type="button" data-companion-collapse>收起</button><button type="button" data-companion-credits>授权</button><button type="button" data-companion-disable>关闭看板娘</button></div></section>`;
+      root.innerHTML = `<div class="companion-status" role="status" aria-live="polite" hidden></div><button type="button" data-companion-avatar aria-label="打开蓝女仆看板娘"><img src="${poster}" alt="原创静态看板娘图标"><span class="companion-stage" aria-hidden="true"></span></button><button type="button" data-companion-more aria-label="看板娘设置" aria-expanded="false" aria-controls="companion-menu">···</button><section id="companion-menu" data-companion-menu role="dialog" aria-label="看板娘设置" hidden><div class="companion-menu-head"><span>看板娘</span><button type="button" data-companion-close aria-label="关闭设置">×</button></div><div data-companion-voice-notice role="status">形象加载后检查语音资源。</div><div data-companion-voice-controls hidden><button type="button" data-companion-sound>开启声音</button><label>语音音量<input data-companion-volume type="range" min="0" max="1" step="0.05" aria-label="看板娘语音音量"></label></div><div class="companion-size"><span>大小</span><div class="companion-segments" data-companion-size role="group" aria-label="看板娘大小"><span class="companion-seg-indicator" aria-hidden="true"></span><button type="button" data-size="220" aria-pressed="false">小</button><button type="button" data-size="270" aria-pressed="true">中</button><button type="button" data-size="310" aria-pressed="false">大</button></div></div><div class="companion-actions"><button type="button" data-companion-retry>重新加载</button><button type="button" data-companion-position>归位</button><button type="button" data-companion-collapse>收起</button><button type="button" data-companion-credits>授权</button><button type="button" data-companion-disable>关闭看板娘</button></div></section>`;
       this.root = root; this.avatar = root.querySelector('[data-companion-avatar]'); this.stage = root.querySelector('.companion-stage'); this.status = root.querySelector('.companion-status'); this.menu = root.querySelector('[data-companion-menu]'); this.more = root.querySelector('[data-companion-more]');
       this.syncVoiceControls();
       document.body.appendChild(root);
@@ -117,6 +117,18 @@
       this.root.querySelector('[data-companion-sound]').setAttribute('aria-pressed', String(!muted));
       this.root.querySelector('[data-companion-volume]').value = String(this.preferences.value.volume);
       this.root.querySelectorAll('[data-size]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.size) === this.preferences.value.size)));
+      this.syncSizeIndicator();
+    }
+    syncSizeIndicator() {
+      const group = this.root?.querySelector('.companion-segments');
+      const active = group?.querySelector('[aria-pressed=true]');
+      const indicator = group?.querySelector('.companion-seg-indicator');
+      if (!group || !active || !indicator || !group.offsetWidth) return;
+      const border = parseFloat(getComputedStyle(group).borderLeftWidth) || 0;
+      const groupRect = group.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      indicator.style.width = activeRect.width + 'px';
+      indicator.style.transform = 'translateX(' + (activeRect.left - groupRect.left - border - 2) + 'px)';
     }
     menuItems() { return [...this.menu.querySelectorAll('button,input,select')].filter(item => !item.closest('[hidden]')); }
     syncVoiceControls() {
@@ -128,7 +140,13 @@
       notice.textContent = this.manifest ? (this.manifest.voiceNotice || '看板娘语音尚未提供。') : '形象加载后检查语音资源。';
     }
     setMenu(open, restore = false) {
+      const wasOpen = !this.menu.hidden;
       this.menu.hidden = !open; this.more.setAttribute('aria-expanded', String(open));
+      this.more.classList.toggle('is-active', open);
+      if (open && !wasOpen) {
+        this.syncSizeIndicator();
+        global.__ctlMotion?.bloom(this.more, this.menu, { zIndex: 0 });
+      }
       if (open) this.menuItems()[0]?.focus(); else if (restore) this.more.focus();
     }
     message(text, persistent = false) {

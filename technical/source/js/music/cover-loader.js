@@ -7,6 +7,7 @@
   function path(track) {
     var local = (window.__vinylCoverPaths || {})[track.cid] || track.coverLocal;
     if (local) {
+      if (/^data:image\//i.test(local)) return local;
       try {
         var localUrl = new URL(local, window.location.href);
         if (localUrl.origin === window.location.origin && /^https?:$/.test(localUrl.protocol)) return localUrl.href;

@@ -26,7 +26,7 @@
 <script src="/js/siren-url-loader.js"></script>
 
 <!-- Global Mini Vinyl Player -->
-<link rel="stylesheet" href="/js/music/music.css?v=20261017-ui">
+<link rel="stylesheet" href="/js/music/music.css?v=20261017-ui2">
 <div id="mpOverlay" hidden></div>
 <section id="mpPlaylist" aria-label="音乐控制与播放列表" hidden>
   <div class="music-panel-heading"><span>塞壬唱片</span><button type="button" id="mpClose" aria-label="收起音乐控制">×</button></div>
@@ -34,8 +34,8 @@
   <button type="button" id="mpRetry" hidden>重试播放</button>
   <button type="button" id="mpCoverRetry" hidden>重试封面</button>
   <div class="music-progress-wrap"><span id="mpTimeCur">00:00</span><input id="mpProgress" type="range" min="0" max="0" step="1" value="0" aria-label="播放进度" disabled><span id="mpTimeDur">00:00</span></div>
-  <label class="music-volume">音量 <input id="mpVolume" type="range" min="0" max="100" step="1" value="30" aria-label="音乐音量"></label>
-  <div id="mpTracks"></div>
+  <div class="music-volume">音量 <input id="mpVolume" type="range" min="0" max="100" step="1" value="30" aria-label="音乐音量"></div>
+  <div class="mp-wheel"><span class="mp-wheel-focus" aria-hidden="true"></span><div id="mpTracks" tabindex="0" role="listbox" aria-label="曲目滚轮"></div></div>
 </section>
 <div id="miniPlayer" aria-label="迷你音乐播放器">
   <button id="mpExpand" type="button" aria-label="展开音乐控制" aria-expanded="false" aria-controls="mpPlaylist"><span id="mpDisc"><img id="mpCover" width="30" height="30" src="/js/music/placeholder.svg" alt="默认唱片封面"></span></button>
@@ -57,14 +57,74 @@ window.__vinylPlaylist = [
 // External cover URLs remain in the playlist for reference; no external cover fetch is required.
 </script>
 <script src="/js/music/player.js"></script>
-<script src="/js/music/cover-loader.js"></script>
-<script src="/js/music/ui.js?v=20261017-ui"></script>
+<script src="/js/music/covers-inline.js?v=20261017-ui2"></script>
+<script src="/js/music/cover-loader.js?v=20261017-ui2"></script>
+<script src="/js/music/ui.js?v=20261017-ui2"></script>
+<script defer src="/js/controls-motion.js?v=20261017-ui2"></script>
 <!-- 蓝女仆看板娘：Canvas2D 分层、独立生命周期 -->
-<link rel="stylesheet" href="/js/companion/companion.css?v=20261017-ui">
+<link rel="stylesheet" href="/js/companion/companion.css?v=20261017-ui2">
 <script defer src="/js/companion/preferences.js"></script>
 <script defer src="/js/companion/voice.js"></script>
-<script defer src="/js/companion/head-projection.js?v=20261017-blue-maid"></script>
-<script defer src="/js/companion/rig-renderer.js?v=20261017-blue-maid-r2"></script>
-<script defer src="/js/companion/renderer.js?v=20261017-blue-maid-r2"></script>
-<script defer src="/js/companion/controller.js?v=20261017-blue-maid-r2"></script>
+<script defer src="/js/companion/head-projection.js?v=20261017-ui2"></script>
+<script defer src="/js/companion/rig-renderer.js?v=20261017-ui2"></script>
+<script defer src="/js/companion/renderer.js?v=20261017-ui2"></script>
+<script defer src="/js/companion/controller.js?v=20261017-ui2"></script>
 <script defer src="/js/companion/bootstrap.js"></script>
+<!-- 鼠标拖尾粒子 -->
+<canvas id="mouseTrail" aria-hidden="true" style="position:fixed;top:0;left:0;pointer-events:none;z-index:998"></canvas>
+<script>
+(function(global, document) {
+  'use strict';
+  if (global.__blogMouseTrail) { global.__blogMouseTrail.mount(); return; }
+
+  var canvas, context, particles = [], frame = 0;
+  var desktop = global.matchMedia('(min-width: 769px) and (hover: hover) and (pointer: fine)');
+  var reduced = global.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function supported() { return desktop.matches && !reduced.matches; }
+  function active() { return supported() && !document.hidden && Boolean(canvas); }
+  function clear() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0; particles = [];
+    if (context && canvas) context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  function resize() {
+    if (!canvas) return;
+    canvas.width = global.innerWidth;
+    canvas.height = global.innerHeight;
+  }
+  function draw() {
+    frame = 0;
+    if (!active()) { clear(); return; }
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var particle = particles[i];
+      particle.x += particle.vx; particle.y += particle.vy; particle.life -= particle.decay;
+      if (particle.life <= 0) { particles.splice(i, 1); continue; }
+      context.beginPath(); context.arc(particle.x, particle.y, particle.radius * particle.life, 0, Math.PI * 2);
+      context.fillStyle = 'hsla(' + particle.hue + ', 75%, 65%, ' + (particle.life * 0.45) + ')'; context.fill();
+    }
+    if (particles.length) frame = requestAnimationFrame(draw);
+  }
+  function schedule() { if (active() && particles.length && !frame) frame = requestAnimationFrame(draw); }
+  function move(event) {
+    if (!active()) return;
+    particles.push({ x:event.clientX, y:event.clientY, radius:2.2, vx:0, vy:0, life:1, decay:0.035, hue:202 });
+    if (particles.length > 20) particles.shift();
+    schedule();
+  }
+  function mount() {
+    var next = document.getElementById('mouseTrail');
+    if (next !== canvas) { canvas = next; context = canvas && canvas.getContext('2d'); resize(); }
+    if (!active()) clear();
+  }
+  document.addEventListener('mousemove', move, { passive:true });
+  document.addEventListener('visibilitychange', function() { if (document.hidden) clear(); else mount(); });
+  global.addEventListener('resize', resize);
+  global.addEventListener('pjax:success', mount);
+  desktop.addEventListener('change', mount);
+  reduced.addEventListener('change', function() { if (!supported()) clear(); else mount(); });
+  global.__blogMouseTrail = { mount:mount, supported:supported };
+  mount();
+})(window, document);
+</script>
