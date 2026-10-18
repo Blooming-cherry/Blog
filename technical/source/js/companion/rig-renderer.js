@@ -51,7 +51,7 @@
       const resolveFile = file => api.sameOrigin(new URL(file, rigURL).href);
       const layers = rig.layers.map(layer => loadImage(resolveFile(layer.file)).then(image => [layer.id, image]));
       const seams = (rig.seams || []).map(seam => loadImage(resolveFile(seam.file)).then(image => [seam.id, image]));
-      const extra = ['wave-backing.png', 'hand-peace-chibi.png'].map(file => loadImage(resolveFile('layers/' + file)));
+      const extra = ['wave-backing-v2.png', 'hand-peace-chibi.png', 'elbow-underlay.png'].map(file => loadImage(resolveFile('layers/' + file)));
       const results = await Promise.all([...layers, ...seams, ...extra]);
       if (!valid()) throw new Error('Cancelled');
       this.rig = rig;
@@ -59,6 +59,7 @@
       this.seams = new Map((rig.seams || []).map((seam, index) => [seam.id, results[rig.layers.length + index][1]]));
       this.waveBacking = results[rig.layers.length + (rig.seams || []).length];
       this.peaceHand = results[rig.layers.length + (rig.seams || []).length + 1];
+      this.elbowUnderlay = results[rig.layers.length + (rig.seams || []).length + 2];
       const canvas = document.createElement('canvas');
       canvas.width = 880; canvas.height = 880;
       canvas.style.cssText = 'width:100%;height:100%;display:block';
@@ -195,6 +196,11 @@
           ctx.restore();
         }
         set(transforms.get(id), id);
+        if (id === 'forearm-right' && Math.abs(wave.elbow) > .01 && this.elbowUnderlay) {
+          // A feathered swatch of the actual sleeve fabric fills the joint
+          // interior while the forearm rotates; it is texture, not a flat patch.
+          ctx.drawImage(this.elbowUnderlay, 748, 733, 64, 64);
+        }
         if (!waving && armParts.includes(id)) {
           const seam = (rig.seams || []).find(s => s.id === id);
           if (seam) imageAt(this.seams.get(id), seam.bounds);

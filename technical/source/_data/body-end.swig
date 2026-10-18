@@ -66,7 +66,7 @@ window.__vinylPlaylist = [
 <script defer src="/js/companion/preferences.js"></script>
 <script defer src="/js/companion/voice.js"></script>
 <script defer src="/js/companion/head-projection.js?v=20261017-ui2"></script>
-<script defer src="/js/companion/rig-renderer.js?v=20261018-armfix1"></script>
+<script defer src="/js/companion/rig-renderer.js?v=20261018-frill1"></script>
 <script defer src="/js/companion/renderer.js?v=20261017-ui2"></script>
 <script defer src="/js/companion/controller.js?v=20261017-ui2"></script>
 <script defer src="/js/companion/bootstrap.js"></script>
