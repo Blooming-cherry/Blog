@@ -60,7 +60,7 @@ window.__vinylPlaylist = [
 <script src="/js/music/covers-inline.js?v=20261017-ui2"></script>
 <script src="/js/music/cover-loader.js?v=20261017-ui2"></script>
 <script src="/js/music/ui.js?v=20261018-bloom"></script>
-<script defer src="/js/controls-motion.js?v=20261018-bloom"></script>
+<script defer src="/js/controls-motion.js?v=20261018-hop2"></script>
 <!-- 蓝女仆看板娘：Canvas2D 分层、独立生命周期 -->
 <link rel="stylesheet" href="/js/companion/companion.css?v=20261018-bloom">
 <script defer src="/js/companion/preferences.js"></script>
