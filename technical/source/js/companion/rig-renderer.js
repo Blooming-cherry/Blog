@@ -8,11 +8,11 @@
     const elbow = smooth((p - .05) / .24) * (1 - smooth((p - .72) / .24));
     const swing = p > .30 && p < .72 ? Math.sin((p - .30) / .42 * Math.PI * 4) * Math.sin((p - .30) / .42 * Math.PI) : 0;
     const sway = smooth(p / .20) * (1 - smooth((p - .78) / .22));
-    return { shoulder: -24 * lift, elbow: -112 * elbow, wrist: 12 * elbow + 9 * swing, head: 3.2 * Math.sin((p - .08) * Math.PI * 3) * sway, hair: -.65 * Math.sin((p - .12) * Math.PI * 3) * sway };
+    return { shoulder: -6 * lift, elbow: -112 * elbow, wrist: 12 * elbow + 9 * swing, head: 3.2 * Math.sin((p - .08) * Math.PI * 3) * sway, hair: -.65 * Math.sin((p - .12) * Math.PI * 3) * sway };
   }
   function happyJoints(p) {
     const lift = smooth(p / .24) * (1 - smooth((p - .80) / .20));
-    return { shoulder: -22 * lift, elbow: -112 * lift, wrist: 8 * lift, head: -5 * lift, hair: .7 * lift };
+    return { shoulder: -6 * lift, elbow: -112 * lift, wrist: 8 * lift, head: -5 * lift, hair: .7 * lift };
   }
   function pivotTransform(rig, parent, pivot, angle = 0, sx = 1, sy = 1, dx = 0, dy = 0) {
     return parent.translate(pivot[0] * rig.width + dx, pivot[1] * rig.height + dy)
@@ -128,7 +128,7 @@
       for (const layer of rig.layers) {
         let angle = 0, dx = 0, dy = 0, sy = 1;
         if (layer.id === 'tail') { angle = Math.sin(time * 1.5) * 1.1 + (action === 'tail' ? Math.sin(phase * duration * 8) * 3.5 * response : 0); tailAngle = angle; }
-        if (layer.id.startsWith('hair-')) angle = Math.sin(time * 1.6 + (layer.id === 'hair-left' ? 0 : .7)) * .55 + wave.hair;
+        if (layer.id.startsWith('hair-')) angle = waving ? 0 : Math.sin(time * 1.6 + (layer.id === 'hair-left' ? 0 : .7)) * .55;
         if (layer.id.startsWith('fin-')) angle = Math.sin(time * 1.8) * .45;
         if (layer.id === 'ahoge') angle = Math.sin(time * 2) * 1.1;
         if (layer.id === 'bangs') angle = Math.sin(time * 1.4) * .12;
@@ -165,12 +165,14 @@
       };
       const flushFront = () => { if (!pitch || frontFlushed) return; lids(); projection.paint(mainCtx, this.headFront, pitch, base.multiply(torso), neck); frontFlushed = true; };
       const armParts = ['arm-right', 'forearm-right', 'hand-right'];
-      const order = ['tail', 'hair-left', 'hair-right', 'leg-left', 'leg-right', 'body', 'skirt', 'arm-left', 'arm-right', 'hand-left', 'head', 'bangs', 'fin-left', 'fin-right', 'ahoge', 'eye-left', 'eye-right', 'iris-left', 'iris-right', 'mouth'];
+      const order = waving
+        ? ['tail', 'hair-left', 'leg-left', 'leg-right', 'body', 'hair-right', 'skirt', 'arm-left', 'arm-right', 'hand-left', 'head', 'bangs', 'fin-left', 'fin-right', 'ahoge', 'eye-left', 'eye-right', 'iris-left', 'iris-right', 'mouth']
+        : ['tail', 'hair-left', 'hair-right', 'leg-left', 'leg-right', 'body', 'skirt', 'arm-left', 'arm-right', 'hand-left', 'head', 'bangs', 'fin-left', 'fin-right', 'ahoge', 'eye-left', 'eye-right', 'iris-left', 'iris-right', 'mouth'];
       order.splice(order.indexOf('hand-right'), 1);
       order.push('forearm-right', 'hand-right');
       if (this.images.has('hair-right')) { set(transforms.get('hair-right'), 'hair-right'); ctx.drawImage(this.waveBacking, 0, 0, rig.width, rig.height); }
       for (const seam of rig.seams || []) {
-        if (seam.id === 'hair-right' || armParts.includes(seam.id) || seam.id.startsWith('iris-') || seam.id.startsWith('eye-') || seam.id === 'mouth') continue;
+        if ((waving && seam.id === 'body') || seam.id === 'hair-right' || armParts.includes(seam.id) || seam.id.startsWith('iris-') || seam.id.startsWith('eye-') || seam.id === 'mouth') continue;
         set(transforms.get(seam.id), seam.id); imageAt(this.seams.get(seam.id), seam.bounds);
       }
       set(head, 'head');
@@ -182,12 +184,20 @@
       for (const id of order) {
         if (id === 'leg-left') flushBack();
         if (id === 'forearm-right') flushFront();
-        const layer = layerById(id); set(transforms.get(id), id);
-        if (armParts.includes(id)) { const seam = (rig.seams || []).find(s => s.id === id); if (seam) imageAt(this.seams.get(id), seam.bounds); }
-        if (id === 'forearm-right' && Math.abs(wave.elbow) > .01) {
-          set(armR, 'arm-right'); ctx.beginPath(); ctx.ellipse(780, 765, 23, 25, -.5, 0, Math.PI * 2);
-          const cloth = ctx.createLinearGradient(760, 745, 800, 785); cloth.addColorStop(0, '#414469'); cloth.addColorStop(1, '#303353');
-          ctx.fillStyle = cloth; ctx.fill(); set(transforms.get(id), id);
+        const layer = layerById(id);
+        if (id === 'arm-right' && Math.abs(wave.shoulder) > .01) {
+          set(torso, id);
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(705, 635, 76, 82);
+          ctx.clip();
+          imageAt(this.images.get(id), layer.bounds);
+          ctx.restore();
+        }
+        set(transforms.get(id), id);
+        if (!waving && armParts.includes(id)) {
+          const seam = (rig.seams || []).find(s => s.id === id);
+          if (seam) imageAt(this.seams.get(id), seam.bounds);
         }
         if (id.startsWith('eye-')) { ctx.fillStyle = '#fdfbff'; trace(layerById('iris-' + id.split('-')[1]).shape); ctx.fill(); }
         ctx.save();
