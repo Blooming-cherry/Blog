@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 320" width="820" height="320" role="img" aria-label="二元 PvP 战斗内核的模块结构">
+  <title>二元 PvP 战斗内核的模块结构</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head" d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #f7f7f7; stroke: #b0b0b0; stroke-width: 1.2; }
+    .label { fill: #1f1f1f; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; font-size: 15px; }
+    .num { fill: #a94f2f; font-weight: 600; }
+    .note { fill: #333333; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; font-size: 15px; }
+    .link { stroke: #8a8a8a; stroke-width: 1.4; fill: none; }
+    .head { fill: #8a8a8a; }
+    @media (prefers-color-scheme: dark) {
+      .box { fill: #242424; stroke: #666666; }
+      .label { fill: #e8e8e8; }
+      .num { fill: #e08a5f; }
+      .note { fill: #d0d0d0; }
+      .link { stroke: #8f8f8f; }
+      .head { fill: #8f8f8f; }
+    }
+  </style>
+
+  <rect class="box" x="28" y="28" width="250" height="40" rx="8"/>
+  <text class="label" x="44" y="54"><tspan class="num">1、</tspan>battleRealization.cpp</text>
+
+  <rect class="box" x="28" y="92" width="250" height="40" rx="8"/>
+  <text class="label" x="44" y="118"><tspan class="num">2、</tspan>Unit.cpp</text>
+
+  <rect class="box" x="28" y="156" width="250" height="40" rx="8"/>
+  <text class="label" x="44" y="182"><tspan class="num">3、</tspan>main.cpp</text>
+
+  <rect class="box" x="28" y="220" width="250" height="40" rx="8"/>
+  <text class="label" x="44" y="246"><tspan class="num">4、</tspan>model.hpp</text>
+
+  <path class="link" d="M278 48 C 330 48, 350 74, 392 74" marker-end="url(#arrow)"/>
+  <path class="link" d="M278 112 C 330 112, 350 100, 392 100" marker-end="url(#arrow)"/>
+  <path class="link" d="M278 176 C 330 176, 350 170, 392 170" marker-end="url(#arrow)"/>
+  <path class="link" d="M278 240 C 330 240, 350 234, 392 234" marker-end="url(#arrow)"/>
+
+  <text class="note" x="400" y="74">实现成员定义、内层函数，</text>
+  <text class="note" x="400" y="98">并完成退出逻辑和边界设计</text>
+
+  <text class="note" x="400" y="170">调用函数实现完整逻辑，</text>
+  <text class="note" x="400" y="194">并完成结构化输出</text>
+
+  <text class="note" x="400" y="234">提供接口，把 1、2 的函数</text>
+  <text class="note" x="400" y="258">与结构的接口暴露给主函数</text>
+</svg>
