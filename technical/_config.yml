@@ -36,6 +36,8 @@ skip_render:
   - assets/companion/**
   - js/companion/vendor/**
   - js/music/vendor/**
+  # Excalidraw 插件的工作目录，只放源文件，不要当成页面渲染
+  - "Excalidraw/*"
 
 # Writing
 new_post_name: :title.md # File name of new posts
