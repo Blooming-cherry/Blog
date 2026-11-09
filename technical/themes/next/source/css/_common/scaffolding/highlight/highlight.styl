@@ -149,3 +149,15 @@ pre {
     color: $highlight-purple;
   }
 }
+
+// Modern highlight.js emits type tokens inside function/parameter containers.
+// Keep the containers neutral so C++ types use the same color everywhere.
+.highlight.cpp pre {
+  .function, .params {
+    color: $highlight-foreground;
+  }
+
+  .type {
+    color: $highlight-purple;
+  }
+}
