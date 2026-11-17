@@ -32,6 +32,7 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+  - "attachments/闲敲棋子.blog/character-flow.html"
   - CNAME
   - assets/companion/**
   - js/companion/vendor/**

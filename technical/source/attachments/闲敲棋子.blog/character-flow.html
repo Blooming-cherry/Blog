@@ -1,0 +1,123 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>一个 n 的计算线路</title><style>:root{color-scheme:light dark;--background:light-dark(#fcfbf7,#192423);--foreground:light-dark(#172e2c,#e0efe9);--muted-foreground:light-dark(#526961,#abc1b8)}body{max-width:none;margin:0;padding:16px;background:var(--background);color:var(--foreground);font:16px/1.55 system-ui,sans-serif}</style></head><body><section id="ncircuit" lang="zh-CN" aria-label="字符 n 的计算线路">
+<style>
+#ncircuit{--paper:var(--background,#fcfbf7);--ink:var(--foreground,#172e2c);--dim:var(--muted-foreground,#526961);--line:color-mix(in srgb,var(--ink) 28%,var(--paper));--green:light-dark(#16715e,#73d5b6);--rust:light-dark(#a04629,#ffab84);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;container-type:inline-size}
+#ncircuit *{box-sizing:border-box}#ncircuit h2,#ncircuit h3,#ncircuit p{margin:0}#ncircuit header,#ncircuit footer,#ncircuit .toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+#ncircuit .map{position:relative;height:340px;margin:16px 0 8px}
+#ncircuit .map svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#ncircuit button,#ncircuit select{font:inherit;cursor:pointer;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:5px 10px}
+#ncircuit button:disabled{cursor:default;opacity:.45}#ncircuit button:focus-visible,#ncircuit select:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+#ncircuit button[aria-pressed=true]{color:var(--paper);background:var(--green);border-color:var(--green)}
+#ncircuit .map button{position:absolute;transform:translate(-50%,-50%);width:var(--node-width);height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;white-space:nowrap;border-radius:14px;padding:4px}
+#ncircuit .map button small{color:inherit}
+#ncircuit .map .skip{width:132px;height:32px;color:var(--rust);border-color:transparent;background:var(--paper);border-radius:10px}
+#ncircuit .map .skip[aria-pressed=true]{background:var(--rust);color:var(--paper)}
+#ncircuit .map .sum{border-radius:50%;width:44px;height:44px}
+#ncircuit .input-symbol{display:flex;align-items:baseline;justify-content:center;gap:16px;padding:20px 0}
+#ncircuit .input-symbol .symbol{font-family:ui-serif,serif;font-style:italic}
+#ncircuit .layout{display:grid;gap:12px;border-top:1px solid var(--line);padding:15px 0}
+#ncircuit .mono,#ncircuit .counter,#ncircuit .num{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums}
+#ncircuit .counter,#ncircuit small{color:var(--dim)}
+#ncircuit .ops{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+#ncircuit .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+#ncircuit .col{display:grid;justify-items:stretch;text-align:center;gap:6px;min-width:0;padding:8px 3px}
+#ncircuit .col small{color:inherit;font-size:.8em}#ncircuit .track{height:5px;background:color-mix(in srgb,currentColor 17%,transparent);display:block}
+#ncircuit .track i{height:100%;display:block;background:currentColor}
+#ncircuit .detail{display:grid;gap:7px;border-left:3px solid var(--green);padding-left:12px}
+#ncircuit .calc{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:baseline}
+#ncircuit .vec{display:flex;gap:2px;width:100%;max-width:500px;height:38px;align-items:center;position:relative}
+#ncircuit .vec:before{content:"";position:absolute;top:50%;width:100%;border-top:1px solid var(--line)}
+#ncircuit .vec i{flex:1;background:var(--green);position:relative;height:var(--height);transform:translateY(var(--dy))}
+#ncircuit footer{border-top:1px solid var(--line);padding-top:10px}
+@keyframes nc-pulse{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}@keyframes nc-enter{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:no-preference){#ncircuit .pulse{stroke-dasharray:1;animation:nc-pulse .65s ease-out}#ncircuit .enter{animation:nc-enter .24s ease-out}}
+@container(max-width:380px){#ncircuit .map button{padding:4px 5px}#ncircuit .num{font-size:.88em}}
+</style>
+<header><h2>一个 n 的计算线路</h2><span class="mono">BOS · a · n₁ · <b>n₂</b></span></header>
+<div class="map" role="group" aria-label="可点选的计算线路"></div>
+<article class="layout" aria-live="polite"></article>
+<footer><small>教学算例 · 显示值已舍入</small><div class="ops"><button type="button" data-go="prev">上一页</button><button type="button" data-go="next">下一页</button></div></footer>
+</section>
+<script>
+(()=>{
+const root=document.getElementById('ncircuit'),map=root.querySelector('.map'),panel=root.querySelector('article');
+const arr=(n,f)=>Array.from({length:n},(_,i)=>f(i)),dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+let seed=2407;const rand=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296)*2-1;
+const matrix=(to,from)=>arr(to,()=>arr(from,()=>rand()*Math.sqrt(3/from)));
+const project=(w,x)=>w.map(r=>dot(r,x)),norm=x=>{const r=Math.sqrt(dot(x,x)/x.length+1e-6);return x.map(v=>v/r)};
+const softmax=x=>{const t=x.map(v=>Math.exp(v-Math.max(...x))),s=t.reduce((a,b)=>a+b,0);return t.map(v=>v/s)};
+const tokens=['BOS','a','n₁','n₂'],inputs=arr(4,()=>arr(16,rand)),x=inputs[3],normalized=inputs.map(norm);
+const wq=matrix(16,16),wk=matrix(16,16),wv=matrix(16,16);
+const q=project(wq,normalized[3]),keys=normalized.map(t=>project(wk,t)),values=normalized.map(t=>project(wv,t));
+const heads=arr(4,j=>{const slice=t=>t.slice(j*4,j*4+4),Q=slice(q),K=keys.map(slice),V=values.map(slice),score=K.map(k=>dot(Q,k)/2),a=softmax(score),part=V.map((v,i)=>v.map(y=>y*a[i])),out=arr(4,k=>part.reduce((s,v)=>s+v[k],0));return {Q,K,V,score,a,part,out}});
+const att=project(matrix(16,16),heads.flatMap(t=>t.out)),h=x.map((v,i)=>v+att[i]),hn=norm(h),fc=project(matrix(64,16),hn),relu=fc.map(v=>Math.max(0,v)),ff=project(matrix(16,64),relu),y=h.map((v,i)=>v+ff[i]);
+const vocab=['a','n','b','EOS'],prob=softmax(project(matrix(4,16),y));
+const titles=['输入向量 x','多头自注意力','第一次残差相加','前馈网络','第二次残差相加','下一个字符'];
+let s={page:0,route:'main',head:0,pos:3,dim:0,op:0};
+const fmt=v=>(Math.abs(v)<.005?0:v).toFixed(2),vector=v=>'['+v.map(fmt).join(', ')+']',pct=v=>(v*100).toFixed(1)+'%';
+const btn=(label,key,val,on=false)=>'<button type="button" data-'+key+'="'+val+'" aria-pressed="'+on+'">'+label+'</button>';
+const vec=(v,label)=>'<div class="vec" role="img" aria-label="'+label+'，共 '+v.length+' 维，零线上方为正值、下方为负值">'+v.map(t=>{const z=Math.abs(t)/Math.max(.00001,...v.map(Math.abs))*18;return '<i style="--height:'+z+'px;--dy:'+(t>=0?-z/2:z/2)+'px"></i>'}).join('')+'</div>';
+function rounded(points,r=22){
+let d='M'+points[0].join(' ');
+for(let i=1;i<points.length-1;i++){
+const a=points[i-1],b=points[i],c=points[i+1];
+const len1=Math.hypot(b[0]-a[0],b[1]-a[1]),len2=Math.hypot(c[0]-b[0],c[1]-b[1]),t=Math.min(r,len1/2,len2/2);
+const before=[b[0]+(a[0]-b[0])*t/len1,b[1]+(a[1]-b[1])*t/len1];
+const after=[b[0]+(c[0]-b[0])*t/len2,b[1]+(c[1]-b[1])*t/len2];
+d+=' L'+before.join(' ')+' Q'+b.join(' ')+' '+after.join(' ');
+}return d+' L'+points.at(-1).join(' ');
+}
+function drawMap(animate){
+const w=map.clientWidth;if(!w)return;
+const nw=Math.min(108,(w-48)/3-12),l=16+nw/2,c=w/2,r=w-l,gap=nw/2+8;
+map.style.setProperty('--node-width',nw+'px');
+const points=[[l,86,'x','16 维',0],[c,86,'注意力','4 个头',1],[r,86,'＋','',2],
+[r,194,'h','16 维',3],[c,194,'前馈','16 → 64 → 16',3],[l,194,'＋','',4],
+[c,302,'输出层','预测下一字符',5],[c,24,'追踪 x 旁路','',2],[c,256,'追踪 h 旁路','',4]];
+const lines=[
+[1,'main',[[l+gap,86],[c-gap,86]]],
+[2,'main',[[c+gap,86],[r-30,86]]],
+[2,'skip',[[l,60],[l,24],[r,24],[r,56]]],
+[3,'main',[[r,116],[r,140],[r,160]]],
+[3,'main',[[r-gap,194],[c+gap,194]]],
+[4,'main',[[c-gap,194],[l+30,194]]],
+[4,'skip',[[r,220],[r,256],[l,256],[l,224]]],
+[5,'both',[[l,224],[l,302],[c-gap,302]]]];
+const paths=lines.map(([pg,route,pts])=>{
+const active=(pg===s.page||(s.page===2&&pg===3&&pts[0][0]===r&&pts[0][1]===116))&&(route==='both'||s.route==='both'||route===s.route);
+const color=active?(route==='skip'?'var(--rust)':'var(--green)'):'var(--line)';
+const d=rounded(pts);
+return '<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(active?3.5:2.5)+'" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#nc-arrow)"/>'+
+(active&&animate?'<path class="pulse" pathLength="1" d="'+d+'" fill="none" stroke="'+color+'" stroke-width="3.5" stroke-linecap="round"/>':'');
+}).join('');
+let svg=map.querySelector('svg');if(!svg){map.innerHTML='<svg aria-hidden="true"></svg>';svg=map.firstChild}
+svg.innerHTML='<defs><marker id="nc-arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="4" markerHeight="4" orient="auto"><path d="M1 1 L6 4 L1 7" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>'+paths;
+points.forEach(([xx,yy,label,sub,pg],i)=>{
+let b=map.querySelector('[data-node="'+i+'"]');
+if(!b){b=document.createElement('button');b.type='button';b.dataset.node=i;map.append(b)}
+const caption=w<400?(i===4?'64 维隐层':i===6?'softmax':sub):sub;
+b.innerHTML='<span>'+label+'</span>'+(caption?'<small>'+caption+'</small>':'');
+b.className=i>=7?'skip':label==='＋'?'sum':'';
+b.style.left=xx+'px';b.style.top=yy+'px';
+b.setAttribute('aria-label',['查看输入 x','展开多头注意力','查看第一次逐维相加','从 h 进入前馈网络','查看前馈网络','查看第二次逐维相加','查看输出分布','追踪第一条残差连接 x','追踪第二条残差连接 h'][i]);
+b.setAttribute('aria-pressed',pg===s.page&&(i>=7?s.route==='skip':s.route!=='skip'));
+});
+}
+function detail(){
+const {page,head,pos,op,dim,route}=s;
+if(page===0)return '<p>第三个字符 n₂ 的输入是 16 维向量 x。点线路上的「注意力」进入计算支路，或点「追踪 x 旁路」看原始输入去哪里。</p>'+'<div class="input-symbol" aria-label="输入 x，16 维向量"><span class="symbol">x = (x₁, x₂, …, x₁₆)</span><span>16 维</span></div>';
+if(page===1){const t=heads[head];return '<p>x 经 RMSNorm 和三个投影得到当前 Q、K、V。每个头取其中 4 维，用当前 Q 查询四个位置。</p><div class="ops">'+arr(4,i=>btn('头 '+(i+1),'head',i,i===head)).join('')+'</div><div class="mono">Q(n₂) = '+vector(t.Q)+'</div><div class="grid4">'+tokens.map((n,i)=>'<button type="button" class="col" data-pos="'+i+'" aria-pressed="'+(i===pos)+'"><b>'+n+'</b><small>'+(i===3?'当前 K/V':'缓存 K/V')+'</small><span class="track"><i style="width:'+100*t.a[i]+'%"></i></span><span class="num">'+pct(t.a[i])+'</span></button>').join('')+'</div><div class="detail"><b>'+tokens[pos]+' 对头 '+(head+1)+' 的贡献</b><span class="num">K = '+vector(t.K[pos])+'</span><span>Q · K / √4 = '+fmt(t.score[pos])+'，四个得分经 softmax 后，此列权重为 '+pct(t.a[pos])+'。</span><span class="num">V = '+vector(t.V[pos])+'</span><span class="num">权重 × V ≈ '+vector(t.part[pos])+'</span></div><p>四列贡献逐维相加，头 '+(head+1)+' 输出 <span class="num">'+vector(t.out)+'</span>。四个头拼接为 16 维，再经线性变换送往第一个加号。</p>'}
+if(page===2||page===4){const first=page===2,src=first?'x':'h',branch=first?'注意力输出':'前馈输出',dst=first?'h':'y',a=first?x:h,b=first?att:ff,res=first?h:y;
+return '<div class="ops">'+btn(branch,'route','main',route==='main')+btn(src+' 旁路','route','skip',route==='skip')+btn('＋ 汇合','route','both',route==='both')+'</div><p>'+(route==='skip'?'沿上图高亮线路，'+src+' 的 16 个分量原样抵达加号。':route==='main'?branch+'沿计算支路抵达加号，与旁路向量在相同维度对齐。':'加号将两路输入逐维相加，生成新的 16 维向量 '+dst+'。')+'</p><label>观察分量 <select data-dim>'+arr(16,i=>'<option value="'+i+'" '+(i===dim?'selected':'')+'>第 '+(i+1)+' 维</option>').join('')+'</select></label><div class="detail"><span>'+src+' 旁路 <b class="num">'+fmt(a[dim])+'</b></span><span>＋ '+branch+' <b class="num">'+fmt(b[dim])+'</b></span><span>＝ '+dst+' 的第 '+(dim+1)+' 维 <b class="num">'+fmt(res[dim])+'</b></span></div>'}
+if(page===3){const ops=['RMSNorm','fc1','ReLU','fc2'],v=[hn,fc,relu,ff][op];return '<p>h 在此分叉。计算支路按顺序执行下面四步，旁路把 h 直接送往第二个加号。</p><div class="ops">'+ops.map((n,i)=>btn(n,'op',i,op===i)).join(' → ')+'</div><b>'+['RMSNorm · 调整 h 的尺度','fc1 · 16 维投影为 64 维','ReLU · 负值归零，正值保留','fc2 · 64 维投影回 16 维'][op]+'</b>'+vec(v,ops[op]+' 输出')+'<small>'+v.length+' 个分量 · 各步骤按本步幅度缩放</small>'}
+return '<p>更新后的 16 维向量 y 经 lm_head 映射为词表分数，softmax 将分数转换为下一字符的概率。</p><b>示例词表的预测分布</b><div class="grid4">'+vocab.map((v,i)=>'<div class="col"><b>'+v+'</b><span class="track"><i style="width:'+prob[i]*100+'%"></i></span><span>'+pct(prob[i])+'</span></div>').join('')+'</div><small>EOS 表示序列结束。</small>'}
+function render(animate=false){const focus=document.activeElement,inside=panel.contains(focus),attr=inside&&Object.keys(focus.dataset)[0];drawMap(animate);panel.innerHTML='<div class="toolbar"><h3>'+titles[s.page]+'</h3><span class="counter">'+(s.page+1)+' / 6</span></div>'+detail();if(attr){const el=panel.querySelector('[data-'+attr+'="'+focus.dataset[attr]+'"]');el?.focus({preventScroll:true})}if(animate){panel.classList.remove('enter');void panel.offsetWidth;panel.classList.add('enter')}root.querySelector('[data-go=prev]').disabled=s.page===0;root.querySelector('[data-go=next]').disabled=s.page===5}
+function change(patch){Object.assign(s,patch);render(true);window.openai?.setWidgetState?.({privateContent:{...s},modelContent:{step:titles[s.page]}})?.catch(()=>{})}
+function turn(page,route){if(page>=0&&page<=5)change({page,route:route||([2,4].includes(page)?'both':'main')})}
+root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.node!==undefined){const i=+d.node;turn([0,1,2,3,3,4,5,2,4][i],i>=7?'skip':undefined)}else if(d.go)turn(s.page+(d.go==='next'?1:-1));else for(const k of ['head','pos','op','route'])if(k in d)change({[k]:k==='route'?d[k]:+d[k]})});
+root.addEventListener('change',e=>{if(e.target.matches('[data-dim]'))change({dim:+e.target.value})});
+root.addEventListener('keydown',e=>{if(!e.altKey&&!e.metaKey&&!e.ctrlKey&&e.target.tagName!=='SELECT'&&['ArrowRight','ArrowLeft'].includes(e.key)){e.preventDefault();turn(s.page+(e.key==='ArrowRight'?1:-1))}});
+function restore(v){if(v){for(const [k,max] of Object.entries({page:5,head:3,pos:3,dim:15,op:3}))if(Number.isInteger(v[k])&&v[k]>=0&&v[k]<=max)s[k]=v[k];if(['both','main','skip'].includes(v.route))s.route=v.route}render()}
+restore(window.openai?.widgetState?.privateContent);new ResizeObserver(()=>drawMap(false)).observe(map);window.addEventListener('openai:set_globals',e=>restore(e.detail?.globals?.widgetState?.privateContent));
+})();
+</script>
+</body></html>
