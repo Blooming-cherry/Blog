@@ -1,0 +1,8 @@
+角色参考：TreapGoGo/deepseek-whale-girl（MIT License）
+Copyright (c) 2026 TreapGoGo
+https://github.com/TreapGoGo/deepseek-whale-girl
+
+参考素材：AATINF/deepseek-whale-girl-assets
+https://github.com/AATINF/deepseek-whale-girl-assets
+
+本图由 OpenAI image_gen 根据参考素材与用户提供的角色设定图生成。
