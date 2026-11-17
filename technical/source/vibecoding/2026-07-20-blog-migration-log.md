@@ -16,7 +16,7 @@ comments: false
 | 项目 | 值 |
 |------|-----|
 | 云服务商 | 阿里云 ECS |
-| 公网 IP | `x.x.x.x` |
+| 公网 IP | x.x.x.x |
 | 系统 | Alibaba Cloud Linux |
 | Nginx | 宝塔面板安装，配置目录 `/www/server/panel/vhost/nginx/` |
 | Nginx 主配置 | `/www/server/nginx/conf/nginx.conf` |
@@ -32,7 +32,7 @@ comments: false
 
 | 主机记录 | 类型 | 记录值 |
 |----------|------|--------|
-| `blog` | A | `x.x.x.x` |
+| `blog` | A | x.x.x.x |
 
 > 注意：`*.blog.adaydream.cn`（泛解析）不匹配 `blog.adaydream.cn` 本身，必须单独加一条 `blog`。
 
@@ -124,7 +124,7 @@ sudo certbot certonly --webroot -w /var/www/blog -d blog.adaydream.cn
 - 曾计划在 `netbird.adaydream.cn` 部署 NetBird 中继服务用于内网穿透
 - 已安装 Docker 并拉取镜像，容器曾短暂运行
 - 后决定不再需要，容器和 `/opt/netbird` 目录已清理
-- 阿里云 DNS 中 `netbird` 解析记录需手动删除
+- 阿里云 DNS 中 netbird 解析记录需手动删除
 
 ## 踩坑记录
 
@@ -132,11 +132,11 @@ sudo certbot certonly --webroot -w /var/www/blog -d blog.adaydream.cn
 |------|------|
 | AliCloud Linux 不在 Docker 官方支持列表 | 用阿里云 yum 镜像源手动安装 |
 | Docker Hub 被墙 | 配国内镜像加速器 |
-| `docker.sock` 权限不足 | `sudo usermod -aG docker admin` 或直接 `sudo` |
+| docker.sock 权限不足 | `sudo usermod -aG docker admin` 或直接 `sudo` |
 | `*.blog` 泛解析不匹配裸 `blog` | 单独加一条 `blog` 主机记录 |
 | certbot `--nginx` 插件找不到宝塔 nginx.conf | 改用 `--webroot` 模式 |
 | Nginx tee 追加导致配置文件内容重复 | 先 `rm` 再 `tee` |
-| `newgrp` 不生效 | 直接在命令前加 `sudo` |
+| newgrp 不生效 | 直接在命令前加 `sudo` |
 | GitHub curl HTTP2 错误 | 用 `--http1.1` 或 ghproxy 代理 |
 
 ## 当前架构
@@ -150,7 +150,7 @@ netbird.adaydream.cn  → （已放弃，DNS 记录待删除）
 
 ## 待办
 
-- [ ] 阿里云 DNS 删除 `netbird` 解析记录
+- [ ] 阿里云 DNS 删除 netbird 解析记录
 - [ ] 部署 `sonnect.adaydream.cn` 导航页（`D:\my-blog\personal\subdomain-nav.html`）
 - [ ] 处理 `adaydream.cn` 旧 Nginx 配置（删除或改为跳转）
 - [ ] 阿里云 DNS 删除 `@` 和 `www` 的旧记录（如不再需要主域名解析）

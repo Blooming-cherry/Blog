@@ -38,7 +38,7 @@ URL 路径中包含一个 32 位的十六进制访问令牌（如 `8aad7b966f7a8
 
 ### 2.3 验证假设
 
-通过探索 Monster Siren 官方站点，发现了其后台 API 端点 `/api/song/{cid}`。调用该 API 获取同一首「Sanctuary Inside」的数据，返回的 `sourceUrl` 中令牌和代码段已完全不同：
+通过探索 Monster Siren 官方站点，发现了其后台 API 端点 `/api/song/{cid}`。调用该 API 获取同一首「Sanctuary Inside」的数据，返回的 sourceUrl 中令牌和代码段已完全不同：
 
 - **硬编码（过期）：** `8aad7b966f7a8069f07c094251c5a2eb / 6A12C018`
 - **API 实时获取（有效）：** `594d336b295cdbab286d352474194077 / 6A147742`
@@ -75,24 +75,24 @@ URL 路径中包含一个 32 位的十六进制访问令牌（如 `8aad7b966f7a8
 
 ### 4.2 前端改造
 
-在 Hexo 项目中新增了 `source/js/siren-url-loader.js`，负责在页面加载时从 Vercel 代理获取新鲜 URL，并以 30 分钟 TTL 缓存于 `localStorage`。核心机制：
+在 Hexo 项目中新增了 `source/js/siren-url-loader.js`，负责在页面加载时从 Vercel 代理获取新鲜 URL，并以 30 分钟 TTL 缓存于 localStorage 。核心机制：
 
-- **同步缓存检查**：先检查 `localStorage` 中是否有未过期的缓存，如有则立即可用（后续访问体验无延迟）
+- **同步缓存检查**：先检查 localStorage 中是否有未过期的缓存，如有则立即可用（后续访问体验无延迟）
 - **异步刷新**：缓存过期或不存在时，发起 XHR 请求获取新鲜 URL，写入 `window.__sirenUrls`
-- **优雅降级**：请求失败时回退到 `localStorage` 中的过期缓存；若完全无缓存则使用硬编码 URL（虽然可能已失效，但不阻塞播放器初始化）
+- **优雅降级**：请求失败时回退到 localStorage 中的过期缓存；若完全无缓存则使用硬编码 URL（虽然可能已失效，但不阻塞播放器初始化）
 
 同时修改了 `source/_data/body-end.swig` 中的播放器核心代码：
 1. 引入 loader 脚本（在已有播放器脚本之前加载）
-2. 为 PL 数组中每首歌添加 `cid` 字段（与 Monster Siren API 对应）
-3. 新增 `resolveUrl()` 函数，优先使用代理返回的新鲜 URL，回退到硬编码 URL
-4. 修改 `load()` 函数中的 `audio.src` 赋值，从直接使用 `t.url` 改为调用 `resolveUrl(t)`
+2. 为 PL 数组中每首歌添加 cid 字段（与 Monster Siren API 对应）
+3. 新增 resolveUrl() 函数，优先使用代理返回的新鲜 URL，回退到硬编码 URL
+4. 修改 load() 函数中的 audio.src 赋值，从直接使用 t.url 改为调用 `resolveUrl(t)`
 
 ### 4.3 构建验证
 
 本地执行 `hexo generate` 构建成功，14 个文件生成完毕。验证了生成产物：
-- `siren-url-loader.js` 正确包含代理地址
-- `body-end.swig` 中的修改正确嵌入到生成的 HTML
-- 全部 8 首歌曲的 `cid` 字段正确注入
+- siren-url-loader.js 正确包含代理地址
+- body-end.swig 中的修改正确嵌入到生成的 HTML
+- 全部 8 首歌曲的 cid 字段正确注入
 
 ## 五、部署说明
 
@@ -101,5 +101,5 @@ URL 路径中包含一个 32 位的十六进制访问令牌（如 `8aad7b966f7a8
 ## 六、遗留事项
 
 1. Vercel 免费套餐每月 10 万次请求限制，对个人博客完全足够
-2. 如需添加新歌，只需在 Vercel 函数的 `SONGS` 数组和 `body-end.swig` 的 `PL` 数组中同步添加即可
+2. 如需添加新歌，只需在 Vercel 函数的 SONGS 数组和 body-end.swig 的 PL 数组中同步添加即可
 3. Monster Siren API 的可用性依赖鹰角网络服务器，若其 API 变更需要同步更新代理代码

@@ -17,9 +17,9 @@ comments: false
 
 ## 方案
 
-1. **代理歌单加歌**：`D:\my-blog\adaydream-proxy\api\music-proxy.js` 的 `SONGS` 数组首位插入 `cid: "880337"`（《Control's Wishes》）。
-2. **终端页改动态拉取**：`D:\my-blog\terminal\index.html` 的 `<audio id="bgm">` 去掉硬编码 `src`，在 `DOMContentLoaded` 里 `fetch('https://adaydream-proxy.vercel.app/api/music-proxy')`，命中 `cid === '880337'` 后设置 `m.src`。
-3. 服务端响应带 `Cache-Control`（max-age 3600 + SWR 600）与 `Access-Control-Allow-Origin: *`，跨域与缓存一并解决。
+1. **代理歌单加歌**：`D:\my-blog\adaydream-proxy\api\music-proxy.js` 的 SONGS 数组首位插入 `cid: "880337"`（《Control's Wishes》）。
+2. **终端页改动态拉取**：`D:\my-blog\terminal\index.html` 的 `<audio id="bgm">` 去掉硬编码 src ，在 DOMContentLoaded 里 `fetch('https://adaydream-proxy.vercel.app/api/music-proxy')`，命中 `cid === '880337'` 后设置 m.src 。
+3. 服务端响应带 Cache-Control （max-age 3600 + SWR 600）与 `Access-Control-Allow-Origin: *`，跨域与缓存一并解决。
 
 ## 踩坑：Vercel 部署被拦截
 
@@ -40,12 +40,12 @@ cp adaydream-proxy/.vercel/project.json     ~/adaydream-proxy-deploy/.vercel/   
 cd ~/adaydream-proxy-deploy && npx vercel --prod --yes
 ```
 
-要点：`.vercel/project.json` 必须一起复制（内含 `projectId`/`orgId`，锁定到原项目）；`package.json` 必须带 `"type": "module"`（proxy 用 ESM `export default`）。
+要点：`.vercel/project.json` 必须一起复制（内含 projectId / orgId ，锁定到原项目）； package.json 必须带 `"type": "module"`（proxy 用 ESM `export default`）。
 
 ## 验证
 
-- 代理接口 `GET /api/music-proxy` 返回 **HTTP 200**，`data[0]` 即 cid `880337`，`url` 为有效 wav 直链（约 52MB）。
-- 线上终端页已含 fetch 逻辑（关键词 `880337` / `music-proxy` / 代理域名均命中）。
+- 代理接口 `GET /api/music-proxy` 返回 **HTTP 200**，`data[0]` 即 cid `880337`， url 为有效 wav 直链（约 52MB）。
+- 线上终端页已含 fetch 逻辑（关键词 `880337` / music-proxy / 代理域名均命中）。
 - 用户端强制刷新 `adaydream.cn` 后背景乐恢复。
 
 ## 踩坑记录
@@ -59,5 +59,5 @@ cd ~/adaydream-proxy-deploy && npx vercel --prod --yes
 
 ## 后续备忘
 
-- 以后 `adaydream-proxy` 加歌 / 换 cid 需要重部署时，走「干净目录复制部署」流程，勿直接在仓库内 `npx vercel`。
+- 以后 adaydream-proxy 加歌 / 换 cid 需要重部署时，走「干净目录复制部署」流程，勿直接在仓库内 `npx vercel`。
 - 代理接口带 1h 缓存，歌单改动后最长 1h 内全网生效。

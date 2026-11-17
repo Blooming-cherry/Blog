@@ -20,7 +20,7 @@ comments: false
 | 项目 | 值 |
 |------|-----|
 | 云服务商 | 阿里云 ECS |
-| 公网 IP | `x.x.x.x` |
+| 公网 IP | x.x.x.x |
 | 系统 | Alibaba Cloud Linux |
 | Web 面板 | 宝塔面板 |
 | Nginx | 1.28.3，配置目录 `/www/server/panel/vhost/nginx/` |
@@ -40,7 +40,7 @@ comments: false
 | 官方 Monster Siren 直链 | 官方资源 | 快（CDN） | 令牌会轮换，需定期更新 | ✅ 选用 |
 | 本地上传 | 个人使用风险最低 | 依赖服务器带宽 | 最稳 | 备选 |
 
-通过 Monster Siren 官方 API `https://monster-siren.hypergryph.com/api/song/{cid}`（`cid=880337`）拿到无损 WAV 直链（https，约 52MB），硬编码进 `<audio src>`。本次仅一首歌，故未走 Vercel 代理（`adaydream-proxy`），直接使用官方直链，天然规避混合内容问题。
+通过 Monster Siren 官方 API `https://monster-siren.hypergryph.com/api/song/{cid}`（`cid=880337`）拿到无损 WAV 直链（https，约 52MB），硬编码进 `<audio src>`。本次仅一首歌，故未走 Vercel 代理（ adaydream-proxy ），直接使用官方直链，天然规避混合内容问题。
 
 ### 2. 修复音乐无法播放的 bug
 
@@ -50,10 +50,10 @@ comments: false
 
 ### 3. 服务器部署
 
-1. 创建站点目录 `/var/www/adaydream/`（owner `admin:admin`）
-2. 修改 Nginx vhost 配置 `adaydream.cn.conf`：`root /var/www/my-site`（已删目录）→ `/var/www/adaydream`
+1. 创建站点目录 `/var/www/adaydream/`（owner admin:admin ）
+2. 修改 Nginx vhost 配置 adaydream.cn.conf ：`root /var/www/my-site`（已删目录）→ `/var/www/adaydream`
 3. `sudo nginx -t` 验证通过 → `sudo nginx -s reload`
-4. 通过宝塔面板「文件」上传 `index.html`（33019 字节）
+4. 通过宝塔面板「文件」上传 index.html （33019 字节）
 
 ### 4. Nginx 验证
 
@@ -65,13 +65,13 @@ comments: false
 1. `.gitignore` 移除 `terminal/` 排除项，页面进 git
 2. 新建 `.github/workflows/deploy-terminal.yml`：监听 `terminal/**` 的 push，rsync `terminal/index.html` → `/var/www/adaydream/index.html`
 3. 复用博客已有的 `SSH_KEY` / `SSH_USER` / `SSH_HOST` 三个 secret（该 deploy key 对 `/var/www/adaydream/` 有写权限）
-4. 推送后 CI 自动跑通，日志确认 `index.html` 共 33,019 字节传输成功
+4. 推送后 CI 自动跑通，日志确认 index.html 共 33,019 字节传输成功
 
 ## 踩坑记录
 
 | 问题 | 解决 |
 |------|------|
-| 音乐不播放 | bgm 逻辑包进 `DOMContentLoaded`，避免 `getElementById` 拿到 null |
+| 音乐不播放 | bgm 逻辑包进 DOMContentLoaded ，避免 getElementById 拿到 null |
 | 网易云外链 302 到 http，触发混合内容 | 改用 Monster Siren 官方 https wav 直链 |
 | Monster Siren API 无 CORS 头 | 直接用 `<audio>` 播放不需要 CORS（未走 fetch） |
 | 本地 Windows 到服务器无 SSH 密钥 | 首次用宝塔网页上传；CI 用仓库里的 deploy key |
@@ -93,7 +93,7 @@ sonnect.adaydream.cn→ （预留，导航页，待部署）
 
 | 旧日志待办 | 当前状态 |
 |------|------|
-| 删除 `netbird` 解析记录 | ✅ 已删除 |
+| 删除 netbird 解析记录 | ✅ 已删除 |
 | 部署 `adaydream.cn` 主域名（原「暂不解析」） | ✅ 已部署（本日志），仅剩 DNS A 记录收尾 |
 | 处理 `adaydream.cn` 旧 Nginx 配置（`root` 指向已删目录） | ✅ 已处理（`root` → `/var/www/adaydream`） |
 | 部署 `sonnect.adaydream.cn` 导航页 | ⏳ 仍待办（本次未涉及） |
@@ -101,6 +101,6 @@ sonnect.adaydream.cn→ （预留，导航页，待部署）
 
 ## 待办
 
-- [ ] 阿里云 DNS 加 `@` A 记录 → `x.x.x.x`（部署最后一步）
+- [ ] 阿里云 DNS 加 `@` A 记录 → x.x.x.x （部署最后一步）
 - [ ] 补充页面 favicon 与 og 分享标签
-- [ ] 留意 wav 直链令牌轮换：HyCDN 防盗链令牌过期后需重新调 API 更新 `src`
+- [ ] 留意 wav 直链令牌轮换：HyCDN 防盗链令牌过期后需重新调 API 更新 src

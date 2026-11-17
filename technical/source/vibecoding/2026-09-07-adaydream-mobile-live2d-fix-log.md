@@ -23,7 +23,7 @@ comments: false
 - 断点合并为 `max-width: 1024px`，窄屏改单列纵向堆叠：标题/按钮 → 中心图形 → GitHub 文案；
 - 窄屏隐藏桌面端绿色 Rhine 水印（顶栏已带 RHINE LAB 品牌）；
 - `height: 100vmin` 改为 `min-height: 100svh / 100dvh` 兜底移动端动态地址栏；
-- 字号统一改 `clamp()`，消除横向溢出与底部裁切。
+- 字号统一改 clamp() ，消除横向溢出与底部裁切。
 
 ### 2. 手机端 v2 重做（22:19，commit `8edf763`）
 
@@ -32,7 +32,7 @@ comments: false
 | 区域 | 手机竖屏行为 |
 |---|---|
 | 页眉 | 固定高 44px，只留左对齐「RHINE LAB」品牌；Blog / Sonnect / GitHub 按钮移入正文介绍区 |
-| 主视觉 | Rhine crest 居中，纯 CSS 缩放入场（`phoneCrestIn`：scale .94→1 + fade），**不走**桌面 JS 手绘 |
+| 主视觉 | Rhine crest 居中，纯 CSS 缩放入场（ phoneCrestIn ：scale .94→1 + fade），**不走**桌面 JS 手绘 |
 | 标题 / 介绍 | ADAYDREAM 居中；下方为「粗体站名链接 + 虚线分隔 + 描述」的介绍行；Lumuen 指 GitHub 仓库 |
 | 背景装饰 | 方块细化为低透明度（opacity ≤ .28）背景层，不作为主体 |
 | 矮横屏 | crest 居左 + 文字居右的横排紧凑布局，无横向/纵向溢出 |
@@ -45,9 +45,9 @@ comments: false
 
 **根因**：分区原本依赖 SVG `<mask>` 内的黑/白镂空；自动深色反色算法反转了 mask 的明度语义，镂空区域被填回 → 整块实心。
 
-**修法**：把「镂空」从 mask 改成**路径真实挖洞** —— 主 crest 路径加 `fill-rule="evenodd"`，并把原镂空子路径并入同一段 `d`，删除 `#rhineHollow` mask。分区因此成为真实几何，任何反色算法都无法破坏。
+**修法**：把「镂空」从 mask 改成**路径真实挖洞** —— 主 crest 路径加 `fill-rule="evenodd"`，并把原镂空子路径并入同一段 d ，删除 `#rhineHollow` mask。分区因此成为真实几何，任何反色算法都无法破坏。
 
-**验证**：无头 Edge `WebContentsForceDark` 下，修复后 crest 逐像素分区结构与日间完全一致；静态终态与旧 mask 版本在 crest 区域**像素差 0**（桌面亦无回归）。
+**验证**：无头 Edge WebContentsForceDark 下，修复后 crest 逐像素分区结构与日间完全一致；静态终态与旧 mask 版本在 crest 区域**像素差 0**（桌面亦无回归）。
 
 ### 4. 修复二：入场动效在「减弱动效」下不播放（commit `861182c`）
 
@@ -57,17 +57,17 @@ comments: false
 
 **修法**：减弱动效下仅收敛大幅/循环类动画；**手机端（竖屏 ≤600 与矮横屏）的 crest / 标题 / 介绍 / 按钮短促入场显式豁免**，仍按约 0.7s 淡入缩放播放。
 
-**验证**：强制 `prefers-reduced-motion` 下，入场 400ms → 900ms 绿墨覆盖 14074 → 21345 持续增长，证明动效确实在播放。
+**验证**：强制 prefers-reduced-motion 下，入场 400ms → 900ms 绿墨覆盖 14074 → 21345 持续增长，证明动效确实在播放。
 
 ### 5. 上线
 
-沿用 08-13 建立的 GitHub Actions 工作流 `deploy-terminal.yml`：push `terminal/` → rsync 到服务器 `/var/www/adaydream`（宝塔 / Nginx / SSL）。本次最终修复 `861182c` 已推送，线上 `adaydream.cn` 已验证：含 evenodd 挖洞、无 `#rhineHollow` 残留、含 v2 全部标记。
+沿用 08-13 建立的 GitHub Actions 工作流 deploy-terminal.yml ：push `terminal/` → rsync 到服务器 `/var/www/adaydream`（宝塔 / Nginx / SSL）。本次最终修复 `861182c` 已推送，线上 `adaydream.cn` 已验证：含 evenodd 挖洞、无 `#rhineHollow` 残留、含 v2 全部标记。
 
 ---
 
 ## 二、Live2D 看板娘语音防抖修复（body-end.swig · 已落地）
 
-看板娘（sagiri 模型，配合 `waifu-tips.js`）点击动作会触发语音。原音频钩子用「7000ms 冷却 + `new Audio(url)` 立即预载」，有两个问题：
+看板娘（sagiri 模型，配合 waifu-tips.js ）点击动作会触发语音。原音频钩子用「7000ms 冷却 + `new Audio(url)` 立即预载」，有两个问题：
 
 1. `new Audio(url)` 默认 `preload="auto"`，构造瞬间就发起 `.wav` 请求 —— 即使后续被冷却丢弃，请求也**已经发出**，网络面板不断堆积；
 2. 冷却窗口内的多次点击被直接丢弃 → 快速连点时表现为静默 / 不稳定。
@@ -98,7 +98,7 @@ a.play = function () {
 要点：
 
 - 一波连续触发压成**最后一次**播放：N 个请求 → 1 个；
-- `preload` 由 `'none'` 延迟到真正放行才切 `'auto'`，从源头消除被丢弃请求；
-- `ended` / `pause` 统一走 `cleanup()` 从播放表中移除，避免数组泄漏。
+- preload 由 `'none'` 延迟到真正放行才切 `'auto'`，从源头消除被丢弃请求；
+- `ended` / `pause` 统一走 cleanup() 从播放表中移除，避免数组泄漏。
 
 > 状态：该改动已在 `technical/source/_data/body-end.swig` **落地**（已提交并部署上线）。

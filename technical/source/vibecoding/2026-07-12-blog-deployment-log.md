@@ -12,7 +12,7 @@ comments: false
 > **涉及节点**：
 > - 本地 Windows 开发机
 > - GitHub (`Blooming-cherry/blooming-cherry.github.io`)
-> - 阿里云轻量应用服务器（上海）`x.x.x.x`，宝塔面板，用户 `admin`
+> - 阿里云轻量应用服务器（上海） x.x.x.x ，宝塔面板，用户 `admin`
 >
 > **状态**：🔄 大部分完成 — GitHub Actions 自动部署已跑通（GitHub Pages + 阿里云服务器双部署）；待完成：宝塔面板 Nginx 站点、SSL 证书。
 
@@ -47,8 +47,8 @@ Git 仓库：[email]:Blooming-cherry/blooming-cherry.github.io.git
 
 | 项目 | 值 |
 |------|-----|
-| 主机名 | `iZuf6a5zotmktmnd9w4deeZ` |
-| 公网 IP | `x.x.x.x` |
+| 主机名 | iZuf6a5zotmktmnd9w4deeZ |
+| 公网 IP | x.x.x.x |
 | 用户 | `admin`（非 root） |
 | 面板 | 宝塔（aaPanel） |
 | Node | v22.22.2 |
@@ -75,7 +75,7 @@ ls ~/my-site/public/ 2>/dev/null
 ```
 
 **详情**：
-- `hexo generate` 输出显示已成功生成了 58 个文件（包括 `index.html`、`archives/index.html`、各类标签页等）
+- `hexo generate` 输出显示已成功生成了 58 个文件（包括 index.html 、`archives/index.html`、各类标签页等）
 - 但随后 `ls ~/my-site/public/` 返回"没有public目录"
 - 列出 `~/my-site` 根目录内容时也没有 `public/` 子目录
 
@@ -203,8 +203,8 @@ chmod 600 /root/.ssh/config                             # Permission denied
 **根因分析**：
 - `admin` 用户没有权限访问 `/root/` 及其子目录
 - Git/SSH 操作应该是用 `admin` 用户执行的，但 SSH 可能尝试在 `/root/.ssh/` 查找密钥（取决于配置）
-- 或者密钥文件 `github-deploy` 未添加到 GitHub 仓库的 Deploy Keys 中
-- 或者 SSH config 未正确配置 `IdentityFile` 指向 `/home/admin/.ssh/github-deploy`
+- 或者密钥文件 github-deploy 未添加到 GitHub 仓库的 Deploy Keys 中
+- 或者 SSH config 未正确配置 IdentityFile 指向 `/home/admin/.ssh/github-deploy`
 
 **可能的解决方案**：
 1. 用 `sudo` 执行 `/root/.ssh/` 相关操作
@@ -249,7 +249,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 | 层面 | 操作 | 位置 |
 |------|------|------|
-| DNS 解析（必做） | 添加 A/AAAA 记录：域名 → `x.x.x.x` | 阿里云 DNS 控制台（域名服务），或宝塔面板的"域名"入口 |
+| DNS 解析（必做） | 添加 A/AAAA 记录：域名 → x.x.x.x | 阿里云 DNS 控制台（域名服务），或宝塔面板的"域名"入口 |
 | Nginx 站点配置（必做） | 创建 vhost：告诉 Nginx 这个域名对应 `/var/www/my-site` | 宝塔面板 → 网站 → 添加站点 |
 
 两者缺一不可。
@@ -260,7 +260,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 ## 阶段三：GitHub Actions 自动部署（双目标）
 
-> ✅ 本阶段已完成。2026-07-08 通过临时测试文件 `test-deploy-trigger.txt` 验证通过。
+> ✅ 本阶段已完成。2026-07-08 通过临时测试文件 test-deploy-trigger.txt 验证通过。
 
 ### 3.1 工作流文件
 
@@ -276,7 +276,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 | 2 | 安装 Node.js 24 | `actions/setup-node@v4` |
 | 3 | 安装依赖 | `npm ci` |
 | 4 | 构建 Hexo | `npx hexo generate` |
-| 5 | 部署到 GitHub Pages | `peaceiris/actions-gh-pages@v4` → `gh-pages` 分支 |
+| 5 | 部署到 GitHub Pages | `peaceiris/actions-gh-pages@v4` → gh-pages 分支 |
 | 6 | SCP 到阿里云服务器 | `appleboy/scp-action@v0` → `/var/www/my-site/` |
 
 - GitHub Pages 用 `${{ secrets.GITHUB_TOKEN }}`（GitHub 内置，无需手动配置）
@@ -286,7 +286,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 | Secret | 值 | 用途 |
 |--------|-----|------|
-| `SSH_HOST` | `x.x.x.x` | 阿里云服务器 IP |
+| `SSH_HOST` | x.x.x.x | 阿里云服务器 IP |
 | `SSH_USER` | `admin` | 服务器用户名 |
 | `SSH_KEY` | *(SSH 私钥)* | 用于 SCP 免密登录 |
 
@@ -305,7 +305,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 
 | 日期 | 测试内容 | 结果 |
 |------|----------|------|
-| 2026-07-08 | 推送测试文件 `test-deploy-trigger.txt` → 触发 Deploy Hexo Blog #29 | ✅ 24s 完成 |
+| 2026-07-08 | 推送测试文件 test-deploy-trigger.txt → 触发 Deploy Hexo Blog #29 | ✅ 24s 完成 |
 | 2026-07-08 | 清理测试文件，推送 → 触发 #30 | ✅ 正常 |
 
 ---
@@ -334,7 +334,7 @@ chmod 600 /root/.ssh/config                             # Permission denied
 | 3.1.1 | Git | SSH 公钥认证失败 | 🔴 阻塞 | ✅ 已解决 — debug 确认 SSH 连通；服务器 `dnf install rsync` 后部署成功 |
 | 3.2.1 | HTTPS | HTTPS 无法访问 | 🟡 中等 | ✅ 已解决 — certbot + Let's Encrypt 证书 |
 | 3.3.1 | 浏览器 | `x.x.x.x 关闭连接` | 🔴 阻塞 | ✅ 已解决 — Nginx 站点已配置 |
-| 4.1 | DNS | 待确认域名解析 | 🟡 中等 | ✅ 已解决 — `@` 和 `www` A 记录均指向 `x.x.x.x` |
+| 4.1 | DNS | 待确认域名解析 | 🟡 中等 | ✅ 已解决 — `@` 和 `www` A 记录均指向 x.x.x.x |
 | 5.1 | ICP 备案 | 域名未完成 ICP 备案，阿里云边缘网络拦截 HTTP + HTTPS | 🔴 阻塞 | ⏳ 待提交阿里云首次备案申请 |
 | — | GitHub Actions | 自动部署尚未配置 | ⏳ | ✅ 已完成 — push to main → Hexo build → GitHub Pages + SCP 到服务器双部署 |
 
@@ -420,7 +420,7 @@ sudo nginx -t && sudo nginx -s reload
 
 ### 5.1 问题现象
 
-用户在浏览器中访问 `https://adaydream.cn`，浏览器报"连接已重置"（ERR_CONNECTION_RESET），网站完全无法打开。此前（7月8日）部署完成后，通过 `x.x.x.x`（IP 直连）验证过服务器 Nginx 正常，但从未通过域名实际测试。
+用户在浏览器中访问 `https://adaydream.cn`，浏览器报"连接已重置"（ERR_CONNECTION_RESET），网站完全无法打开。此前（7月8日）部署完成后，通过 x.x.x.x （IP 直连）验证过服务器 Nginx 正常，但从未通过域名实际测试。
 
 ### 5.2 排查过程（逐层穿透）
 
@@ -451,7 +451,7 @@ curl -I -k https://adaydream.cn
 
 #### 第 3 步：排除本地代理干扰
 
-检查本地环境，发现 **Clash Verge** 正在运行（系统代理 `127.0.0.1:7897`，进程 `clash-verge.exe` + `verge-mihomo.exe`）。
+检查本地环境，发现 **Clash Verge** 正在运行（系统代理 `127.0.0.1:7897`，进程 clash-verge.exe + verge-mihomo.exe ）。
 
 ```bash
 # 停止 Clash Verge 后重测
@@ -587,7 +587,7 @@ server {
 |------|------|------|
 | 1. 登录备案系统 | 阿里云控制台 → 备案 → 开始备案 | — |
 | 2. 填写主办者信息 | 个人备案：姓名、身份证号、手机号、邮箱 | — |
-| 3. 填写网站信息 | 域名 `adaydream.cn`、服务器 IP `x.x.x.x`、网站名称（如"ADayDream 博客"）、服务内容选"博客/个人空间" | — |
+| 3. 填写网站信息 | 域名 `adaydream.cn`、服务器 IP x.x.x.x 、网站名称（如"ADayDream 博客"）、服务内容选"博客/个人空间" | — |
 | 4. 上传证件 | 身份证正反面照片 + 人脸核身 | — |
 | 5. 阿里云初审 | 阿里云客服电话核实 | 1-2 工作日 |
 | 6. 管局审核 | 工信部最终审批 | 约 2-4 周 |
@@ -605,7 +605,7 @@ server {
 
 ### 5.6 备案成功后操作清单
 
-- [ ] 在网页底部添加 ICP 备案号（如 `浙ICP备XXXXXXXX号-1`）
+- [ ] 在网页底部添加 ICP 备案号（如 浙ICP备XXXXXXXX号-1 ）
 - [ ] 备案号链接到 [工信部备案查询](https://beian.miit.gov.cn/)
 - [ ] 在阿里云控制台提交公安联网备案（如当地要求）
 - [ ] 验证 `https://adaydream.cn` 可正常访问（HTTP→HTTPS 跳转 + TLS 1.2/1.3 双栈）
@@ -634,11 +634,11 @@ server {
 | **E7** | `www` CNAME 指向 GitHub Pages | certbot 验证 `www.adaydream.cn` 时连到 GitHub IP `185.199.111.153` 返回 404 | 改了裸域 A 记录但忘记改 `www` 的 CNAME | 修改 DNS 时把 `@` 和 `www` 两条记录一起检查 |
 | **E8** | `sudo` + `~` 路径解析错误 | `sudo cp -r ~/my-site/public/* /var/www/` → 报 `/root/my-site/` 不存在 | `sudo` 下 `~` 展开为 `/root/` 而非 `/home/admin/` | `sudo` 命令中始终使用绝对路径，不要依赖 `~` |
 | **E9** | bash 感叹号历史展开 | `echo "<h1>Welcome!</h1>"` 报 `event not found` | `!` 在双引号内触发 bash history expansion | 使用单引号 `'...'` 包裹含感叹号的字符串 |
-| **E10** | SSH 公钥不匹配 | 本地 `github-actions-deploy.pub` 与服务器 `authorized_keys` 中的同名密钥指纹不同 | 创建了两把不同的密钥对但用了相同的注释名 | 密钥对比应对比指纹而非注释名；`ssh-keygen -lf` 查看指纹 |
+| **E10** | SSH 公钥不匹配 | 本地 github-actions-deploy.pub 与服务器 `authorized_keys` 中的同名密钥指纹不同 | 创建了两把不同的密钥对但用了相同的注释名 | 密钥对比应对比指纹而非注释名；`ssh-keygen -lf` 查看指纹 |
 | **E11** | `tee` 到不存在的目录 | `tee: /etc/nginx/sites-available/...: No such file or directory` | 父目录不存在，tee 不会自动创建 | 写文件前先 `mkdir -p` 确保父目录存在 |
 | **E12** | 以为部署完成 = 网站可访问 | 浏览器访问 adaydream.cn 报"连接已重置"，但服务器 IP 直连正常，GitHub Actions 绿色 | 域名 DNS 指向阿里云服务器，而服务器在中国大陆，域名没有完成 ICP 备案 | 中国大陆服务器 + 域名 = 必须先 ICP 备案。部署到服务器 ≠ 网站上线，必须通过域名实际验证 |
 | **E13** | 将 TLS 1.2 握手失败归因为服务器配置问题 | 排查方向一度指向 Nginx SSL 配置、证书权限、OpenSSL 版本兼容等 | 服务器本地 TLS 1.2 完全正常，RST 来自阿里云边缘网络的 ICP 拦截 | 当"IP 直连正常但域名失败"时，优先考虑网络路径中是否有中间设备（WAF/防火墙/合规系统）在干预 |
-| **E14** | 被"Beaver" Server 头误导 | 看到 `Server: Beaver` 以为服务器上有其他 Web 服务或代理 | "Beaver" 是阿里云 ICP 拦截系统的标识，不在我们的服务器上 | HTTP 响应中的 `Server` 头不一定来自目标服务器——中间设备可以替换/注入响应内容 |
+| **E14** | 被"Beaver" Server 头误导 | 看到 `Server: Beaver` 以为服务器上有其他 Web 服务或代理 | "Beaver" 是阿里云 ICP 拦截系统的标识，不在我们的服务器上 | HTTP 响应中的 Server 头不一定来自目标服务器——中间设备可以替换/注入响应内容 |
 | **E15** | 未在部署完成后第一时间用域名验证 | 7月8日 IP 直连测试通过后就认为部署完成了 | 域名 DNS 已生效多日，但一致未通过 `curl -H 'Host:adaydream.cn'` 或直接 curl 域名来验证 | 部署完成的定义必须是**通过最终访问方式（域名 + HTTPS）验证成功**，仅 IP 测试不够 |
 
 ### 二、概念性理解不足
@@ -660,7 +660,7 @@ server {
 2. **排错优先加日志，不要猜** —— 加了 `ssh -v` debug 步骤后，5 秒就发现了 `rsync: command not found` 根因。之前无日志的三轮尝试浪费了大量时间
 3. **复杂工具出问题 → 降级为原生命令** —— SCP action → rsync action → 原生 rsync，每一步降级都让问题更透明
 4. **密钥对比要看指纹** —— `ssh-keygen -lf file.pub` 比肉眼对比 base64 字符串可靠一万倍
-5. **DNS 生效需要等，但可以用 `nslookup` 立刻验证当前状态** —— 不要猜 DNS 有没有生效，直接查
+5. **DNS 生效需要等，但可以用 nslookup 立刻验证当前状态** —— 不要猜 DNS 有没有生效，直接查
 6. **"IP 直连 OK，域名不行"的第一反应应该是"有什么在按域名过滤？"** —— 不是"服务器哪配错了"。这种模式下，服务器配置大概率没问题，问题在中间设备（WAF/防火墙/合规系统/GFW）
 7. **用 2×2 矩阵交叉测试可以快速锁定根因** —— 今天的 TLS 版本 × SNI 值 交叉测试，5 分钟就确定了"只有 `*.adaydream.cn` + TLS 1.2" 被阻断，直接排除了配置错误、网络故障等几十种可能性
 8. **tcpdump 是判断"RST 谁发的"的唯一可靠方式** —— 客户端看到 RST 时，只有在目标服务器上同时抓包（0 包到达 = RST 是中间设备伪造的），才能区分"服务器拒绝了连接"还是"中间设备在拦截"

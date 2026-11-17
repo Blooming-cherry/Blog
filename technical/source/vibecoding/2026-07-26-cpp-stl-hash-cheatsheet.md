@@ -54,22 +54,22 @@ description: "从 C 手写哈希到 C++ STL 全家桶 —— vector / string / u
 
 | 容器 | 一句话 | 内部结构 |
 |------|--------|----------|
-| `vector` | 默认容器，连续内存 | 动态数组 |
-| `string` | `vector<char>` + 字符串操作 | 动态数组 + SSO |
+| vector | 默认容器，连续内存 | 动态数组 |
+| string | `vector<char>` + 字符串操作 | 动态数组 + SSO |
 | `unordered_map` | O(1) 键值查找 | 哈希表（链地址法） |
 | `unordered_set` | O(1) 去重/判存在 | 哈希表 |
-| `map` | 按键排序的键值对 | 红黑树 |
-| `set` | 有序去重集合 | 红黑树 |
-| `deque` | 头尾都能快速增删 | 分块数组 |
-| `array` | 安全版 C 数组 | 栈上定长数组 |
+| map | 按键排序的键值对 | 红黑树 |
+| set | 有序去重集合 | 红黑树 |
+| deque | 头尾都能快速增删 | 分块数组 |
+| array | 安全版 C 数组 | 栈上定长数组 |
 | `priority_queue` | 始终取最值 | 堆（默认大顶堆） |
-| `list` | 双向链表（别用） | 双向链表 |
+| list | 双向链表（别用） | 双向链表 |
 
 ---
 
 ## 2. std::vector — 你的默认容器
 
-> **内部结构：** 三指针 —— `begin` / `end` / `capacity_end`
+> **内部结构：** 三指针 —— begin / end / `capacity_end`
 > ```
 > [1][2][3][?][?][?][?][?]
 >  |<--size-->|
@@ -157,11 +157,11 @@ MSVC:          1 → 2 → 3 → 4 → 6 → 9 ...  (×1.5)
 |------|--------|
 | `push_back` / `emplace_back` | O(1) 均摊 |
 | `pop_back` | O(1) |
-| `operator[]` / `at()` / `front` / `back` | O(1) |
+| `operator[]` / at() / front / back | O(1) |
 | `insert(pos)` / `erase(pos)` | **O(n)** ⚠️ |
-| `find()` | O(n) |
-| `sort()` | O(n log n) |
-| `reserve()` / `resize()` | O(n) |
+| find() | O(n) |
+| sort() | O(n log n) |
+| reserve() / resize() | O(n) |
 
 ---
 
@@ -215,7 +215,7 @@ process(string("hello"));  // ✅
 process(s);                // ✅
 ```
 
-> **原则：** 函数参数用 `string_view`，返回值用 `string`（别返回 string_view 指向临时对象）。
+> **原则：** 函数参数用 `string_view`，返回值用 string （别返回 string_view 指向临时对象）。
 
 ---
 
@@ -911,9 +911,9 @@ auto b = vb[0];               // ✅ 按值接收
 ---
 
 > **总结：** 
-> - 90% 的情况：`vector` + `unordered_map` + `string` 
-> - 需要排序：`map` / `set`
-> - 双端操作：`deque`
+> - 90% 的情况： vector + `unordered_map` + string 
+> - 需要排序： map / set
+> - 双端操作： deque
 > - 最值：`priority_queue`
 > - 哈希底层原理（§10-11）是理解 `unordered_map` 为什么 O(1) 的基础，但日常编码不需要自己实现。
 > - 选容器的第一原则：**先确定访问模式，再选数据结构**。没有万能容器，只有最匹配的容器。
