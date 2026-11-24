@@ -137,3 +137,23 @@ theme: next
 #   type: git
 #   repo: https://github.com/Blooming-cherry/blooming-cherry.github.io.git
 #   branch: gh-pages
+
+# Subscription entry; other NexT settings remain unchanged.
+theme_config:
+  menu:
+    RSS: /rss.xml || fa fa-rss
+
+# RSS 2.0 + Atom subscriptions
+feed:
+  enable: true
+  type:
+    - rss2
+    - atom
+  path:
+    - rss.xml
+    - atom.xml
+  limit: 20
+  content: false
+  content_limit: 200
+  order_by: -date
+  autodiscovery: true
